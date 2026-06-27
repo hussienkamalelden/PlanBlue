@@ -69,7 +69,7 @@ Open [http://localhost:1337/admin](http://localhost:1337/admin) and create your 
 
 ---
 
-## Step 5 — Run development servers
+## Step 4 — Run development servers
 
 ```powershell
 pnpm dev:web   # http://localhost:3000
