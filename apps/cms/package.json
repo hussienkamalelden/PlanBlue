@@ -1,0 +1,34 @@
+{
+  "name": "@planblue/cms",
+  "version": "0.1.0",
+  "private": true,
+  "description": "PlanBlue Strapi CMS — backend & admin dashboard",
+  "scripts": {
+    "develop": "strapi develop",
+    "start": "strapi start",
+    "build": "strapi build",
+    "strapi": "strapi",
+    "lint": "echo \"Strapi lint — configure eslint later\""
+  },
+  "dependencies": {
+    "@planblue/email": "workspace:*",
+    "@planblue/shared": "workspace:*",
+    "@strapi/plugin-users-permissions": "^5.12.0",
+    "@strapi/strapi": "^5.12.0",
+    "pg": "^8.14.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.30.0",
+    "styled-components": "^6.1.17"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "strapi": {
+    "uuid": "planblue-cms-scaffold"
+  }
+}

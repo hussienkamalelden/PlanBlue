@@ -1,0 +1,4 @@
+// Content-types scaffold — implement schemas in later steps:
+// - product, category, order, order-item
+// - marketer, promocode
+// - product-view, active-session (analytics)

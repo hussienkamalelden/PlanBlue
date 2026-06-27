@@ -1,0 +1,25 @@
+{
+  "name": "planblue",
+  "version": "0.1.0",
+  "private": true,
+  "description": "PlanBlue — E-commerce Online Toy Store (Monorepo)",
+  "scripts": {
+    "dev": "pnpm run --parallel dev:web dev:cms",
+    "dev:web": "pnpm --filter @planblue/web dev",
+    "dev:cms": "pnpm --filter @planblue/cms develop",
+    "build": "pnpm run --parallel build:web build:cms",
+    "build:web": "pnpm --filter @planblue/web build",
+    "build:cms": "pnpm --filter @planblue/cms build",
+    "lint": "pnpm run --parallel lint:web lint:cms",
+    "lint:web": "pnpm --filter @planblue/web lint",
+    "lint:cms": "pnpm --filter @planblue/cms lint",
+    "db:up": "docker compose -f docker/docker-compose.yml up -d",
+    "db:down": "docker compose -f docker/docker-compose.yml down",
+    "db:logs": "docker compose -f docker/docker-compose.yml logs -f postgres"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@10.32.1"
+}

@@ -1,0 +1,3 @@
+// Custom Strapi middlewares:
+// - active user tracking
+// - product view counter
