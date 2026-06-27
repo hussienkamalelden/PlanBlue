@@ -31,10 +31,9 @@ PlanBlue/
 
 Install before starting:
 
-1. **Node.js 20+** — [nodejs.org](https://nodejs.org/)
+1. **Node.js 20+**
 2. **pnpm 9+** — `npm install -g pnpm`
-3. **PostgreSQL 16** — choose one:
-   - **Option A (recommended):** Docker Desktop + Docker Compose
+3. **PostgreSQL 16** — Docker Desktop + Docker Compose
 4. **Git**
 
 ---
