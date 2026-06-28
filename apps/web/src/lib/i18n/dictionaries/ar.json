@@ -1,0 +1,56 @@
+{
+  "common": {
+    "brand": "PlanBlue",
+    "tagline": "متجر الألعاب",
+    "loading": "جاري التحميل...",
+    "error": "حدث خطأ. يرجى المحاولة مرة أخرى."
+  },
+  "header": {
+    "products": "المنتجات",
+    "cart": "السلة"
+  },
+  "home": {
+    "title": "مرحباً بك في PlanBlue",
+    "description": "تصفح مجموعتنا من الألعاب — لا حاجة لحساب.",
+    "cta": "تسوق المنتجات"
+  },
+  "products": {
+    "title": "المنتجات",
+    "empty": "لا توجد منتجات متاحة حالياً.",
+    "filteredEmpty": "لا توجد منتجات في هذه الفئة."
+  },
+  "category": {
+    "title": "الفئات",
+    "all": "كل المنتجات"
+  },
+  "productCard": {
+    "views": "مشاهدة",
+    "sale": "تخفيض",
+    "outOfStock": "غير متوفر"
+  },
+  "productDetail": {
+    "backToProducts": "العودة إلى المنتجات",
+    "description": "الوصف",
+    "basePrice": "السعر الأساسي",
+    "discountPrice": "سعر التخفيض",
+    "views": "إجمالي المشاهدات",
+    "quantity": "الكمية",
+    "inStock": "{stock} متوفر في المخزون",
+    "quantityWarning": "يتوفر فقط {stock} قطعة في المخزون. يرجى تقليل الكمية.",
+    "outOfStock": "هذا المنتج غير متوفر حالياً.",
+    "addToCart": "أضف إلى السلة",
+    "buyNow": "اشترِ الآن",
+    "addedToCart": "تمت الإضافة إلى السلة",
+    "notFound": "المنتج غير موجود",
+    "notFoundDescription": "المنتج الذي تبحث عنه غير موجود أو تمت إزالته."
+  },
+  "cart": {
+    "title": "سلتك",
+    "empty": "سلتك فارغة.",
+    "continueShopping": "متابعة التسوق"
+  },
+  "checkout": {
+    "title": "إتمام الشراء",
+    "placeholder": "صفحة الدفع قريباً."
+  }
+}

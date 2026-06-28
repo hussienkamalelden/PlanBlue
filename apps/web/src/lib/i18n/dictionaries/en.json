@@ -1,0 +1,56 @@
+{
+  "common": {
+    "brand": "PlanBlue",
+    "tagline": "Toy Store",
+    "loading": "Loading...",
+    "error": "Something went wrong. Please try again."
+  },
+  "header": {
+    "products": "Products",
+    "cart": "Cart"
+  },
+  "home": {
+    "title": "Welcome to PlanBlue",
+    "description": "Browse our toy collection — no account required.",
+    "cta": "Shop products"
+  },
+  "products": {
+    "title": "Products",
+    "empty": "No products available yet.",
+    "filteredEmpty": "No products in this category."
+  },
+  "category": {
+    "title": "Categories",
+    "all": "All products"
+  },
+  "productCard": {
+    "views": "views",
+    "sale": "Sale",
+    "outOfStock": "Out of stock"
+  },
+  "productDetail": {
+    "backToProducts": "Back to products",
+    "description": "Description",
+    "basePrice": "Base price",
+    "discountPrice": "Sale price",
+    "views": "Total views",
+    "quantity": "Quantity",
+    "inStock": "{stock} in stock",
+    "quantityWarning": "Only {stock} items available in stock. Please reduce the quantity.",
+    "outOfStock": "This product is currently out of stock.",
+    "addToCart": "Add to Cart",
+    "buyNow": "Buy Now",
+    "addedToCart": "Added to cart",
+    "notFound": "Product not found",
+    "notFoundDescription": "The product you are looking for does not exist or has been removed."
+  },
+  "cart": {
+    "title": "Your Cart",
+    "empty": "Your cart is empty.",
+    "continueShopping": "Continue shopping"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "placeholder": "Checkout flow coming soon."
+  }
+}

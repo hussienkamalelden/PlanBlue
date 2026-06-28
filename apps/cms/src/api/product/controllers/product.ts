@@ -11,7 +11,7 @@ export default factories.createCoreController(
       const { data, meta } = await super.find(ctx);
 
       const sanitizedData = data.map((product: any) => {
-        const basePrice = product.base_price || 0;
+        const basePrice = Number(product.price) || 0;
         const discountPercentage = product.discount_percentage || 0;
         const discountPrice =
           basePrice - basePrice * (discountPercentage / 100);
@@ -54,7 +54,7 @@ export default factories.createCoreController(
       const { data } = await super.findOne(ctx);
       if (!data) return { data };
 
-      const basePrice = data.base_price || 0;
+      const basePrice = Number(data.price) || 0;
       const discountPercentage = data.discount_percentage || 0;
       const discountPrice = basePrice - basePrice * (discountPercentage / 100);
 
