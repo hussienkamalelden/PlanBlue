@@ -17,6 +17,7 @@ import {
 } from '@/lib/product/stock';
 import type { StrapiProduct } from '@/lib/types/strapi';
 import { useLocaleStore } from '@/stores/locale-store';
+import Image from 'next/image';
 
 type ProductDetailViewProps = {
   product: StrapiProduct;
@@ -36,6 +37,7 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
   const exceedsStock = isQuantityExceedsStock(quantity, product);
   const actionsDisabled = arePurchaseActionsDisabled(quantity, product);
   const { basePrice, salePrice } = getProductPrices(product);
+  const media = product.media as any;
 
   function incrementQuantity() {
     setFeedback(null);
@@ -90,7 +92,13 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
       <div className="grid gap-10 lg:grid-cols-2">
         <div className="rounded-2xl border border-neutral-200 bg-white p-8 shadow-sm">
           <div className="flex aspect-square items-center justify-center rounded-xl bg-neutral-100 text-neutral-400">
-            <span className="text-sm">Product media</span>
+            <Image
+              src={media[0].url}
+              alt={media[0].name}
+              width={100}
+              height={100}
+              className="w-full h-full object-cover"
+            />
           </div>
         </div>
 

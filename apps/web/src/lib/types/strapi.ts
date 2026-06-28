@@ -1,4 +1,4 @@
-import type { Locale } from "@/lib/i18n/config";
+import type { Locale } from '@/lib/i18n/config';
 
 export type StrapiCategory = {
   id: number;
@@ -22,6 +22,7 @@ export type StrapiProduct = {
   views: number;
   locale: Locale;
   categories?: StrapiCategory[];
+  media?: any[];
 };
 
 export type StrapiListResponse<T> = {
