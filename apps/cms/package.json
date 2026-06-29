@@ -13,6 +13,8 @@
   "dependencies": {
     "@planblue/email": "workspace:*",
     "@planblue/shared": "workspace:*",
+    "@react-email/components": "^0.0.31",
+    "@react-email/render": "^2.0.9",
     "@strapi/plugin-users-permissions": "^5.12.0",
     "@strapi/provider-email-nodemailer": "^5.49.0",
     "@strapi/strapi": "^5.12.0",
