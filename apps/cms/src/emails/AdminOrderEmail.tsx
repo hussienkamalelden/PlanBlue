@@ -31,6 +31,8 @@ interface AdminEmailProps {
   address: string;
   extra_notes: string;
   order_items: string;
+  governorate: string;
+  promo_code: string;
 }
 
 const AdminOrderEmail = ({
@@ -41,6 +43,8 @@ const AdminOrderEmail = ({
   address,
   extra_notes,
   order_items,
+  governorate,
+  promo_code,
 }: AdminEmailProps) => {
   return (
     <Html lang="en" dir="ltr">
@@ -89,12 +93,20 @@ const AdminOrderEmail = ({
                 <Text style={rowValue}>{phone}</Text>
               </Row>
               <Row style={orderRow}>
+                <Text style={rowLabel}>Governorate</Text>
+                <Text style={rowValue}>{governorate}</Text>
+              </Row>
+              <Row style={orderRow}>
                 <Text style={rowLabel}>Destination Address</Text>
                 <Text style={rowValue}>{address}</Text>
               </Row>
               <Row style={orderRow}>
                 <Text style={rowLabel}>Purchased Items</Text>
                 <Text style={rowValue}>{order_items}</Text>
+              </Row>
+              <Row style={orderRow}>
+                <Text style={rowLabel}>Promo Code</Text>
+                <Text style={rowValue}>{promo_code}</Text>
               </Row>
               <Row style={orderRow}>
                 <Text style={rowLabel}>Customer Notes</Text>

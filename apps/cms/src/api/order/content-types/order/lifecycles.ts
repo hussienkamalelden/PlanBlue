@@ -18,6 +18,8 @@ export default {
           phone: result.phone,
           extra_notes: result.extra_notes,
           order_items: result.order_items,
+          governorate: result.governorate,
+          promo_code: result.promo_code,
         }),
       );
       // sending the email to the customer through Resend through the Strapi Service
@@ -38,6 +40,8 @@ export default {
           phone: result.phone,
           extra_notes: result.extra_notes,
           order_items: result.order_items,
+          governorate: result.governorate,
+          promo_code: result.promo_code,
         }),
       );
       await strapi.plugins['email'].services.email.send({

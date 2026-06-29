@@ -28,6 +28,8 @@ interface EmailProps {
   address: string;
   extra_notes: string;
   order_items: string;
+  governorate: string;
+  promo_code: string;
 }
 
 const ClientOrderEmail = ({
@@ -38,6 +40,8 @@ const ClientOrderEmail = ({
   address,
   extra_notes,
   order_items,
+  governorate,
+  promo_code,
 }: EmailProps) => {
   return (
     <Html lang="ar" dir="rtl">
@@ -75,6 +79,10 @@ const ClientOrderEmail = ({
                 <Text style={rowValue}>{phone}</Text>
               </Row>
               <Row style={orderRow}>
+                <Text style={rowLabel}>Governorate</Text>
+                <Text style={rowValue}>{governorate}</Text>
+              </Row>
+              <Row style={orderRow}>
                 <Text style={rowLabel}>Address</Text>
                 <Text style={rowValue}>{address}</Text>
               </Row>
@@ -85,6 +93,10 @@ const ClientOrderEmail = ({
               <Row style={orderRow}>
                 <Text style={rowLabel}>Order Items</Text>
                 <Text style={rowValue}>{order_items}</Text>
+              </Row>
+              <Row style={orderRow}>
+                <Text style={rowLabel}>Promo Code</Text>
+                <Text style={rowValue}>{promo_code}</Text>
               </Row>
               {/* Total */}
               <Row style={totalRow}>

@@ -497,6 +497,38 @@ export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     email: Schema.Attribute.String & Schema.Attribute.Required;
     extra_notes: Schema.Attribute.Text;
+    governorate: Schema.Attribute.Enumeration<
+      [
+        'Cairo',
+        'Giza',
+        'Alexandria',
+        'Qalyubia',
+        'Sharqia',
+        'Dakahlia',
+        'Monufia',
+        'Gharbia',
+        'Kafr El Sheikh',
+        'Beheira',
+        'Damietta',
+        'Port Said',
+        'Ismailia',
+        'Suez',
+        'North Sinai',
+        'South Sinai',
+        'Matrouh',
+        'New Valley',
+        'Faiyum',
+        'Beni Suef',
+        'Minya',
+        'Asyut',
+        'Sohag',
+        'Qena',
+        'Luxor',
+        'Aswan',
+        'Red Sea',
+      ]
+    > &
+      Schema.Attribute.Required;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::order.order'> &
       Schema.Attribute.Private;
@@ -504,6 +536,7 @@ export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
     order_id: Schema.Attribute.UID & Schema.Attribute.Required;
     order_items: Schema.Attribute.Text & Schema.Attribute.Required;
     phone: Schema.Attribute.String & Schema.Attribute.Required;
+    promo_code: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     status_type: Schema.Attribute.Enumeration<
       ['processing', 'pending', 'shipped', 'delivered', 'cancelled']
