@@ -47,10 +47,64 @@
   "cart": {
     "title": "Your Cart",
     "empty": "Your cart is empty.",
-    "continueShopping": "Continue shopping"
+    "continueShopping": "Continue shopping",
+    "proceedToCheckout": "Proceed to Checkout",
+    "clearCart": "Clear Cart",
+    "clearConfirm": "Are you sure you want to clear your cart?",
+    "remove": "Remove",
+    "stockWarning": "Only {stock} available — you selected {quantity}.",
+    "subtotal": "Subtotal",
+    "total": "Total",
+    "items": "items"
   },
   "checkout": {
     "title": "Checkout",
-    "placeholder": "Checkout flow coming soon."
+    "subtitle": "Complete your order",
+    "paymentMethod": "Payment Method",
+    "cashOnDelivery": "Cash on Delivery",
+    "cashOnDeliveryDesc": "Pay when you receive your order at your doorstep.",
+    "giftBanner": "Free batteries included with every toy — a special gift from PlanBlue to you!",
+    "form": {
+      "name": "Full Name",
+      "namePlaceholder": "Enter your full name",
+      "email": "Email Address",
+      "emailPlaceholder": "example@email.com",
+      "phone": "Phone Number",
+      "phonePlaceholder": "01XXXXXXXXX",
+      "governorate": "Governorate",
+      "governoratePlaceholder": "Select your governorate",
+      "address": "Delivery Address",
+      "addressPlaceholder": "Street, building, floor, apartment...",
+      "promoCode": "Promo Code (optional)",
+      "promoCodePlaceholder": "Enter promo code",
+      "extraNotes": "Extra Notes (optional)",
+      "extraNotesPlaceholder": "Any special requests or delivery instructions..."
+    },
+    "orderSummary": "Order Summary",
+    "subtotal": "Subtotal",
+    "total": "Total",
+    "items": "items",
+    "placeOrder": "Place Order",
+    "placing": "Placing order...",
+    "emptyCart": "Your cart is empty. Add some products before checkout.",
+    "backToCart": "Back to Cart",
+    "validation": {
+      "nameRequired": "Full name is required",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Please enter a valid email",
+      "phoneRequired": "Phone number is required",
+      "governorateRequired": "Governorate is required",
+      "addressRequired": "Delivery address is required"
+    },
+    "success": {
+      "title": "Order Placed Successfully!",
+      "message": "Thank you for your order. You will receive a confirmation email shortly.",
+      "orderId": "Order ID",
+      "backToHome": "Back to Home"
+    },
+    "error": {
+      "title": "Order Failed",
+      "message": "Something went wrong while placing your order. Please try again."
+    }
   }
 }

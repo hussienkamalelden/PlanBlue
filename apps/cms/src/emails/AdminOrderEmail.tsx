@@ -102,7 +102,7 @@ const AdminOrderEmail = ({
               </Row>
               <Row style={orderRow}>
                 <Text style={rowLabel}>Purchased Items</Text>
-                <Text style={rowValue}>{order_items}</Text>
+                <Text style={itemsValue}>{order_items}</Text>
               </Row>
               <Row style={orderRow}>
                 <Text style={rowLabel}>Promo Code</Text>
@@ -235,6 +235,15 @@ const rowValue = {
   fontSize: '13px',
   margin: '0',
   float: 'right' as const,
+};
+
+const itemsValue = {
+  color: '#0f172a',
+  fontWeight: '500',
+  fontSize: '13px',
+  margin: '8px 0 0 0',
+  whiteSpace: 'pre-line' as const,
+  clear: 'both' as const,
 };
 
 const totalRow = {

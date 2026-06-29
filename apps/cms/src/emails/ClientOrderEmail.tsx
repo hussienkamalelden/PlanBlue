@@ -92,7 +92,7 @@ const ClientOrderEmail = ({
               </Row>
               <Row style={orderRow}>
                 <Text style={rowLabel}>Order Items</Text>
-                <Text style={rowValue}>{order_items}</Text>
+                <Text style={itemsValue}>{order_items}</Text>
               </Row>
               <Row style={orderRow}>
                 <Text style={rowLabel}>Promo Code</Text>
@@ -212,6 +212,15 @@ const rowValue = {
   fontSize: '14px',
   margin: '0',
   float: 'right' as const,
+};
+
+const itemsValue = {
+  color: '#0f172a',
+  fontWeight: '600',
+  fontSize: '14px',
+  margin: '8px 0 0 0',
+  whiteSpace: 'pre-line' as const,
+  clear: 'both' as const,
 };
 
 const totalRow = {

@@ -12,6 +12,7 @@ export type CartLineItem = {
   price: number;
   discountPrice: number | null;
   has_sale: boolean;
+  stockQuantity: number;
 };
 
 type CartState = {
@@ -20,6 +21,7 @@ type CartState = {
   setItemQuantity: (documentId: string, quantity: number) => void;
   removeItem: (documentId: string) => void;
   clearCart: () => void;
+  isInCart: (documentId: string) => boolean;
 };
 
 export const useCartStore = create<CartState>()(
@@ -36,7 +38,11 @@ export const useCartStore = create<CartState>()(
           set({
             items: get().items.map((line) =>
               line.documentId === item.documentId
-                ? { ...line, quantity: line.quantity + item.quantity }
+                ? {
+                    ...line,
+                    quantity: line.quantity + item.quantity,
+                    stockQuantity: item.stockQuantity,
+                  }
                 : line,
             ),
           });
@@ -61,6 +67,10 @@ export const useCartStore = create<CartState>()(
       },
 
       clearCart: () => set({ items: [] }),
+
+      isInCart: (documentId) => {
+        return get().items.some((line) => line.documentId === documentId);
+      },
     }),
     { name: CART_STORAGE_KEY },
   ),

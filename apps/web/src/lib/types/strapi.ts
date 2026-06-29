@@ -22,7 +22,7 @@ export type StrapiProduct = {
   views: number;
   locale: Locale;
   categories?: StrapiCategory[];
-  media?: any[];
+  media?: unknown[];
 };
 
 export type StrapiListResponse<T> = {

@@ -28,6 +28,7 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
   const locale = useLocaleStore((state) => state.locale);
   const t = useTranslations();
   const addItem = useCartStore((state) => state.addItem);
+  const isInCart = useCartStore((state) => state.isInCart);
 
   const [quantity, setQuantity] = useState(1);
   const [feedback, setFeedback] = useState<string | null>(null);
@@ -37,7 +38,7 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
   const exceedsStock = isQuantityExceedsStock(quantity, product);
   const actionsDisabled = arePurchaseActionsDisabled(quantity, product);
   const { basePrice, salePrice } = getProductPrices(product);
-  const media = product.media as any;
+  const media = product.media;
 
   function incrementQuantity() {
     setFeedback(null);
@@ -57,6 +58,7 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
       price: basePrice,
       discountPrice: salePrice,
       has_sale: product.has_sale,
+      stockQuantity,
     };
   }
 
@@ -74,11 +76,11 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
       return;
     }
 
-    addItem(buildCartLine());
+    if (!isInCart(product.documentId)) {
+      addItem(buildCartLine());
+    }
     router.push('/checkout');
   }
-
-  const numberLocale = locale === 'ar' ? 'ar-SA' : 'en-US';
 
   return (
     <div className="space-y-8">
@@ -92,13 +94,17 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
       <div className="grid gap-10 lg:grid-cols-2">
         <div className="rounded-2xl border border-neutral-200 bg-white p-8 shadow-sm">
           <div className="flex aspect-square items-center justify-center rounded-xl bg-neutral-100 text-neutral-400">
-            <Image
-              src={media[0].url}
-              alt={media[0].name}
-              width={100}
-              height={100}
-              className="w-full h-full object-cover"
-            />
+            {media && media.length > 0 ? (
+              <Image
+                src={(media[0] as { url: string; name: string }).url}
+                alt={(media[0] as { url: string; name: string }).name}
+                width={100}
+                height={100}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span className="text-4xl">🧸</span>
+            )}
           </div>
         </div>
 

@@ -47,10 +47,64 @@
   "cart": {
     "title": "سلتك",
     "empty": "سلتك فارغة.",
-    "continueShopping": "متابعة التسوق"
+    "continueShopping": "متابعة التسوق",
+    "proceedToCheckout": "المتابعة للدفع",
+    "clearCart": "إفراغ السلة",
+    "clearConfirm": "هل أنت متأكد من إفراغ السلة؟",
+    "remove": "إزالة",
+    "stockWarning": "متوفر فقط {stock} — اخترت {quantity}.",
+    "subtotal": "المجموع الفرعي",
+    "total": "الإجمالي",
+    "items": "منتجات"
   },
   "checkout": {
     "title": "إتمام الشراء",
-    "placeholder": "صفحة الدفع قريباً."
+    "subtitle": "أكمل طلبك",
+    "paymentMethod": "طريقة الدفع",
+    "cashOnDelivery": "الدفع عند الاستلام",
+    "cashOnDeliveryDesc": "ادفع عند استلام طلبك على باب منزلك.",
+    "giftBanner": "البطاريات مجانية مع كل لعبة — هدية خاصة من PlanBlue لك!",
+    "form": {
+      "name": "الاسم الكامل",
+      "namePlaceholder": "أدخل اسمك الكامل",
+      "email": "البريد الإلكتروني",
+      "emailPlaceholder": "example@email.com",
+      "phone": "رقم الهاتف",
+      "phonePlaceholder": "01XXXXXXXXX",
+      "governorate": "المحافظة",
+      "governoratePlaceholder": "اختر محافظتك",
+      "address": "عنوان التوصيل",
+      "addressPlaceholder": "الشارع، المبنى، الطابق، الشقة...",
+      "promoCode": "كود الخصم (اختياري)",
+      "promoCodePlaceholder": "أدخل كود الخصم",
+      "extraNotes": "ملاحظات إضافية (اختياري)",
+      "extraNotesPlaceholder": "أي طلبات خاصة أو تعليمات للتوصيل..."
+    },
+    "orderSummary": "ملخص الطلب",
+    "subtotal": "المجموع الفرعي",
+    "total": "الإجمالي",
+    "items": "منتجات",
+    "placeOrder": "تأكيد الطلب",
+    "placing": "جاري تأكيد الطلب...",
+    "emptyCart": "سلتك فارغة. أضف بعض المنتجات قبل إتمام الشراء.",
+    "backToCart": "العودة إلى السلة",
+    "validation": {
+      "nameRequired": "الاسم الكامل مطلوب",
+      "emailRequired": "البريد الإلكتروني مطلوب",
+      "emailInvalid": "يرجى إدخال بريد إلكتروني صالح",
+      "phoneRequired": "رقم الهاتف مطلوب",
+      "governorateRequired": "المحافظة مطلوبة",
+      "addressRequired": "عنوان التوصيل مطلوب"
+    },
+    "success": {
+      "title": "تم تأكيد الطلب بنجاح!",
+      "message": "شكراً لطلبك. ستتلقى بريداً إلكترونياً للتأكيد قريباً.",
+      "orderId": "رقم الطلب",
+      "backToHome": "العودة للرئيسية"
+    },
+    "error": {
+      "title": "فشل الطلب",
+      "message": "حدث خطأ أثناء تأكيد طلبك. يرجى المحاولة مرة أخرى."
+    }
   }
 }

@@ -45,10 +45,6 @@
       "type": "text",
       "required": true
     },
-    "order_items": {
-      "type": "text",
-      "required": true
-    },
     "extra_notes": {
       "type": "text"
     },
@@ -87,6 +83,10 @@
         "Aswan",
         "Red Sea"
       ]
+    },
+    "order_items": {
+      "type": "json",
+      "required": true
     }
   }
 }
