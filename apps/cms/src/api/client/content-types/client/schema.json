@@ -25,6 +25,9 @@
     },
     "promo_code": {
       "type": "string"
+    },
+    "notes": {
+      "type": "text"
     }
   }
 }
