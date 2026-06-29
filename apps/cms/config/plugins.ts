@@ -1,4 +1,8 @@
 export default ({ env }: { env: any }) => ({
+  'planblue-admin': {
+    enabled: true,
+    resolve: './src/plugins/planblue-admin',
+  },
   // upload plugin for cloudflare r2
   upload: {
     config: {

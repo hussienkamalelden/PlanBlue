@@ -65,5 +65,17 @@ export default factories.createCoreController(
         },
       };
     },
+
+    async resetViews(ctx) {
+      try {
+        const result = await strapi
+          .service('api::product.product')
+          .resetAllViews();
+
+        return ctx.send(result);
+      } catch (error) {
+        return ctx.badRequest('Failed to reset views', { error });
+      }
+    },
   }),
 );

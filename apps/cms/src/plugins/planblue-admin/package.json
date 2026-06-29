@@ -1,0 +1,11 @@
+{
+  "name": "planblue-admin",
+  "version": "1.0.0",
+  "private": true,
+  "strapi": {
+    "name": "planblue-admin",
+    "displayName": "PlanBlue Admin",
+    "description": "Admin-only utilities for PlanBlue CMS",
+    "kind": "plugin"
+  }
+}
