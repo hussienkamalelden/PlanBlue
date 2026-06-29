@@ -503,7 +503,7 @@ export interface ApiClientClient extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     name: Schema.Attribute.String;
-    phone: Schema.Attribute.Integer;
+    phone: Schema.Attribute.String;
     promo_code: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;

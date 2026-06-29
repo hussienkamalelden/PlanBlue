@@ -3,13 +3,22 @@ import ClientOrderEmail from '../../../../emails/ClientOrderEmail';
 import AdminOrderEmail from '../../../../emails/AdminOrderEmail';
 import React from 'react';
 
-function parseOrderItems(raw: unknown): Array<{ documentId?: string; title: string; quantity: number; unitPrice: number }> {
+function parseOrderItems(
+  raw: unknown,
+): Array<{
+  documentId?: string;
+  title: string;
+  quantity: number;
+  unitPrice: number;
+}> {
   if (typeof raw === 'string') return JSON.parse(raw);
   if (Array.isArray(raw)) return raw;
   return [];
 }
 
-function formatOrderItemsForEmail(items: Array<{ title: string; quantity: number; unitPrice: number }>): string {
+function formatOrderItemsForEmail(
+  items: Array<{ title: string; quantity: number; unitPrice: number }>,
+): string {
   return items
     .map((item) => `• ${item.title} × ${item.quantity} — ${item.unitPrice} EGP`)
     .join('\n');
@@ -24,17 +33,19 @@ export default {
 
     // Save or update client data
     try {
-      const existingClients = await strapi.documents('api::client.client').findMany({
-        filters: { email: result.email },
-        status: 'published',
-      });
+      const existingClients = await strapi
+        .documents('api::client.client')
+        .findMany({
+          filters: { email: result.email },
+          status: 'published',
+        });
 
       if (existingClients.length === 0) {
         await strapi.documents('api::client.client').create({
           data: {
             name: result.name,
             email: result.email,
-            phone: Number(result.phone),
+            phone: result.phone,
             address: result.address,
             promo_code: result.promo_code || null,
           },
@@ -45,7 +56,7 @@ export default {
           documentId: existingClients[0].documentId,
           data: {
             name: result.name,
-            phone: Number(result.phone),
+            phone: result.phone,
             address: result.address,
           },
           status: 'published',
@@ -70,7 +81,10 @@ export default {
 
         if (!product) continue;
 
-        const newStock = Math.max(0, (product.available_stock ?? 0) - item.quantity);
+        const newStock = Math.max(
+          0,
+          (product.available_stock ?? 0) - item.quantity,
+        );
 
         await strapi.documents('api::product.product').update({
           documentId: item.documentId,
