@@ -22,6 +22,39 @@ export default {
     // Only process published entries to avoid running twice (draft + publish)
     if (!result.publishedAt) return;
 
+    // Save or update client data
+    try {
+      const existingClients = await strapi.documents('api::client.client').findMany({
+        filters: { email: result.email },
+        status: 'published',
+      });
+
+      if (existingClients.length === 0) {
+        await strapi.documents('api::client.client').create({
+          data: {
+            name: result.name,
+            email: result.email,
+            phone: Number(result.phone),
+            address: result.address,
+            promo_code: result.promo_code || null,
+          },
+          status: 'published',
+        });
+      } else {
+        await strapi.documents('api::client.client').update({
+          documentId: existingClients[0].documentId,
+          data: {
+            name: result.name,
+            phone: Number(result.phone),
+            address: result.address,
+          },
+          status: 'published',
+        });
+      }
+    } catch (error) {
+      strapi.log.error('Failed to save client data:', error);
+    }
+
     // Decrease product stock based on ordered quantities
     try {
       const orderItems = parseOrderItems(result.order_items);

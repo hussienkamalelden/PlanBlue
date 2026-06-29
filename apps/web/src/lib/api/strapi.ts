@@ -70,11 +70,12 @@ export function getProductPrices(product: StrapiProduct) {
 }
 
 export function formatPrice(amount: number, locale: Locale): string {
-  return new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en-US", {
-    style: "currency",
-    currency: "USD",
+  const formatted = new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-EG", {
     minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   }).format(amount);
+
+  return locale === "ar" ? `${formatted} جنيه` : `${formatted} EGP`;
 }
 
 export type { StrapiProduct };
