@@ -1,4 +1,5 @@
 export default ({ env }: { env: any }) => ({
+  // upload plugin for cloudflare r2
   upload: {
     config: {
       provider: 'strapi-provider-cloudflare-r2',
@@ -10,6 +11,25 @@ export default ({ env }: { env: any }) => ({
           Bucket: env('CLOUDFLARE_BUCKET_NAME'),
         },
         cloudflarePublicAccessUrl: env('CLOUDFLARE_PUBLIC_URL'),
+      },
+    },
+  },
+  // email plugin for resend
+  email: {
+    config: {
+      provider: '@strapi/provider-email-nodemailer',
+      providerOptions: {
+        host: 'smtp.resend.com',
+        port: 465,
+        secure: true, // secure the connection
+        auth: {
+          user: 'resend', // the word "resend" is fixed with the SMTP of Resend
+          pass: env('RESEND_API_KEY'),
+        },
+      },
+      settings: {
+        defaultFrom: env('RESEND_DEFAULT_FROM'),
+        defaultReplyTo: env('RESEND_DEFAULT_REPLY_TO'),
       },
     },
   },

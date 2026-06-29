@@ -14,6 +14,7 @@
     "@planblue/email": "workspace:*",
     "@planblue/shared": "workspace:*",
     "@strapi/plugin-users-permissions": "^5.12.0",
+    "@strapi/provider-email-nodemailer": "^5.49.0",
     "@strapi/strapi": "^5.12.0",
     "pg": "^8.14.1",
     "react": "^18.3.1",
