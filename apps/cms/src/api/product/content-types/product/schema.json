@@ -15,6 +15,16 @@
     }
   },
   "attributes": {
+    "sku": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      },
+      "required": true,
+      "unique": true
+    },
     "title": {
       "type": "string",
       "pluginOptions": {
@@ -22,6 +32,16 @@
           "localized": true
         }
       },
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      },
+      "targetField": "title",
       "required": true
     },
     "description": {

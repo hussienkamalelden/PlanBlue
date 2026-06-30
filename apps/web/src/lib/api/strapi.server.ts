@@ -79,7 +79,7 @@ export async function fetchProducts(locale: Locale): Promise<StrapiProduct[]> {
   return json.data;
 }
 
-/** findOne — increments views via custom Strapi product controller */
+/** findOne by documentId — increments views via custom Strapi product controller */
 export async function fetchProductByDocumentId(
   documentId: string,
   locale: Locale,
@@ -97,6 +97,30 @@ export async function fetchProductByDocumentId(
     );
 
     return json.data ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/** Find product by slug — filters products list and returns first match */
+export async function fetchProductBySlug(
+  slug: string,
+  locale: Locale,
+): Promise<StrapiProduct | null> {
+  try {
+    const json = await strapiFetch<StrapiListResponse<StrapiProduct>>(
+      '/products',
+      {
+        'filters[slug][$eq]': slug,
+        'populate[categories][fields][0]': 'title',
+        'populate[categories][fields][1]': 'documentId',
+        'populate[media][fields][0]': 'url',
+        'populate[media][fields][1]': 'name',
+      },
+      { locale },
+    );
+
+    return json.data?.[0] ?? null;
   } catch {
     return null;
   }

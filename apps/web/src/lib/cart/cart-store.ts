@@ -7,6 +7,7 @@ import { CART_STORAGE_KEY } from "./types";
 
 export type CartLineItem = {
   documentId: string;
+  slug: string;
   title: string;
   quantity: number;
   price: number;

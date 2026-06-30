@@ -1,20 +1,20 @@
 import { notFound } from 'next/navigation';
 
 import { ProductDetailView } from '@/components/shop/product-detail-view';
-import { fetchProductByDocumentId } from '@/lib/api/strapi.server';
+import { fetchProductBySlug } from '@/lib/api/strapi.server';
 import { getLocale } from '@/lib/i18n/get-locale';
 
 type ProductDetailPageProps = {
-  params: Promise<{ documentId: string }>;
+  params: Promise<{ slug: string }>;
 };
 
 export default async function ProductDetailPage({
   params,
 }: ProductDetailPageProps) {
-  const { documentId } = await params;
+  const { slug } = await params;
   const locale = await getLocale();
 
-  const product = await fetchProductByDocumentId(documentId, locale);
+  const product = await fetchProductBySlug(slug, locale);
 
   if (!product) {
     notFound();

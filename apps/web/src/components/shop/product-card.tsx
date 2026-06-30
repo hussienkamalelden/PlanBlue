@@ -20,7 +20,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Link
-      href={`/products/${product.documentId}`}
+      href={`/products/${product.slug}`}
       className={`group block h-full transition-opacity hover:opacity-90 ${
         unavailable ? 'opacity-50' : ''
       }`}

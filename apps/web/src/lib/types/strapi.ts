@@ -11,6 +11,8 @@ export type StrapiProduct = {
   id: number;
   documentId: string;
   title: string;
+  slug: string;
+  sku?: string;
   description: string;
   price: number;
   /** Added by custom Strapi product controller when on sale */

@@ -53,6 +53,7 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
   function buildCartLine() {
     return {
       documentId: product.documentId,
+      slug: product.slug,
       title: product.title,
       quantity,
       price: basePrice,
@@ -113,6 +114,25 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
             <h1 className="text-3xl font-bold tracking-tight text-neutral-900">
               {product.title}
             </h1>
+
+            {product.sku && (
+              <p className="mt-1 text-xs font-medium text-neutral-400">
+                {t.productDetail.sku}: {product.sku}
+              </p>
+            )}
+
+            {product.categories && product.categories.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {product.categories.map((cat) => (
+                  <span
+                    key={cat.documentId}
+                    className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700"
+                  >
+                    {cat.title}
+                  </span>
+                ))}
+              </div>
+            )}
 
             {outOfStock && (
               <p className="mt-2 text-sm font-medium text-red-600">

@@ -35,6 +35,8 @@
     "discountPrice": "Sale price",
     "views": "Total views",
     "quantity": "Quantity",
+    "sku": "SKU",
+    "categories": "Categories",
     "inStock": "{stock} in stock",
     "quantityWarning": "Only {stock} items available in stock. Please reduce the quantity.",
     "outOfStock": "This product is currently out of stock.",
