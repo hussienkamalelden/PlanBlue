@@ -530,6 +530,7 @@ export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     email: Schema.Attribute.String & Schema.Attribute.Required;
     extra_notes: Schema.Attribute.Text;
+    follow_up_call: Schema.Attribute.Text;
     governorate: Schema.Attribute.Enumeration<
       [
         'Cairo',
@@ -572,7 +573,7 @@ export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
     promo_code: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     status_type: Schema.Attribute.Enumeration<
-      ['processing', 'pending', 'shipped', 'delivered', 'cancelled']
+      ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled']
     >;
     total: Schema.Attribute.Decimal & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;

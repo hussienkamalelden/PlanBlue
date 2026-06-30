@@ -34,8 +34,8 @@
     "status_type": {
       "type": "enumeration",
       "enum": [
-        "processing",
         "pending",
+        "confirmed",
         "shipped",
         "delivered",
         "cancelled"
@@ -87,6 +87,9 @@
     "order_items": {
       "type": "json",
       "required": true
+    },
+    "follow_up_call": {
+      "type": "text"
     }
   }
 }
