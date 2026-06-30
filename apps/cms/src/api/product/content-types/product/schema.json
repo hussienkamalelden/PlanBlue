@@ -89,6 +89,10 @@
     "views": {
       "type": "integer",
       "default": 0
+    },
+    "total_sold": {
+      "type": "integer",
+      "default": 0
     }
   }
 }

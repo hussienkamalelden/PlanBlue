@@ -13,6 +13,7 @@ type OrderItem = {
     title: string;
     sku: string;
     available_stock: number;
+    total_sold: number;
   };
 };
 
@@ -41,7 +42,7 @@ export default {
           order_items: {
             populate: {
               product: {
-                fields: ['documentId', 'title', 'sku', 'available_stock'],
+                fields: ['documentId', 'title', 'sku', 'available_stock', 'total_sold'],
               },
             },
           },
@@ -103,12 +104,13 @@ export default {
       strapi.log.error('Failed to save client data:', error);
     }
 
-    // Decrease product stock
+    // Decrease product stock and increase total_sold
     try {
       for (const item of orderItems) {
         if (!item.product?.documentId || !item.quantity) continue;
 
         const currentStock = item.product.available_stock ?? 0;
+        const currentSold = item.product.total_sold ?? 0;
         const newStock = Math.max(0, currentStock - item.quantity);
 
         await strapi.documents('api::product.product').update({
@@ -116,12 +118,13 @@ export default {
           data: {
             available_stock: newStock,
             available: newStock > 0,
+            total_sold: currentSold + item.quantity,
           },
           status: 'published',
         });
       }
     } catch (error) {
-      strapi.log.error('Failed to decrease product stock:', error);
+      strapi.log.error('Failed to update product stock:', error);
     }
 
     // Send order confirmation emails
