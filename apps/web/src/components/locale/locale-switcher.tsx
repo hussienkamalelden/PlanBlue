@@ -1,34 +1,23 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import { useTransition } from "react";
-
-import { setLocaleCookie } from "@/app/actions/locale";
-import { LOCALES, type Locale } from "@/lib/i18n/config";
-import { useLocaleStore } from "@/stores/locale-store";
+import { setLocaleCookie } from '@/app/actions/locale';
+import { LOCALES, type Locale } from '@/lib/i18n/config';
+import { useLocaleStore } from '@/stores/locale-store';
 
 const LABELS: Record<Locale, string> = {
-  en: "English",
-  ar: "العربية",
+  en: 'English',
+  ar: 'العربية',
 };
 
 export function LocaleSwitcher() {
-  const router = useRouter();
   const locale = useLocaleStore((state) => state.locale);
   const setLocale = useLocaleStore((state) => state.setLocale);
-  const [isPending, startTransition] = useTransition();
 
   function handleChange(nextLocale: Locale) {
-    if (nextLocale === locale) {
-      return;
-    }
+    if (nextLocale === locale) return;
 
     setLocale(nextLocale);
-
-    startTransition(async () => {
-      await setLocaleCookie(nextLocale);
-      router.refresh();
-    });
+    setLocaleCookie(nextLocale);
   }
 
   return (
@@ -41,12 +30,11 @@ export function LocaleSwitcher() {
         <button
           key={code}
           type="button"
-          disabled={isPending}
           onClick={() => handleChange(code)}
-          className={`rounded-md px-3 py-1.5 transition-colors disabled:opacity-60 ${
+          className={`rounded-md px-3 py-1.5 transition-colors ${
             locale === code
-              ? "bg-neutral-900 text-white"
-              : "text-neutral-600 hover:bg-neutral-100"
+              ? 'bg-neutral-900 text-white'
+              : 'text-neutral-600 hover:bg-neutral-100'
           }`}
           aria-pressed={locale === code}
         >

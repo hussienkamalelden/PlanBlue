@@ -1,4 +1,3 @@
-import type { Locale } from '@/lib/i18n/config';
 import type {
   StrapiCategory,
   StrapiListResponse,
@@ -8,17 +7,11 @@ import type {
 
 import { STRAPI_URL } from './strapi';
 
-type StrapiFetchOptions = {
-  locale: Locale;
-};
-
 async function strapiFetch<T>(
   path: string,
-  searchParams: Record<string, string>,
-  { locale }: StrapiFetchOptions,
+  searchParams: Record<string, string> = {},
 ): Promise<T> {
   const url = new URL(`${STRAPI_URL}/api${path}`);
-  url.searchParams.set('locale', locale);
 
   for (const [key, value] of Object.entries(searchParams)) {
     url.searchParams.set(key, value);
@@ -47,9 +40,7 @@ async function strapiFetch<T>(
   return response.json() as Promise<T>;
 }
 
-export async function fetchCategories(
-  locale: Locale,
-): Promise<StrapiCategory[]> {
+export async function fetchCategories(): Promise<StrapiCategory[]> {
   const json = await strapiFetch<StrapiListResponse<StrapiCategory>>(
     '/categories',
     {
@@ -57,13 +48,12 @@ export async function fetchCategories(
       'fields[1]': 'documentId',
       sort: 'title:asc',
     },
-    { locale },
   );
 
   return json.data;
 }
 
-export async function fetchProducts(locale: Locale): Promise<StrapiProduct[]> {
+export async function fetchProducts(): Promise<StrapiProduct[]> {
   const json = await strapiFetch<StrapiListResponse<StrapiProduct>>(
     '/products',
     {
@@ -73,16 +63,14 @@ export async function fetchProducts(locale: Locale): Promise<StrapiProduct[]> {
       'populate[media][fields][1]': 'name',
       sort: 'createdAt:desc',
     },
-    { locale },
   );
 
   return json.data;
 }
 
-/** findOne by documentId — increments views via custom Strapi product controller */
+/** findOne by documentId */
 export async function fetchProductByDocumentId(
   documentId: string,
-  locale: Locale,
 ): Promise<StrapiProduct | null> {
   try {
     const json = await strapiFetch<StrapiSingleResponse<StrapiProduct>>(
@@ -93,7 +81,6 @@ export async function fetchProductByDocumentId(
         'populate[media][fields][0]': 'url',
         'populate[media][fields][1]': 'name',
       },
-      { locale },
     );
 
     return json.data ?? null;
@@ -102,10 +89,9 @@ export async function fetchProductByDocumentId(
   }
 }
 
-/** Find product by slug — filters products list and returns first match */
+/** Find product by slug */
 export async function fetchProductBySlug(
   slug: string,
-  locale: Locale,
 ): Promise<StrapiProduct | null> {
   try {
     const json = await strapiFetch<StrapiListResponse<StrapiProduct>>(
@@ -117,7 +103,6 @@ export async function fetchProductBySlug(
         'populate[media][fields][0]': 'url',
         'populate[media][fields][1]': 'name',
       },
-      { locale },
     );
 
     return json.data?.[0] ?? null;

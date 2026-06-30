@@ -1,10 +1,7 @@
-import type { Locale } from '@/lib/i18n/config';
-
 export type StrapiCategory = {
   id: number;
   documentId: string;
   title: string;
-  locale: Locale;
 };
 
 export type StrapiProduct = {
@@ -22,7 +19,6 @@ export type StrapiProduct = {
   available: boolean;
   available_stock: number;
   views: number;
-  locale: Locale;
   categories?: StrapiCategory[];
   media?: unknown[];
 };
