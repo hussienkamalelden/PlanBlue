@@ -53,37 +53,13 @@
       "type": "string"
     },
     "governorate": {
-      "type": "enumeration",
+      "type": "string",
+      "required": true
+    },
+    "shipping_cost": {
+      "type": "decimal",
       "required": true,
-      "enum": [
-        "Cairo",
-        "Giza",
-        "Alexandria",
-        "Qalyubia",
-        "Sharqia",
-        "Dakahlia",
-        "Monufia",
-        "Gharbia",
-        "Kafr El Sheikh",
-        "Beheira",
-        "Damietta",
-        "Port Said",
-        "Ismailia",
-        "Suez",
-        "North Sinai",
-        "South Sinai",
-        "Matrouh",
-        "New Valley",
-        "Faiyum",
-        "Beni Suef",
-        "Minya",
-        "Asyut",
-        "Sohag",
-        "Qena",
-        "Luxor",
-        "Aswan",
-        "Red Sea"
-      ]
+      "default": 0
     },
     "follow_up_call": {
       "type": "text"

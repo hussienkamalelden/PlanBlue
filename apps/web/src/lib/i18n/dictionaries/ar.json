@@ -84,6 +84,7 @@
     },
     "orderSummary": "ملخص الطلب",
     "subtotal": "المجموع الفرعي",
+    "shipping": "الشحن",
     "total": "الإجمالي",
     "items": "منتجات",
     "placeOrder": "تأكيد الطلب",

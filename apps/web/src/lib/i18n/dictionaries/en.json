@@ -84,6 +84,7 @@
     },
     "orderSummary": "Order Summary",
     "subtotal": "Subtotal",
+    "shipping": "Shipping",
     "total": "Total",
     "items": "items",
     "placeOrder": "Place Order",

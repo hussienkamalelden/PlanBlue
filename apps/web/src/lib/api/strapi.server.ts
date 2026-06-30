@@ -2,6 +2,7 @@ import type {
   StrapiCategory,
   StrapiListResponse,
   StrapiProduct,
+  StrapiShipping,
   StrapiSingleResponse,
 } from '@/lib/types/strapi';
 
@@ -38,6 +39,21 @@ async function strapiFetch<T>(
   }
 
   return response.json() as Promise<T>;
+}
+
+export async function fetchShipping(): Promise<StrapiShipping[]> {
+  const json = await strapiFetch<StrapiListResponse<StrapiShipping>>(
+    '/shippings',
+    {
+      'fields[0]': 'name',
+      'fields[1]': 'cost',
+      'fields[2]': 'documentId',
+      sort: 'name:asc',
+      status: 'published',
+    },
+  );
+
+  return json.data;
 }
 
 export async function fetchCategories(): Promise<StrapiCategory[]> {

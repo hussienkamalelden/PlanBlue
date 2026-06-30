@@ -1,3 +1,10 @@
+export type StrapiShipping = {
+  id: number;
+  documentId: string;
+  name: string;
+  cost: number;
+};
+
 export type StrapiCategory = {
   id: number;
   documentId: string;

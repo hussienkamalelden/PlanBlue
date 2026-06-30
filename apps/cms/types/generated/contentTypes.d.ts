@@ -523,39 +523,10 @@ export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
     email: Schema.Attribute.String & Schema.Attribute.Required;
     extra_notes: Schema.Attribute.Text;
     follow_up_call: Schema.Attribute.Text;
-    governorate: Schema.Attribute.Enumeration<
-      [
-        'Cairo',
-        'Giza',
-        'Alexandria',
-        'Qalyubia',
-        'Sharqia',
-        'Dakahlia',
-        'Monufia',
-        'Gharbia',
-        'Kafr El Sheikh',
-        'Beheira',
-        'Damietta',
-        'Port Said',
-        'Ismailia',
-        'Suez',
-        'North Sinai',
-        'South Sinai',
-        'Matrouh',
-        'New Valley',
-        'Faiyum',
-        'Beni Suef',
-        'Minya',
-        'Asyut',
-        'Sohag',
-        'Qena',
-        'Luxor',
-        'Aswan',
-        'Red Sea',
-      ]
-    > &
-      Schema.Attribute.Required;
+    governorate: Schema.Attribute.String & Schema.Attribute.Required;
     is_processed: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    is_stock_reversed: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::order.order'> &
       Schema.Attribute.Private;
@@ -565,6 +536,9 @@ export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
     phone: Schema.Attribute.String & Schema.Attribute.Required;
     promo_code: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    shipping_cost: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<0>;
     status_type: Schema.Attribute.Enumeration<
       ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled']
     > &
@@ -628,6 +602,35 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     views: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+  };
+}
+
+export interface ApiShippingShipping extends Struct.CollectionTypeSchema {
+  collectionName: 'shippings';
+  info: {
+    displayName: 'Shipping';
+    pluralName: 'shippings';
+    singularName: 'shipping';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    cost: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::shipping.shipping'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
   };
 }
 
@@ -1146,6 +1149,7 @@ declare module '@strapi/strapi' {
       'api::client.client': ApiClientClient;
       'api::order.order': ApiOrderOrder;
       'api::product.product': ApiProductProduct;
+      'api::shipping.shipping': ApiShippingShipping;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;
