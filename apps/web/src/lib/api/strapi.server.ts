@@ -92,7 +92,7 @@ export async function fetchProductByDocumentId(
   }
 }
 
-/** Find product by slug */
+/** Find product by slug, then hit findOne to increment views */
 export async function fetchProductBySlug(
   slug: string,
 ): Promise<StrapiProduct | null> {
@@ -101,15 +101,15 @@ export async function fetchProductBySlug(
       '/products',
       {
         'filters[slug][$eq]': slug,
-        'populate[categories][fields][0]': 'title',
-        'populate[categories][fields][1]': 'title_ar',
-        'populate[categories][fields][2]': 'documentId',
-        'populate[media][fields][0]': 'url',
-        'populate[media][fields][1]': 'name',
+        'fields[0]': 'documentId',
       },
     );
 
-    return json.data?.[0] ?? null;
+    const match = json.data?.[0];
+    if (!match) return null;
+
+    // Call findOne to trigger view increment and get full product data
+    return await fetchProductByDocumentId(match.documentId);
   } catch {
     return null;
   }
