@@ -3,6 +3,14 @@
 import type { CartLineItem } from "@/lib/cart/cart-store";
 import { STRAPI_URL } from "./strapi";
 
+export type OrderItemPayload = {
+  quantity: number;
+  price_at_purchase: number;
+  product: {
+    connect: string[];
+  };
+};
+
 export type OrderPayload = {
   name: string;
   email: string;
@@ -11,7 +19,7 @@ export type OrderPayload = {
   address: string;
   promo_code?: string;
   extra_notes?: string;
-  order_items: string;
+  order_items: OrderItemPayload[];
   total: number;
   order_id: string;
   status_type: "pending";
@@ -31,17 +39,21 @@ function generateOrderId(): string {
   return `PB-${timestamp}-${random}`;
 }
 
-function serializeCartItems(items: CartLineItem[]): string {
-  return JSON.stringify(
-    items.map((item) => ({
-      documentId: item.documentId,
-      title: item.title,
-      quantity: item.quantity,
-      unitPrice: item.has_sale && item.discountPrice !== null
+function buildOrderItems(items: CartLineItem[]): OrderItemPayload[] {
+  return items.map((item) => {
+    const unitPrice =
+      item.has_sale && item.discountPrice !== null
         ? item.discountPrice
-        : item.price,
-    })),
-  );
+        : item.price;
+
+    return {
+      quantity: item.quantity,
+      price_at_purchase: Number(unitPrice.toFixed(2)),
+      product: {
+        connect: [item.documentId],
+      },
+    };
+  });
 }
 
 function calculateTotal(items: CartLineItem[]): number {
@@ -77,7 +89,7 @@ export async function createOrder(
     address: formData.address,
     promo_code: formData.promo_code || undefined,
     extra_notes: formData.extra_notes || undefined,
-    order_items: serializeCartItems(items),
+    order_items: buildOrderItems(items),
     total: Number(total.toFixed(2)),
     order_id,
     status_type: "pending",

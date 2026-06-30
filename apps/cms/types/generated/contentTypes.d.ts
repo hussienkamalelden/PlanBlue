@@ -560,7 +560,7 @@ export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     order_id: Schema.Attribute.UID & Schema.Attribute.Required;
-    order_items: Schema.Attribute.JSON & Schema.Attribute.Required;
+    order_items: Schema.Attribute.Component<'orders.order-item', true>;
     phone: Schema.Attribute.String & Schema.Attribute.Required;
     promo_code: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;

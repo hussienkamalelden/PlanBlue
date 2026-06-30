@@ -3,24 +3,22 @@ import ClientOrderEmail from '../../../../emails/ClientOrderEmail';
 import AdminOrderEmail from '../../../../emails/AdminOrderEmail';
 import React from 'react';
 
-function parseOrderItems(
-  raw: unknown,
-): Array<{
-  documentId?: string;
-  title: string;
+type OrderItem = {
   quantity: number;
-  unitPrice: number;
-}> {
-  if (typeof raw === 'string') return JSON.parse(raw);
-  if (Array.isArray(raw)) return raw;
-  return [];
-}
+  price_at_purchase: number;
+  product?: {
+    documentId: string;
+    title: string;
+    available_stock: number;
+  };
+};
 
-function formatOrderItemsForEmail(
-  items: Array<{ title: string; quantity: number; unitPrice: number }>,
-): string {
+function formatOrderItemsForEmail(items: OrderItem[]): string {
   return items
-    .map((item) => `• ${item.title} × ${item.quantity} — ${item.unitPrice} EGP`)
+    .map(
+      (item) =>
+        `• ${item.product?.title ?? 'Product'} × ${item.quantity} — ${item.price_at_purchase} EGP`,
+    )
     .join('\n');
 }
 
@@ -28,8 +26,29 @@ export default {
   async afterCreate(event: any) {
     const { result } = event;
 
-    // Only process published entries to avoid running twice (draft + publish)
     if (!result.publishedAt) return;
+
+    // Re-fetch the order with populated order_items -> product
+    let orderItems: OrderItem[] = [];
+    try {
+      const fullOrder = await strapi.documents('api::order.order').findOne({
+        documentId: result.documentId,
+        populate: {
+          order_items: {
+            populate: {
+              product: {
+                fields: ['documentId', 'title', 'available_stock'],
+              },
+            },
+          },
+        },
+        status: 'published',
+      });
+
+      orderItems = (fullOrder?.order_items as OrderItem[]) ?? [];
+    } catch (error) {
+      strapi.log.error('Failed to fetch order items:', error);
+    }
 
     // Save or update client data
     try {
@@ -66,28 +85,16 @@ export default {
       strapi.log.error('Failed to save client data:', error);
     }
 
-    // Decrease product stock based on ordered quantities
+    // Decrease product stock
     try {
-      const orderItems = parseOrderItems(result.order_items);
-
       for (const item of orderItems) {
-        if (!item.documentId || !item.quantity) continue;
+        if (!item.product?.documentId || !item.quantity) continue;
 
-        const product = await strapi.documents('api::product.product').findOne({
-          documentId: item.documentId,
-          fields: ['available_stock'],
-          status: 'published',
-        });
-
-        if (!product) continue;
-
-        const newStock = Math.max(
-          0,
-          (product.available_stock ?? 0) - item.quantity,
-        );
+        const currentStock = item.product.available_stock ?? 0;
+        const newStock = Math.max(0, currentStock - item.quantity);
 
         await strapi.documents('api::product.product').update({
-          documentId: item.documentId,
+          documentId: item.product.documentId,
           data: {
             available_stock: newStock,
             available: newStock > 0,
@@ -101,7 +108,6 @@ export default {
 
     // Send order confirmation emails
     try {
-      const orderItems = parseOrderItems(result.order_items);
       const formattedItems = formatOrderItemsForEmail(orderItems);
 
       const emailHtml = await render(

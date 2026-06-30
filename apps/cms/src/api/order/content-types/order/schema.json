@@ -84,12 +84,13 @@
         "Red Sea"
       ]
     },
-    "order_items": {
-      "type": "json",
-      "required": true
-    },
     "follow_up_call": {
       "type": "text"
+    },
+    "order_items": {
+      "type": "component",
+      "component": "orders.order-item",
+      "repeatable": true
     }
   }
 }
