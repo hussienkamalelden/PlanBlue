@@ -55,6 +55,7 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
       documentId: product.documentId,
       slug: product.slug,
       title: product.title,
+      title_ar: product.title_ar,
       quantity,
       price: basePrice,
       discountPrice: salePrice,
@@ -112,7 +113,7 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
         <div className="space-y-6">
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-neutral-900">
-              {product.title}
+              {locale === 'ar' ? product.title_ar : product.title}
             </h1>
 
             {product.sku && (
@@ -227,7 +228,7 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
               {t.productDetail.description}
             </h2>
             <p className="whitespace-pre-line text-sm leading-relaxed text-neutral-600">
-              {product.description}
+              {locale === 'ar' ? product.description_ar : product.description}
             </p>
           </section>
         </div>

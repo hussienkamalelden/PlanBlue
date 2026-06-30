@@ -13,3 +13,10 @@ export function isValidLocale(value: string): value is Locale {
 export function getLocaleDirection(locale: Locale): "ltr" | "rtl" {
   return locale === "ar" ? "rtl" : "ltr";
 }
+
+/** Persist locale in the browser without a server action (avoids RSC refetch). */
+export function setClientLocaleCookie(locale: Locale): void {
+  if (typeof document === "undefined") return;
+
+  document.cookie = `${LOCALE_COOKIE}=${locale}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`;
+}

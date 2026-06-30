@@ -21,7 +21,7 @@ export default async function RootLayout({
   return (
     <html lang={locale} dir={getLocaleDirection(locale)}>
       <body suppressHydrationWarning className="min-h-screen bg-neutral-50 text-neutral-900 antialiased">
-        <LocaleProvider initialLocale={locale}>
+        <LocaleProvider>
           <SiteHeader />
           {children}
         </LocaleProvider>

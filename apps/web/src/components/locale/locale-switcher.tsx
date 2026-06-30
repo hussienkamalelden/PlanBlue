@@ -1,12 +1,11 @@
-'use client';
+"use client";
 
-import { setLocaleCookie } from '@/app/actions/locale';
-import { LOCALES, type Locale } from '@/lib/i18n/config';
-import { useLocaleStore } from '@/stores/locale-store';
+import { LOCALES, type Locale } from "@/lib/i18n/config";
+import { useLocaleStore } from "@/stores/locale-store";
 
 const LABELS: Record<Locale, string> = {
-  en: 'English',
-  ar: 'العربية',
+  en: "English",
+  ar: "العربية",
 };
 
 export function LocaleSwitcher() {
@@ -17,7 +16,6 @@ export function LocaleSwitcher() {
     if (nextLocale === locale) return;
 
     setLocale(nextLocale);
-    setLocaleCookie(nextLocale);
   }
 
   return (
@@ -33,8 +31,8 @@ export function LocaleSwitcher() {
           onClick={() => handleChange(code)}
           className={`rounded-md px-3 py-1.5 transition-colors ${
             locale === code
-              ? 'bg-neutral-900 text-white'
-              : 'text-neutral-600 hover:bg-neutral-100'
+              ? "bg-neutral-900 text-white"
+              : "text-neutral-600 hover:bg-neutral-100"
           }`}
           aria-pressed={locale === code}
         >

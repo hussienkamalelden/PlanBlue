@@ -21,6 +21,10 @@
       "relation": "manyToMany",
       "target": "api::product.product",
       "inversedBy": "categories"
+    },
+    "title_ar": {
+      "type": "string",
+      "required": true
     }
   }
 }
