@@ -16,10 +16,12 @@
     },
     "quantity": {
       "type": "integer",
+      "required": true,
       "min": 1
     },
     "price_at_purchase": {
-      "type": "decimal"
+      "type": "decimal",
+      "required": true
     }
   },
   "config": {}

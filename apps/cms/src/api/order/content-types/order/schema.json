@@ -33,6 +33,7 @@
     },
     "status_type": {
       "type": "enumeration",
+      "default": "pending",
       "enum": [
         "pending",
         "confirmed",
@@ -91,6 +92,14 @@
       "type": "component",
       "component": "orders.order-item",
       "repeatable": true
+    },
+    "is_processed": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_stock_reversed": {
+      "type": "boolean",
+      "default": false
     }
   }
 }

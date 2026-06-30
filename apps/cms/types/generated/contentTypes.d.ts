@@ -555,6 +555,7 @@ export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
       ]
     > &
       Schema.Attribute.Required;
+    is_processed: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::order.order'> &
       Schema.Attribute.Private;
@@ -566,7 +567,8 @@ export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
     publishedAt: Schema.Attribute.DateTime;
     status_type: Schema.Attribute.Enumeration<
       ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled']
-    >;
+    > &
+      Schema.Attribute.DefaultTo<'pending'>;
     total: Schema.Attribute.Decimal & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
