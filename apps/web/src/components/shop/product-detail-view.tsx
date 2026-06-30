@@ -123,15 +123,20 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
             )}
 
             {product.categories && product.categories.length > 0 && (
-              <div className="mt-3 flex flex-wrap gap-2">
-                {product.categories.map((cat) => (
-                  <span
-                    key={cat.documentId}
-                    className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700"
-                  >
-                    {cat.title}
-                  </span>
-                ))}
+              <div className="mt-4">
+                <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">
+                  {t.productDetail.categories}
+                </p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {product.categories.map((cat) => (
+                    <span
+                      key={cat.documentId}
+                      className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700"
+                    >
+                      {locale === 'ar' ? cat.title_ar : cat.title}
+                    </span>
+                  ))}
+                </div>
               </div>
             )}
 

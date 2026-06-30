@@ -1,7 +1,8 @@
-"use client";
+'use client';
 
-import { useTranslations } from "@/lib/i18n/use-translations";
-import type { StrapiCategory } from "@/lib/types/strapi";
+import { useTranslations } from '@/lib/i18n/use-translations';
+import type { StrapiCategory } from '@/lib/types/strapi';
+import { useLocaleStore } from '@/stores/locale-store';
 
 type CategoryNavProps = {
   categories: StrapiCategory[];
@@ -15,6 +16,7 @@ export function CategoryNav({
   onSelectCategory,
 }: CategoryNavProps) {
   const t = useTranslations();
+  const locale = useLocaleStore((state) => state.locale);
 
   return (
     <section aria-label={t.category.title}>
@@ -29,8 +31,8 @@ export function CategoryNav({
             onClick={() => onSelectCategory(null)}
             className={`rounded-full border px-4 py-2 text-sm transition-colors ${
               selectedCategoryId === null
-                ? "border-neutral-900 bg-neutral-900 text-white"
-                : "border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300"
+                ? 'border-neutral-900 bg-neutral-900 text-white'
+                : 'border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300'
             }`}
           >
             {t.category.all}
@@ -44,11 +46,11 @@ export function CategoryNav({
               onClick={() => onSelectCategory(category.documentId)}
               className={`rounded-full border px-4 py-2 text-sm transition-colors ${
                 selectedCategoryId === category.documentId
-                  ? "border-neutral-900 bg-neutral-900 text-white"
-                  : "border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300"
+                  ? 'border-neutral-900 bg-neutral-900 text-white'
+                  : 'border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300'
               }`}
             >
-              {category.title}
+              {locale === 'ar' ? category.title_ar : category.title}
             </button>
           </li>
         ))}

@@ -45,7 +45,8 @@ export async function fetchCategories(): Promise<StrapiCategory[]> {
     '/categories',
     {
       'fields[0]': 'title',
-      'fields[1]': 'documentId',
+      'fields[1]': 'title_ar',
+      'fields[2]': 'documentId',
       sort: 'title:asc',
     },
   );
@@ -58,7 +59,8 @@ export async function fetchProducts(): Promise<StrapiProduct[]> {
     '/products',
     {
       'populate[categories][fields][0]': 'title',
-      'populate[categories][fields][1]': 'documentId',
+      'populate[categories][fields][1]': 'title_ar',
+      'populate[categories][fields][2]': 'documentId',
       'populate[media][fields][0]': 'url',
       'populate[media][fields][1]': 'name',
       sort: 'createdAt:desc',
@@ -77,7 +79,8 @@ export async function fetchProductByDocumentId(
       `/products/${documentId}`,
       {
         'populate[categories][fields][0]': 'title',
-        'populate[categories][fields][1]': 'documentId',
+        'populate[categories][fields][1]': 'title_ar',
+        'populate[categories][fields][2]': 'documentId',
         'populate[media][fields][0]': 'url',
         'populate[media][fields][1]': 'name',
       },
@@ -99,7 +102,8 @@ export async function fetchProductBySlug(
       {
         'filters[slug][$eq]': slug,
         'populate[categories][fields][0]': 'title',
-        'populate[categories][fields][1]': 'documentId',
+        'populate[categories][fields][1]': 'title_ar',
+        'populate[categories][fields][2]': 'documentId',
         'populate[media][fields][0]': 'url',
         'populate[media][fields][1]': 'name',
       },

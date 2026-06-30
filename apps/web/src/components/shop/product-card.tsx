@@ -29,7 +29,7 @@ export function ProductCard({ product }: ProductCardProps) {
       <article className="flex h-full flex-col rounded-xl border border-neutral-200 bg-white p-5 shadow-sm transition-shadow group-hover:shadow-md">
         <div className="mb-3 flex items-start justify-between gap-3">
           <h3 className="text-lg font-semibold text-neutral-900">
-            {product.title}
+            {locale === 'ar' ? product.title_ar : product.title}
           </h3>
           <div className="flex shrink-0 flex-col items-end gap-1">
             {product.has_sale && salePrice !== null && (
@@ -46,7 +46,7 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
 
         <p className="mb-4 line-clamp-3 flex-1 text-sm leading-relaxed text-neutral-600">
-          {product.description}
+          {locale === 'ar' ? product.description_ar : product.description}
         </p>
 
         <div className="mt-auto space-y-2 border-t border-neutral-100 pt-4">
