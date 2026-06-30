@@ -23,6 +23,8 @@ const Preview = BasePreview as any;
 interface EmailProps {
   name: string;
   order_id: string | number;
+  subtotal: number;
+  shipping_cost: number;
   total: number;
   phone: string;
   address: string;
@@ -35,6 +37,8 @@ interface EmailProps {
 const ClientOrderEmail = ({
   name,
   order_id,
+  subtotal,
+  shipping_cost,
   total,
   phone,
   address,
@@ -97,6 +101,14 @@ const ClientOrderEmail = ({
               <Row style={orderRow}>
                 <Text style={rowLabel}>Promo Code</Text>
                 <Text style={rowValue}>{promo_code}</Text>
+              </Row>
+              <Row style={orderRow}>
+                <Text style={rowLabel}>Subtotal</Text>
+                <Text style={rowValue}>{subtotal} EGP</Text>
+              </Row>
+              <Row style={orderRow}>
+                <Text style={rowLabel}>Shipping ({governorate})</Text>
+                <Text style={rowValue}>{shipping_cost} EGP</Text>
               </Row>
               {/* Total */}
               <Row style={totalRow}>

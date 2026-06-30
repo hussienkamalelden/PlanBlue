@@ -26,6 +26,8 @@ const Link = BaseLink as any;
 interface AdminEmailProps {
   name: string;
   order_id: string | number;
+  subtotal: number;
+  shipping_cost: number;
   total: number;
   phone: string;
   address: string;
@@ -38,6 +40,8 @@ interface AdminEmailProps {
 const AdminOrderEmail = ({
   name,
   order_id,
+  subtotal,
+  shipping_cost,
   total,
   phone,
   address,
@@ -113,6 +117,14 @@ const AdminOrderEmail = ({
                 <Text style={rowValue}>
                   {extra_notes || 'No special requirements specified'}
                 </Text>
+              </Row>
+              <Row style={orderRow}>
+                <Text style={rowLabel}>Subtotal</Text>
+                <Text style={rowValue}>{subtotal} EGP</Text>
+              </Row>
+              <Row style={orderRow}>
+                <Text style={rowLabel}>Shipping ({governorate})</Text>
+                <Text style={rowValue}>{shipping_cost} EGP</Text>
               </Row>
 
               {/* Financial Capture Total */}

@@ -50,6 +50,13 @@ async function getPopulatedOrderItems(documentId: string): Promise<OrderItem[]> 
   }
 }
 
+function calculateOrderSubtotal(items: OrderItem[]): number {
+  return items.reduce(
+    (sum, item) => sum + item.price_at_purchase * item.quantity,
+    0,
+  );
+}
+
 async function processNewOrder(result: any) {
   const orderItems = await getPopulatedOrderItems(result.documentId);
 
@@ -137,11 +144,15 @@ async function processNewOrder(result: any) {
   // Send order confirmation emails
   try {
     const formattedItems = formatOrderItemsForEmail(orderItems);
+    const subtotal = calculateOrderSubtotal(orderItems);
+    const shippingCost = Number(result.shipping_cost ?? 0);
 
     const emailHtml = await render(
       React.createElement(ClientOrderEmail, {
         name: result.name,
         order_id: result.order_id,
+        subtotal: Number(subtotal.toFixed(2)),
+        shipping_cost: Number(shippingCost.toFixed(2)),
         total: result.total,
         address: result.address,
         phone: result.phone,
@@ -162,6 +173,8 @@ async function processNewOrder(result: any) {
       React.createElement(AdminOrderEmail, {
         name: result.name,
         order_id: result.order_id,
+        subtotal: Number(subtotal.toFixed(2)),
+        shipping_cost: Number(shippingCost.toFixed(2)),
         total: result.total,
         address: result.address,
         phone: result.phone,
