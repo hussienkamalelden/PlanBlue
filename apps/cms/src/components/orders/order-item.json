@@ -11,6 +11,9 @@
       "relation": "oneToOne",
       "target": "api::product.product"
     },
+    "product_title": {
+      "type": "string"
+    },
     "quantity": {
       "type": "integer",
       "min": 1

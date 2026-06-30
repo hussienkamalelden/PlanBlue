@@ -4,21 +4,25 @@ import AdminOrderEmail from '../../../../emails/AdminOrderEmail';
 import React from 'react';
 
 type OrderItem = {
+  id: number;
   quantity: number;
   price_at_purchase: number;
+  product_title?: string;
   product?: {
     documentId: string;
     title: string;
+    sku: string;
     available_stock: number;
   };
 };
 
 function formatOrderItemsForEmail(items: OrderItem[]): string {
   return items
-    .map(
-      (item) =>
-        `• ${item.product?.title ?? 'Product'} × ${item.quantity} — ${item.price_at_purchase} EGP`,
-    )
+    .map((item) => {
+      const title = item.product?.title ?? item.product_title ?? 'Product';
+      const sku = item.product?.sku ? ` (${item.product.sku})` : '';
+      return `• ${title}${sku} × ${item.quantity} — ${item.price_at_purchase} EGP`;
+    })
     .join('\n');
 }
 
@@ -37,7 +41,7 @@ export default {
           order_items: {
             populate: {
               product: {
-                fields: ['documentId', 'title', 'available_stock'],
+                fields: ['documentId', 'title', 'sku', 'available_stock'],
               },
             },
           },
@@ -48,6 +52,20 @@ export default {
       orderItems = (fullOrder?.order_items as OrderItem[]) ?? [];
     } catch (error) {
       strapi.log.error('Failed to fetch order items:', error);
+    }
+
+    // Set product_title on each order item for dashboard visibility
+    try {
+      for (const item of orderItems) {
+        if (item.product?.title && !item.product_title) {
+          await strapi.db.query('orders.order-item').update({
+            where: { id: item.id },
+            data: { product_title: item.product.title },
+          });
+        }
+      }
+    } catch (error) {
+      strapi.log.error('Failed to set product titles:', error);
     }
 
     // Save or update client data

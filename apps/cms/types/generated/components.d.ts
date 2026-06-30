@@ -9,6 +9,7 @@ export interface OrdersOrderItem extends Struct.ComponentSchema {
   attributes: {
     price_at_purchase: Schema.Attribute.Decimal;
     product: Schema.Attribute.Relation<'oneToOne', 'api::product.product'>;
+    product_title: Schema.Attribute.String;
     quantity: Schema.Attribute.Integer &
       Schema.Attribute.SetMinMax<
         {

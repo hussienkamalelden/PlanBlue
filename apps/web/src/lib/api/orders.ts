@@ -6,6 +6,7 @@ import { STRAPI_URL } from "./strapi";
 export type OrderItemPayload = {
   quantity: number;
   price_at_purchase: number;
+  product_title: string;
   product: {
     connect: string[];
   };
@@ -49,6 +50,7 @@ function buildOrderItems(items: CartLineItem[]): OrderItemPayload[] {
     return {
       quantity: item.quantity,
       price_at_purchase: Number(unitPrice.toFixed(2)),
+      product_title: item.title,
       product: {
         connect: [item.documentId],
       },
