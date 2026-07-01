@@ -43,6 +43,8 @@ export type StrapiProduct = {
   available_stock: number;
   views: number;
   total_sold: number;
+  all_ages: boolean;
+  age?: number;
   categories?: StrapiCategory[];
   media?: StrapiMedia[];
 };

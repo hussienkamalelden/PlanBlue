@@ -20,7 +20,15 @@
     "filteredEmpty": "لا توجد منتجات في هذه الفئة.",
     "sortTitle": "ترتيب حسب",
     "topSellers": "الأكثر مبيعاً",
-    "mostViewed": "الأكثر مشاهدة"
+    "mostViewed": "الأكثر مشاهدة",
+    "ageTitle": "العمر",
+    "allAges": "جميع الأعمار",
+    "age0to1": "0–1 سنة",
+    "age1to2": "1–2 سنة",
+    "age2to3": "2–3 سنوات",
+    "age3to4": "3–4 سنوات",
+    "age4to6": "4–6 سنوات",
+    "ageAbove6": "أكثر من 6"
   },
   "category": {
     "title": "الفئات",

@@ -3,9 +3,10 @@
 import { useEffect, useState } from "react";
 
 import { CategoryNav } from "@/components/shop/category-nav";
+import { ProductAgeNav } from "@/components/shop/product-age-nav";
 import { ProductGrid } from "@/components/shop/product-grid";
 import { ProductSortNav } from "@/components/shop/product-sort-nav";
-import type { ProductSort } from "@/lib/product/filters";
+import type { AgeFilter, ProductSort } from "@/lib/product/filters";
 import type { StrapiCategory, StrapiProduct } from "@/lib/types/strapi";
 
 type ProductsViewProps = {
@@ -18,10 +19,12 @@ export function ProductsView({ categories, products }: ProductsViewProps) {
     null,
   );
   const [selectedSort, setSelectedSort] = useState<ProductSort>(null);
+  const [selectedAgeFilter, setSelectedAgeFilter] = useState<AgeFilter>(null);
 
   useEffect(() => {
     setSelectedCategoryId(null);
     setSelectedSort(null);
+    setSelectedAgeFilter(null);
   }, [categories, products]);
 
   return (
@@ -29,6 +32,11 @@ export function ProductsView({ categories, products }: ProductsViewProps) {
       <ProductSortNav
         selectedSort={selectedSort}
         onSelectSort={setSelectedSort}
+      />
+
+      <ProductAgeNav
+        selectedAgeFilter={selectedAgeFilter}
+        onSelectAgeFilter={setSelectedAgeFilter}
       />
 
       <CategoryNav
@@ -40,6 +48,7 @@ export function ProductsView({ categories, products }: ProductsViewProps) {
       <ProductGrid
         products={products}
         selectedCategoryId={selectedCategoryId}
+        selectedAgeFilter={selectedAgeFilter}
         selectedSort={selectedSort}
       />
     </div>

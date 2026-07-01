@@ -3,8 +3,10 @@
 import { ProductCard } from "./product-card";
 import { useTranslations } from "@/lib/i18n/use-translations";
 import {
+  filterProductsByAge,
   filterProductsByCategory,
   sortProducts,
+  type AgeFilter,
   type ProductSort,
 } from "@/lib/product/filters";
 import type { StrapiProduct } from "@/lib/types/strapi";
@@ -12,22 +14,30 @@ import type { StrapiProduct } from "@/lib/types/strapi";
 type ProductGridProps = {
   products: StrapiProduct[];
   selectedCategoryId: string | null;
+  selectedAgeFilter: AgeFilter;
   selectedSort: ProductSort;
 };
 
 export function ProductGrid({
   products,
   selectedCategoryId,
+  selectedAgeFilter,
   selectedSort,
 }: ProductGridProps) {
   const t = useTranslations();
 
   const visibleProducts = sortProducts(
-    filterProductsByCategory(products, selectedCategoryId),
+    filterProductsByAge(
+      filterProductsByCategory(products, selectedCategoryId),
+      selectedAgeFilter,
+    ),
     selectedSort,
   );
 
-  const hasActiveFilter = selectedCategoryId !== null || selectedSort !== null;
+  const hasActiveFilter =
+    selectedCategoryId !== null ||
+    selectedAgeFilter !== null ||
+    selectedSort !== null;
 
   return (
     <section aria-label={t.products.title}>
