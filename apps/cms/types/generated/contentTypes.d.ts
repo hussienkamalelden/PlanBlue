@@ -591,6 +591,8 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    age: Schema.Attribute.Integer & Schema.Attribute.Required;
+    all_ages: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
     available: Schema.Attribute.Boolean &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<true>;

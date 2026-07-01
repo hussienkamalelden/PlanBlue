@@ -93,6 +93,24 @@
     "total_sold": {
       "type": "integer",
       "default": 0
+    },
+    "age": {
+      "type": "integer",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "all_ages"
+            },
+            false
+          ]
+        }
+      },
+      "required": true
+    },
+    "all_ages": {
+      "type": "boolean",
+      "default": true
     }
   }
 }
