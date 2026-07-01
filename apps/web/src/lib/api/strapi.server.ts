@@ -164,7 +164,8 @@ export async function fetchRelatedProducts(
   product: StrapiProduct,
   limit = 4,
 ): Promise<StrapiProduct[]> {
-  const categoryIds = product.categories?.map((category) => category.documentId) ?? [];
+  const categoryIds =
+    product.categories?.map((category) => category.documentId) ?? [];
 
   if (categoryIds.length === 0) {
     return [];
