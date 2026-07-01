@@ -32,4 +32,16 @@ export function formatPrice(amount: number, locale: Locale): string {
   return locale === "ar" ? `${formatted} جنيه` : `${formatted} EGP`;
 }
 
+export function getMediaUrl(url: string): string {
+  if (url.startsWith("http://") || url.startsWith("https://")) {
+    return url;
+  }
+
+  return `${STRAPI_URL}${url.startsWith("/") ? url : `/${url}`}`;
+}
+
+export function isVideoMedia(mime: string): boolean {
+  return mime.startsWith("video/");
+}
+
 export type { StrapiProduct };

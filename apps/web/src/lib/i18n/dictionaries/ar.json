@@ -43,6 +43,8 @@
     "addToCart": "أضف إلى السلة",
     "buyNow": "اشترِ الآن",
     "addedToCart": "تمت الإضافة إلى السلة",
+    "mediaImage": "صورة المنتج {index}",
+    "mediaVideo": "فيديو المنتج {index}",
     "notFound": "المنتج غير موجود",
     "notFoundDescription": "المنتج الذي تبحث عنه غير موجود أو تمت إزالته."
   },

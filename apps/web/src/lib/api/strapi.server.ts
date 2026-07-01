@@ -79,6 +79,7 @@ export async function fetchProducts(): Promise<StrapiProduct[]> {
       'populate[categories][fields][2]': 'documentId',
       'populate[media][fields][0]': 'url',
       'populate[media][fields][1]': 'name',
+      'populate[media][fields][2]': 'mime',
       sort: 'createdAt:desc',
     },
   );
@@ -99,6 +100,7 @@ export async function fetchProductByDocumentId(
         'populate[categories][fields][2]': 'documentId',
         'populate[media][fields][0]': 'url',
         'populate[media][fields][1]': 'name',
+        'populate[media][fields][2]': 'mime',
       },
     );
 

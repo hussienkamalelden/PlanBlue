@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { QuantitySelector } from '@/components/shop/quantity-selector';
+import { ProductMediaGallery } from '@/components/shop/product-media-gallery';
 import { formatPrice, getProductPrices } from '@/lib/api/strapi';
 import { useCartStore } from '@/lib/cart/cart-store';
 import { interpolate } from '@/lib/i18n/dictionary';
@@ -17,7 +18,6 @@ import {
 } from '@/lib/product/stock';
 import type { StrapiProduct } from '@/lib/types/strapi';
 import { useLocaleStore } from '@/stores/locale-store';
-import Image from 'next/image';
 
 type ProductDetailViewProps = {
   product: StrapiProduct;
@@ -38,7 +38,7 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
   const exceedsStock = isQuantityExceedsStock(quantity, product);
   const actionsDisabled = arePurchaseActionsDisabled(quantity, product);
   const { basePrice, salePrice } = getProductPrices(product);
-  const media = product.media;
+  const title = locale === 'ar' ? product.title_ar : product.title;
 
   function incrementQuantity() {
     setFeedback(null);
@@ -95,25 +95,13 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
 
       <div className="grid gap-10 lg:grid-cols-2">
         <div className="rounded-2xl border border-neutral-200 bg-white p-8 shadow-sm">
-          <div className="flex aspect-square items-center justify-center rounded-xl bg-neutral-100 text-neutral-400">
-            {media && media.length > 0 ? (
-              <Image
-                src={(media[0] as { url: string; name: string }).url}
-                alt={(media[0] as { url: string; name: string }).name}
-                width={100}
-                height={100}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <span className="text-4xl">🧸</span>
-            )}
-          </div>
+          <ProductMediaGallery media={product.media ?? []} alt={title} />
         </div>
 
         <div className="space-y-6">
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-neutral-900">
-              {locale === 'ar' ? product.title_ar : product.title}
+              {title}
             </h1>
 
             {product.sku && (

@@ -5,6 +5,12 @@ export type StrapiShipping = {
   cost: number;
 };
 
+export type StrapiMedia = {
+  url: string;
+  name: string;
+  mime: string;
+};
+
 export type StrapiCategory = {
   id: number;
   documentId: string;
@@ -30,7 +36,7 @@ export type StrapiProduct = {
   available_stock: number;
   views: number;
   categories?: StrapiCategory[];
-  media?: unknown[];
+  media?: StrapiMedia[];
 };
 
 export type StrapiListResponse<T> = {
