@@ -1,9 +1,14 @@
 import { CheckoutForm } from "@/components/shop/checkout-form";
-import { fetchShipping } from "@/lib/api/strapi.server";
-import type { StrapiShipping } from "@/lib/types/strapi";
+import {
+  fetchExtras,
+  fetchShipping,
+  findGiftWrappingExtra,
+} from "@/lib/api/strapi.server";
+import type { StrapiExtra, StrapiShipping } from "@/lib/types/strapi";
 
 export default async function CheckoutPage() {
   let shippingOptions: StrapiShipping[] = [];
+  let giftWrapping: StrapiExtra | null = null;
 
   try {
     shippingOptions = await fetchShipping();
@@ -11,5 +16,14 @@ export default async function CheckoutPage() {
     shippingOptions = [];
   }
 
-  return <CheckoutForm shippingOptions={shippingOptions} />;
+  try {
+    const extras = await fetchExtras();
+    giftWrapping = findGiftWrappingExtra(extras);
+  } catch {
+    giftWrapping = null;
+  }
+
+  return (
+    <CheckoutForm shippingOptions={shippingOptions} giftWrapping={giftWrapping} />
+  );
 }

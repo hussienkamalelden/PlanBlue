@@ -18,6 +18,8 @@ export type OrderPayload = {
   phone: string;
   governorate: string;
   shipping_cost: number;
+  gift_wrapping: boolean;
+  gift_wrapping_cost: number;
   address: string;
   promo_code?: string;
   extra_notes?: string;
@@ -76,6 +78,8 @@ export async function createOrder(
     phone: string;
     governorate: string;
     shipping_cost: number;
+    gift_wrapping: boolean;
+    gift_wrapping_cost: number;
     address: string;
     promo_code: string;
     extra_notes: string;
@@ -83,7 +87,8 @@ export async function createOrder(
   items: CartLineItem[],
 ): Promise<OrderResponse> {
   const subtotal = calculateTotal(items);
-  const total = subtotal + formData.shipping_cost;
+  const total =
+    subtotal + formData.shipping_cost + formData.gift_wrapping_cost;
   const order_id = generateOrderId();
 
   const payload: OrderPayload = {
@@ -92,6 +97,8 @@ export async function createOrder(
     phone: formData.phone,
     governorate: formData.governorate,
     shipping_cost: Number(formData.shipping_cost.toFixed(2)),
+    gift_wrapping: formData.gift_wrapping,
+    gift_wrapping_cost: Number(formData.gift_wrapping_cost.toFixed(2)),
     address: formData.address,
     promo_code: formData.promo_code || undefined,
     extra_notes: formData.extra_notes || undefined,

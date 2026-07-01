@@ -1,5 +1,6 @@
 import type {
   StrapiCategory,
+  StrapiExtra,
   StrapiListResponse,
   StrapiProduct,
   StrapiShipping,
@@ -54,6 +55,32 @@ export async function fetchShipping(): Promise<StrapiShipping[]> {
   );
 
   return json.data;
+}
+
+export async function fetchExtras(): Promise<StrapiExtra[]> {
+  const json = await strapiFetch<StrapiListResponse<StrapiExtra>>('/extras', {
+    'fields[0]': 'title',
+    'fields[1]': 'cost',
+    'fields[2]': 'documentId',
+    sort: 'title:asc',
+    status: 'published',
+  });
+
+  return json.data;
+}
+
+function normalizeExtraTitle(title: string): string {
+  return title.trim().toLowerCase().replace(/\s+/g, '_');
+}
+
+export function findGiftWrappingExtra(
+  extras: StrapiExtra[],
+): StrapiExtra | null {
+  return (
+    extras.find(
+      (extra) => normalizeExtraTitle(extra.title) === 'gift_wrapping',
+    ) ?? null
+  );
 }
 
 export async function fetchCategories(): Promise<StrapiCategory[]> {

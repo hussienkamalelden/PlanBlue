@@ -146,6 +146,8 @@ async function processNewOrder(result: any) {
     const formattedItems = formatOrderItemsForEmail(orderItems);
     const subtotal = calculateOrderSubtotal(orderItems);
     const shippingCost = Number(result.shipping_cost ?? 0);
+    const giftWrapping = Boolean(result.gift_wrapping);
+    const giftWrappingCost = Number(result.gift_wrapping_cost ?? 0);
 
     const emailHtml = await render(
       React.createElement(ClientOrderEmail, {
@@ -153,6 +155,8 @@ async function processNewOrder(result: any) {
         order_id: result.order_id,
         subtotal: Number(subtotal.toFixed(2)),
         shipping_cost: Number(shippingCost.toFixed(2)),
+        gift_wrapping: giftWrapping,
+        gift_wrapping_cost: Number(giftWrappingCost.toFixed(2)),
         total: result.total,
         address: result.address,
         phone: result.phone,
@@ -175,6 +179,8 @@ async function processNewOrder(result: any) {
         order_id: result.order_id,
         subtotal: Number(subtotal.toFixed(2)),
         shipping_cost: Number(shippingCost.toFixed(2)),
+        gift_wrapping: giftWrapping,
+        gift_wrapping_cost: Number(giftWrappingCost.toFixed(2)),
         total: result.total,
         address: result.address,
         phone: result.phone,

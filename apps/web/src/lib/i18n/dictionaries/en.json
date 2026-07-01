@@ -87,6 +87,8 @@
     "orderSummary": "Order Summary",
     "subtotal": "Subtotal",
     "shipping": "Shipping",
+    "giftWrapping": "Gift Wrapping",
+    "giftWrappingDesc": "Add premium gift wrapping for",
     "total": "Total",
     "items": "items",
     "placeOrder": "Place Order",

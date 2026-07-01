@@ -87,6 +87,8 @@
     "orderSummary": "ملخص الطلب",
     "subtotal": "المجموع الفرعي",
     "shipping": "الشحن",
+    "giftWrapping": "تغليف هدايا",
+    "giftWrappingDesc": "أضف تغليف هدايا مميز بـ",
     "total": "الإجمالي",
     "items": "منتجات",
     "placeOrder": "تأكيد الطلب",

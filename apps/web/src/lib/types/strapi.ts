@@ -5,6 +5,13 @@ export type StrapiShipping = {
   cost: number;
 };
 
+export type StrapiExtra = {
+  id: number;
+  documentId: string;
+  title: string;
+  cost: number;
+};
+
 export type StrapiMedia = {
   url: string;
   name: string;

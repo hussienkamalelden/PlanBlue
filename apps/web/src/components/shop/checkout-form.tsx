@@ -7,7 +7,7 @@ import { createOrder, calculateTotal } from "@/lib/api/orders";
 import { formatPrice } from "@/lib/api/strapi";
 import { useCartStore } from "@/lib/cart/cart-store";
 import { useTranslations } from "@/lib/i18n/use-translations";
-import type { StrapiShipping } from "@/lib/types/strapi";
+import type { StrapiExtra, StrapiShipping } from "@/lib/types/strapi";
 import { useLocaleStore } from "@/stores/locale-store";
 
 type FormErrors = {
@@ -22,9 +22,10 @@ type OrderStatus = "idle" | "submitting" | "success" | "error";
 
 type CheckoutFormProps = {
   shippingOptions: StrapiShipping[];
+  giftWrapping: StrapiExtra | null;
 };
 
-export function CheckoutForm({ shippingOptions }: CheckoutFormProps) {
+export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProps) {
   const t = useTranslations();
   const locale = useLocaleStore((state) => state.locale);
   const items = useCartStore((state) => state.items);
@@ -43,13 +44,18 @@ export function CheckoutForm({ shippingOptions }: CheckoutFormProps) {
   const [errors, setErrors] = useState<FormErrors>({});
   const [status, setStatus] = useState<OrderStatus>("idle");
   const [orderId, setOrderId] = useState("");
+  const [giftWrappingChecked, setGiftWrappingChecked] = useState(false);
 
   const subtotal = calculateTotal(items);
   const selectedShipping = shippingOptions.find(
     (option) => option.documentId === form.shippingId,
   );
   const shippingCost = Number(selectedShipping?.cost ?? 0);
-  const total = subtotal + shippingCost;
+  const giftWrappingCost =
+    giftWrappingChecked && giftWrapping
+      ? Number(giftWrapping.cost ?? 0)
+      : 0;
+  const total = subtotal + shippingCost + giftWrappingCost;
 
   function updateField(field: keyof typeof form, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -94,6 +100,8 @@ export function CheckoutForm({ shippingOptions }: CheckoutFormProps) {
           phone: form.phone,
           governorate: selectedShipping.name,
           shipping_cost: shippingCost,
+          gift_wrapping: giftWrappingChecked,
+          gift_wrapping_cost: giftWrappingCost,
           address: form.address,
           promo_code: form.promo_code,
           extra_notes: form.extra_notes,
@@ -269,6 +277,27 @@ export function CheckoutForm({ shippingOptions }: CheckoutFormProps) {
                   className="w-full resize-none rounded-lg border border-neutral-200 bg-white px-3 py-2.5 text-sm transition-colors hover:border-neutral-300 focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
                 />
               </div>
+              {giftWrapping && (
+                <div className="sm:col-span-2">
+                  <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-neutral-200 bg-neutral-50 p-4 transition-colors hover:border-neutral-300">
+                    <input
+                      type="checkbox"
+                      checked={giftWrappingChecked}
+                      onChange={(e) => setGiftWrappingChecked(e.target.checked)}
+                      className="mt-0.5 h-4 w-4 rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900"
+                    />
+                    <span className="text-sm text-neutral-700">
+                      <span className="font-medium text-neutral-900">
+                        {t.checkout.giftWrapping}
+                      </span>
+                      <span className="mt-0.5 block text-neutral-500">
+                        {t.checkout.giftWrappingDesc}{" "}
+                        {formatPrice(Number(giftWrapping.cost), locale)}
+                      </span>
+                    </span>
+                  </label>
+                </div>
+              )}
             </div>
           </section>
         </div>
@@ -321,6 +350,14 @@ export function CheckoutForm({ shippingOptions }: CheckoutFormProps) {
                   </span>
                   <span className="font-medium text-neutral-900">
                     {formatPrice(shippingCost, locale)}
+                  </span>
+                </div>
+              )}
+              {giftWrappingChecked && giftWrappingCost > 0 && (
+                <div className="mt-2 flex items-center justify-between text-sm">
+                  <span className="text-neutral-600">{t.checkout.giftWrapping}</span>
+                  <span className="font-medium text-neutral-900">
+                    {formatPrice(giftWrappingCost, locale)}
                   </span>
                 </div>
               )}

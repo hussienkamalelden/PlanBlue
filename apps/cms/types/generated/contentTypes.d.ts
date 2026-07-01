@@ -505,6 +505,32 @@ export interface ApiClientClient extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiExtraExtra extends Struct.CollectionTypeSchema {
+  collectionName: 'extras';
+  info: {
+    displayName: 'Extra';
+    pluralName: 'extras';
+    singularName: 'extra';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    cost: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::extra.extra'> &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
   collectionName: 'orders';
   info: {
@@ -523,6 +549,10 @@ export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
     email: Schema.Attribute.String & Schema.Attribute.Required;
     extra_notes: Schema.Attribute.Text;
     follow_up_call: Schema.Attribute.Text;
+    gift_wrapping: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    gift_wrapping_cost: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<0>;
     governorate: Schema.Attribute.String & Schema.Attribute.Required;
     is_processed: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     is_stock_reversed: Schema.Attribute.Boolean &
@@ -1147,6 +1177,7 @@ declare module '@strapi/strapi' {
       'admin::user': AdminUser;
       'api::category.category': ApiCategoryCategory;
       'api::client.client': ApiClientClient;
+      'api::extra.extra': ApiExtraExtra;
       'api::order.order': ApiOrderOrder;
       'api::product.product': ApiProductProduct;
       'api::shipping.shipping': ApiShippingShipping;

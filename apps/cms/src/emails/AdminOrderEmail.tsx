@@ -28,6 +28,8 @@ interface AdminEmailProps {
   order_id: string | number;
   subtotal: number;
   shipping_cost: number;
+  gift_wrapping: boolean;
+  gift_wrapping_cost: number;
   total: number;
   phone: string;
   address: string;
@@ -42,6 +44,8 @@ const AdminOrderEmail = ({
   order_id,
   subtotal,
   shipping_cost,
+  gift_wrapping,
+  gift_wrapping_cost,
   total,
   phone,
   address,
@@ -126,6 +130,12 @@ const AdminOrderEmail = ({
                 <Text style={rowLabel}>Shipping ({governorate})</Text>
                 <Text style={rowValue}>{shipping_cost} EGP</Text>
               </Row>
+              {gift_wrapping && (
+                <Row style={orderRow}>
+                  <Text style={rowLabel}>Gift Wrapping</Text>
+                  <Text style={rowValue}>{gift_wrapping_cost} EGP</Text>
+                </Row>
+              )}
 
               {/* Financial Capture Total */}
               <Row style={totalRow}>

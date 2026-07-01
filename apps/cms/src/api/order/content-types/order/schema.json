@@ -61,6 +61,25 @@
       "required": true,
       "default": 0
     },
+    "gift_wrapping": {
+      "type": "boolean",
+      "default": false
+    },
+    "gift_wrapping_cost": {
+      "type": "decimal",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "gift_wrapping"
+            },
+            true
+          ]
+        }
+      },
+      "required": true,
+      "default": 0
+    },
     "follow_up_call": {
       "type": "text"
     },
