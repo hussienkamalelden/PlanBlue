@@ -23,7 +23,6 @@ export function sortProducts(
     return products;
   }
 
-  console.log(products);
   const sorted = [...products];
 
   if (sort === 'top_sellers') {

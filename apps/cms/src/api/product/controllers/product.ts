@@ -28,29 +28,22 @@ export default factories.createCoreController(
     async findOne(ctx) {
       const { id } = ctx.params;
 
-      // 1. Increment the views counter directly in the database using Document Service
-      // We use a try-catch to ensure that if view-counting fails, the product still loads
       try {
-        const currentProduct = await strapi
-          .documents('api::product.product')
-          .findOne({
-            documentId: id,
-          });
+        const rows = await strapi.db
+          .query('api::product.product')
+          .findMany({ where: { documentId: id }, limit: 1 });
 
-        if (currentProduct) {
-          const currentViews = currentProduct.views || 0;
-          await strapi.documents('api::product.product').update({
-            documentId: id,
-            data: {
-              views: currentViews + 1,
-            },
+        if (rows.length > 0) {
+          const currentViews = Number(rows[0].views ?? 0);
+          await strapi.db.query('api::product.product').updateMany({
+            where: { documentId: id },
+            data: { views: currentViews + 1 },
           });
         }
       } catch (error) {
         strapi.log.error('Failed to increment product views:', error);
       }
 
-      // 2. Fetch the updated product data to return to the frontend
       const { data } = await super.findOne(ctx);
       if (!data) return { data };
 
