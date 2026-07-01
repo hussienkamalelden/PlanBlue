@@ -6,6 +6,7 @@ import { useState } from 'react';
 
 import { QuantitySelector } from '@/components/shop/quantity-selector';
 import { ProductMediaGallery } from '@/components/shop/product-media-gallery';
+import { RelatedProducts } from '@/components/shop/related-products';
 import { formatPrice, getProductPrices } from '@/lib/api/strapi';
 import { useCartStore } from '@/lib/cart/cart-store';
 import { interpolate } from '@/lib/i18n/dictionary';
@@ -21,9 +22,13 @@ import { useLocaleStore } from '@/stores/locale-store';
 
 type ProductDetailViewProps = {
   product: StrapiProduct;
+  relatedProducts: StrapiProduct[];
 };
 
-export function ProductDetailView({ product }: ProductDetailViewProps) {
+export function ProductDetailView({
+  product,
+  relatedProducts,
+}: ProductDetailViewProps) {
   const router = useRouter();
   const locale = useLocaleStore((state) => state.locale);
   const t = useTranslations();
@@ -226,6 +231,8 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
           </section>
         </div>
       </div>
+
+      <RelatedProducts products={relatedProducts} />
     </div>
   );
 }

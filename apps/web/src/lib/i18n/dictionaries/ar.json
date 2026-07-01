@@ -45,6 +45,7 @@
     "addedToCart": "تمت الإضافة إلى السلة",
     "mediaImage": "صورة المنتج {index}",
     "mediaVideo": "فيديو المنتج {index}",
+    "relatedProducts": "منتجات ذات صلة",
     "notFound": "المنتج غير موجود",
     "notFoundDescription": "المنتج الذي تبحث عنه غير موجود أو تمت إزالته."
   },

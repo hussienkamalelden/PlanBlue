@@ -159,3 +159,41 @@ export async function fetchProductBySlug(
     return null;
   }
 }
+
+export async function fetchRelatedProducts(
+  product: StrapiProduct,
+  limit = 4,
+): Promise<StrapiProduct[]> {
+  const categoryIds = product.categories?.map((category) => category.documentId) ?? [];
+
+  if (categoryIds.length === 0) {
+    return [];
+  }
+
+  const params: Record<string, string> = {
+    'populate[categories][fields][0]': 'title',
+    'populate[categories][fields][1]': 'title_ar',
+    'populate[categories][fields][2]': 'documentId',
+    'populate[media][fields][0]': 'url',
+    'populate[media][fields][1]': 'name',
+    'populate[media][fields][2]': 'mime',
+    'filters[documentId][$ne]': product.documentId,
+    'pagination[pageSize]': String(limit),
+    sort: 'createdAt:desc',
+  };
+
+  categoryIds.forEach((categoryId, index) => {
+    params[`filters[categories][documentId][$in][${index}]`] = categoryId;
+  });
+
+  try {
+    const json = await strapiFetch<StrapiListResponse<StrapiProduct>>(
+      '/products',
+      params,
+    );
+
+    return json.data;
+  } catch {
+    return [];
+  }
+}

@@ -1,5 +1,5 @@
 import type { Locale } from "@/lib/i18n/config";
-import type { StrapiProduct } from "@/lib/types/strapi";
+import type { StrapiMedia, StrapiProduct } from "@/lib/types/strapi";
 
 export const STRAPI_URL =
   process.env.NEXT_PUBLIC_STRAPI_URL ?? "http://localhost:1337";
@@ -42,6 +42,16 @@ export function getMediaUrl(url: string): string {
 
 export function isVideoMedia(mime: string): boolean {
   return mime.startsWith("video/");
+}
+
+export function getFirstProductImage(
+  media: StrapiProduct["media"],
+): StrapiMedia | null {
+  if (!media?.length) {
+    return null;
+  }
+
+  return media.find((item) => !isVideoMedia(item.mime)) ?? null;
 }
 
 export type { StrapiProduct };
