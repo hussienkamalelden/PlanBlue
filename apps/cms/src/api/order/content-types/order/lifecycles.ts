@@ -1,6 +1,7 @@
 import { render } from '@react-email/components';
 import ClientOrderEmail from '../../../../emails/ClientOrderEmail';
 import AdminOrderEmail from '../../../../emails/AdminOrderEmail';
+import AffiliateCommissionEmail from '../../../../emails/AffiliateCommissionEmail';
 import React from 'react';
 
 type OrderItem = {
@@ -58,6 +59,21 @@ function calculateOrderSubtotal(items: OrderItem[]): number {
     (sum, item) => sum + item.price_at_purchase * item.quantity,
     0,
   );
+}
+
+function getStrapiMediaUrl(media: { url?: string } | null | undefined): string {
+  if (!media?.url) return '';
+
+  if (media.url.startsWith('http')) {
+    return media.url;
+  }
+
+  const baseUrl =
+    process.env.STRAPI_PUBLIC_URL ||
+    strapi.config.get('server.url') ||
+    'http://localhost:1337';
+
+  return `${String(baseUrl).replace(/\/$/, '')}${media.url}`;
 }
 
 async function resolveProductFromItem(item: any): Promise<any | null> {
@@ -265,7 +281,10 @@ async function processAffiliateCommission(result: any) {
 
   try {
     const affiliates = await strapi.documents('api::affiliate.affiliate').findMany({
-      populate: { promocodes: true },
+      populate: {
+        promocodes: true,
+        avatar: true,
+      },
       status: 'published',
     });
 
@@ -294,13 +313,13 @@ async function processAffiliateCommission(result: any) {
     if (earnedCommission <= 0) return;
 
     const currentPending = Number(matchedAffiliate.current_pending_commission ?? 0);
+    const totalPaid = Number(matchedAffiliate.total_paid_commission ?? 0);
+    const newPendingCommission = Number((currentPending + earnedCommission).toFixed(2));
 
     await strapi.db.query('api::affiliate.affiliate').updateMany({
       where: { documentId: matchedAffiliate.documentId },
       data: {
-        current_pending_commission: Number(
-          (currentPending + earnedCommission).toFixed(2),
-        ),
+        current_pending_commission: newPendingCommission,
       },
     });
 
@@ -312,6 +331,36 @@ async function processAffiliateCommission(result: any) {
     strapi.log.info(
       `[AFFILIATE] Credited ${earnedCommission} EGP to ${matchedAffiliate.name} on delivery (code: ${promoCode}, order: ${result.order_id})`,
     );
+
+    try {
+      const orderItems = await getPopulatedOrderItems(result.documentId);
+      const formattedItems = formatOrderItemsForEmail(orderItems);
+      const avatarUrl = getStrapiMediaUrl(matchedAffiliate.avatar);
+
+      const emailHtml = await render(
+        React.createElement(AffiliateCommissionEmail, {
+          name: matchedAffiliate.name,
+          avatar_url: avatarUrl || undefined,
+          earned_commission: earnedCommission,
+          current_pending_commission: newPendingCommission,
+          total_paid_commission: totalPaid,
+          commission_percentage: commissionPercentage,
+          order_id: result.order_id,
+          promo_code: promoCode,
+          order_subtotal: orderSubtotal,
+          order_items: formattedItems,
+        }),
+      );
+
+      await strapi.plugins['email'].services.email.send({
+        to: matchedAffiliate.email,
+        from: process.env.RESEND_DEFAULT_FROM,
+        subject: `PlanBlue — You earned ${earnedCommission} EGP commission! 🎉`,
+        html: emailHtml,
+      });
+    } catch (emailError) {
+      strapi.log.error('Failed to send affiliate commission email:', emailError);
+    }
   } catch (error) {
     strapi.log.error('Failed to process affiliate commission:', error);
   }
