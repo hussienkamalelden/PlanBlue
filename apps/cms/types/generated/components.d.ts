@@ -23,7 +23,7 @@ export interface OrdersOrderItem extends Struct.ComponentSchema {
     icon: 'bulletList';
   };
   attributes: {
-    price_at_purchase: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    price_at_purchase: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
     product: Schema.Attribute.Relation<'oneToOne', 'api::product.product'>;
     product_title: Schema.Attribute.String;
     quantity: Schema.Attribute.Integer &

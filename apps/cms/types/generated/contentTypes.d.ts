@@ -619,8 +619,8 @@ export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
       ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled']
     > &
       Schema.Attribute.DefaultTo<'pending'>;
-    subtotal: Schema.Attribute.Decimal & Schema.Attribute.Required;
-    total: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    subtotal: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
+    total: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

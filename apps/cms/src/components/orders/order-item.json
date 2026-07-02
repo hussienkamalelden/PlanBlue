@@ -21,7 +21,7 @@
     },
     "price_at_purchase": {
       "type": "decimal",
-      "required": true
+      "default": 0
     }
   },
   "config": {}

@@ -14,6 +14,9 @@ type OrderItem = {
     sku: string;
     available_stock: number;
     total_sold: number;
+    price: number;
+    has_sale: boolean;
+    discount_percentage: number;
   };
 };
 
@@ -35,7 +38,7 @@ async function getPopulatedOrderItems(documentId: string): Promise<OrderItem[]> 
         order_items: {
           populate: {
             product: {
-              fields: ['title', 'sku', 'available_stock', 'total_sold'],
+              fields: ['title', 'sku', 'available_stock', 'total_sold', 'price', 'has_sale', 'discount_percentage'],
             },
           },
         },
@@ -55,6 +58,124 @@ function calculateOrderSubtotal(items: OrderItem[]): number {
     (sum, item) => sum + item.price_at_purchase * item.quantity,
     0,
   );
+}
+
+async function resolveProductFromItem(item: any): Promise<any | null> {
+  let productDocumentId: string | null = null;
+
+  if (!item.product) return null;
+
+  if (typeof item.product === 'string') {
+    productDocumentId = item.product;
+  } else if (typeof item.product === 'object') {
+    if (item.product.connect && Array.isArray(item.product.connect)) {
+      const first = item.product.connect[0];
+      if (typeof first === 'string') {
+        productDocumentId = first;
+      } else if (first?.documentId) {
+        productDocumentId = first.documentId;
+      } else if (first?.id) {
+        const found = await strapi.db.query('api::product.product').findOne({
+          where: { id: first.id },
+        });
+        return found;
+      }
+    } else if (item.product.documentId) {
+      productDocumentId = item.product.documentId;
+    } else if (item.product.id) {
+      const found = await strapi.db.query('api::product.product').findOne({
+        where: { id: item.product.id },
+      });
+      return found;
+    }
+  }
+
+  if (!productDocumentId) return null;
+
+  const results = await strapi.db.query('api::product.product').findMany({
+    where: { documentId: productDocumentId, publishedAt: { $ne: null } },
+  });
+
+  return results[0] ?? null;
+}
+
+async function validateAndEnrichOrderData(data: any) {
+  const orderItems = data.order_items;
+
+  if (!orderItems || !Array.isArray(orderItems) || orderItems.length === 0) {
+    return;
+  }
+
+  for (const item of orderItems) {
+    const product = await resolveProductFromItem(item);
+    if (!product) continue;
+
+    item.product_title = product.title;
+
+    if (!item.price_at_purchase || item.price_at_purchase === 0) {
+      let effectivePrice = Number(product.price);
+      if (product.has_sale && product.discount_percentage > 0) {
+        effectivePrice = effectivePrice - (effectivePrice * Number(product.discount_percentage)) / 100;
+      }
+      item.price_at_purchase = Number(effectivePrice.toFixed(2));
+    }
+
+    const requestedQty = Number(item.quantity ?? 0);
+    const availableStock = Number(product.available_stock ?? 0);
+    if (requestedQty > availableStock) {
+      throw new Error(
+        `Insufficient stock for "${product.title}". Requested: ${requestedQty}, Available: ${availableStock}`,
+      );
+    }
+  }
+
+  const subtotal = orderItems.reduce((sum: number, item: any) => {
+    const price = Number(item.price_at_purchase ?? 0);
+    const qty = Number(item.quantity ?? 0);
+    return sum + price * qty;
+  }, 0);
+
+  data.subtotal = Number(subtotal.toFixed(2));
+
+  let discountAmount = 0;
+  let promoDiscountPercentage = 0;
+
+  const promoCode = data.promo_code?.trim();
+  if (promoCode) {
+    const affiliates = await strapi.documents('api::affiliate.affiliate').findMany({
+      populate: { promocodes: true },
+      status: 'published',
+    });
+
+    let matchedPromo: any = null;
+
+    for (const affiliate of affiliates) {
+      const promo = (affiliate.promocodes ?? []).find(
+        (p: any) => p.code?.toLowerCase() === promoCode.toLowerCase(),
+      );
+      if (promo) {
+        matchedPromo = promo;
+        break;
+      }
+    }
+
+    if (!matchedPromo) {
+      throw new Error(
+        `Promo code "${promoCode}" is invalid or does not exist.`,
+      );
+    }
+
+    promoDiscountPercentage = Number(matchedPromo.discount_percentage ?? 0);
+    discountAmount = Number(((subtotal * promoDiscountPercentage) / 100).toFixed(2));
+  }
+
+  data.promo_discount_percentage = promoDiscountPercentage;
+  data.discount_amount = discountAmount;
+
+  const shippingCost = Number(data.shipping_cost ?? 0);
+  const giftWrappingCost = Number(data.gift_wrapping_cost ?? 0);
+
+  data.total = Number((subtotal - discountAmount + shippingCost + giftWrappingCost).toFixed(2));
 }
 
 async function processAffiliateCommission(result: any) {
@@ -288,6 +409,26 @@ async function handleCancellation(result: any) {
 }
 
 export default {
+  async beforeCreate(event: any) {
+    const { data } = event.params;
+    try {
+      await validateAndEnrichOrderData(data);
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
+  },
+
+  async beforeUpdate(event: any) {
+    const { data } = event.params;
+    if (data.order_items) {
+      try {
+        await validateAndEnrichOrderData(data);
+      } catch (error: any) {
+        throw new Error(error.message);
+      }
+    }
+  },
+
   async afterCreate(event: any) {
     const { result } = event;
 

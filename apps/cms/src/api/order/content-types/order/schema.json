@@ -29,7 +29,7 @@
     },
     "total": {
       "type": "decimal",
-      "required": true
+      "default": 0
     },
     "status_type": {
       "type": "enumeration",
@@ -58,7 +58,7 @@
     },
     "subtotal": {
       "type": "decimal",
-      "required": true
+      "default": 0
     },
     "discount_amount": {
       "type": "decimal",
