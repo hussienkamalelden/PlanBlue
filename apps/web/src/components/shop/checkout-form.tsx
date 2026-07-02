@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 
-import { createOrder, calculateTotal } from "@/lib/api/orders";
+import { createOrder, calculateTotal, validatePromoCode } from "@/lib/api/orders";
 import { formatPrice } from "@/lib/api/strapi";
 import { useCartStore } from "@/lib/cart/cart-store";
 import { useTranslations } from "@/lib/i18n/use-translations";
@@ -46,7 +46,15 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
   const [orderId, setOrderId] = useState("");
   const [giftWrappingChecked, setGiftWrappingChecked] = useState(false);
 
+  const [promoStatus, setPromoStatus] = useState<
+    "idle" | "validating" | "valid" | "invalid"
+  >("idle");
+  const [promoDiscount, setPromoDiscount] = useState(0);
+  const [promoError, setPromoError] = useState("");
+
   const subtotal = calculateTotal(items);
+  const discountAmount =
+    promoStatus === "valid" ? Number(((subtotal * promoDiscount) / 100).toFixed(2)) : 0;
   const selectedShipping = shippingOptions.find(
     (option) => option.documentId === form.shippingId,
   );
@@ -55,7 +63,7 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
     giftWrappingChecked && giftWrapping
       ? Number(giftWrapping.cost ?? 0)
       : 0;
-  const total = subtotal + shippingCost + giftWrappingCost;
+  const total = subtotal - discountAmount + shippingCost + giftWrappingCost;
 
   function updateField(field: keyof typeof form, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -63,6 +71,30 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
       setErrors((prev) => ({ ...prev, governorate: undefined }));
     } else if (errors[field as keyof FormErrors]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }));
+    }
+    if (field === "promo_code") {
+      setPromoStatus("idle");
+      setPromoDiscount(0);
+      setPromoError("");
+    }
+  }
+
+  async function handleApplyPromo() {
+    const code = form.promo_code.trim();
+    if (!code) return;
+
+    setPromoStatus("validating");
+    setPromoError("");
+
+    const result = await validatePromoCode(code);
+
+    if (result.valid) {
+      setPromoStatus("valid");
+      setPromoDiscount(result.discount_percentage);
+    } else {
+      setPromoStatus("invalid");
+      setPromoDiscount(0);
+      setPromoError(result.message ?? t.checkout.promoInvalid);
     }
   }
 
@@ -103,7 +135,9 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
           gift_wrapping: giftWrappingChecked,
           gift_wrapping_cost: giftWrappingCost,
           address: form.address,
-          promo_code: form.promo_code,
+          promo_code: promoStatus === "valid" ? form.promo_code.trim() : "",
+          promo_discount_percentage: promoStatus === "valid" ? promoDiscount : 0,
+          discount_amount: discountAmount,
           extra_notes: form.extra_notes,
         },
         items,
@@ -259,12 +293,46 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
                   <p className="mt-1 text-xs text-red-600">{errors.address}</p>
                 )}
               </div>
-              <FieldInput
-                label={t.checkout.form.promoCode}
-                placeholder={t.checkout.form.promoCodePlaceholder}
-                value={form.promo_code}
-                onChange={(v) => updateField("promo_code", v)}
-              />
+              <div className="sm:col-span-2">
+                <label className="mb-1 block text-sm font-medium text-neutral-700">
+                  {t.checkout.form.promoCode}
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={form.promo_code}
+                    onChange={(e) => updateField("promo_code", e.target.value)}
+                    placeholder={t.checkout.form.promoCodePlaceholder}
+                    className={`flex-1 rounded-lg border px-3 py-2.5 text-sm transition-colors ${
+                      promoStatus === "invalid"
+                        ? "border-red-400 bg-red-50"
+                        : promoStatus === "valid"
+                          ? "border-green-400 bg-green-50"
+                          : "border-neutral-200 bg-white hover:border-neutral-300 focus:border-neutral-900"
+                    } focus:outline-none focus:ring-1 focus:ring-neutral-900`}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleApplyPromo}
+                    disabled={
+                      !form.promo_code.trim() || promoStatus === "validating"
+                    }
+                    className="rounded-lg bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-500"
+                  >
+                    {promoStatus === "validating"
+                      ? "..."
+                      : t.checkout.promoApply}
+                  </button>
+                </div>
+                {promoStatus === "valid" && (
+                  <p className="mt-1 text-xs text-green-600">
+                    {t.checkout.promoApplied} ({promoDiscount}% {t.checkout.promoOff})
+                  </p>
+                )}
+                {promoStatus === "invalid" && promoError && (
+                  <p className="mt-1 text-xs text-red-600">{promoError}</p>
+                )}
+              </div>
               <div className="sm:col-span-2">
                 <label className="mb-1 block text-sm font-medium text-neutral-700">
                   {t.checkout.form.extraNotes}
@@ -343,6 +411,16 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
                   {formatPrice(subtotal, locale)}
                 </span>
               </div>
+              {discountAmount > 0 && (
+                <div className="mt-2 flex items-center justify-between text-sm">
+                  <span className="text-green-700">
+                    {t.checkout.discount} ({promoDiscount}%)
+                  </span>
+                  <span className="font-medium text-green-700">
+                    -{formatPrice(discountAmount, locale)}
+                  </span>
+                </div>
+              )}
               {selectedShipping && (
                 <div className="mt-2 flex items-center justify-between text-sm">
                   <span className="text-neutral-600">

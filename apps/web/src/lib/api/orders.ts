@@ -22,6 +22,9 @@ export type OrderPayload = {
   gift_wrapping_cost: number;
   address: string;
   promo_code?: string;
+  promo_discount_percentage: number;
+  subtotal: number;
+  discount_amount: number;
   extra_notes?: string;
   order_items: OrderItemPayload[];
   total: number;
@@ -35,6 +38,12 @@ export type OrderResponse = {
     documentId: string;
     order_id: string;
   };
+};
+
+export type PromoValidationResult = {
+  valid: boolean;
+  discount_percentage: number;
+  message?: string;
 };
 
 function generateOrderId(): string {
@@ -71,6 +80,41 @@ function calculateTotal(items: CartLineItem[]): number {
   }, 0);
 }
 
+export async function validatePromoCode(
+  code: string,
+): Promise<PromoValidationResult> {
+  try {
+    const response = await fetch(
+      `${STRAPI_URL}/api/affiliates?populate[promocodes][fields][0]=code&populate[promocodes][fields][1]=discount_percentage&status=published`,
+    );
+
+    if (!response.ok) {
+      return { valid: false, discount_percentage: 0, message: "Server error" };
+    }
+
+    const json = await response.json();
+    const affiliates = json.data ?? [];
+
+    for (const affiliate of affiliates) {
+      const promos = affiliate.promocodes ?? [];
+      const match = promos.find(
+        (p: { code: string }) => p.code?.toLowerCase() === code.toLowerCase(),
+      );
+
+      if (match) {
+        return {
+          valid: true,
+          discount_percentage: Number(match.discount_percentage ?? 0),
+        };
+      }
+    }
+
+    return { valid: false, discount_percentage: 0, message: "Invalid promo code" };
+  } catch {
+    return { valid: false, discount_percentage: 0, message: "Failed to validate" };
+  }
+}
+
 export async function createOrder(
   formData: {
     name: string;
@@ -82,13 +126,18 @@ export async function createOrder(
     gift_wrapping_cost: number;
     address: string;
     promo_code: string;
+    promo_discount_percentage: number;
+    discount_amount: number;
     extra_notes: string;
   },
   items: CartLineItem[],
 ): Promise<OrderResponse> {
   const subtotal = calculateTotal(items);
   const total =
-    subtotal + formData.shipping_cost + formData.gift_wrapping_cost;
+    subtotal -
+    formData.discount_amount +
+    formData.shipping_cost +
+    formData.gift_wrapping_cost;
   const order_id = generateOrderId();
 
   const payload: OrderPayload = {
@@ -101,6 +150,9 @@ export async function createOrder(
     gift_wrapping_cost: Number(formData.gift_wrapping_cost.toFixed(2)),
     address: formData.address,
     promo_code: formData.promo_code || undefined,
+    promo_discount_percentage: Number(formData.promo_discount_percentage.toFixed(2)),
+    subtotal: Number(subtotal.toFixed(2)),
+    discount_amount: Number(formData.discount_amount.toFixed(2)),
     extra_notes: formData.extra_notes || undefined,
     order_items: buildOrderItems(items),
     total: Number(total.toFixed(2)),

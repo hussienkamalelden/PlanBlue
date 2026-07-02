@@ -57,6 +57,59 @@ function calculateOrderSubtotal(items: OrderItem[]): number {
   );
 }
 
+async function processAffiliateCommission(result: any) {
+  const promoCode = result.promo_code;
+  if (!promoCode) return;
+
+  try {
+    const affiliates = await strapi.documents('api::affiliate.affiliate').findMany({
+      populate: { promocodes: true },
+      status: 'published',
+    });
+
+    let matchedAffiliate: any = null;
+    let matchedPromo: any = null;
+
+    for (const affiliate of affiliates) {
+      const promo = (affiliate.promocodes ?? []).find(
+        (p: any) => p.code?.toLowerCase() === promoCode.toLowerCase(),
+      );
+      if (promo) {
+        matchedAffiliate = affiliate;
+        matchedPromo = promo;
+        break;
+      }
+    }
+
+    if (!matchedAffiliate || !matchedPromo) return;
+
+    const orderSubtotal = Number(result.subtotal ?? 0);
+    const commissionPercentage = Number(matchedAffiliate.commission_percentage ?? 0);
+    const earnedCommission = Number(
+      ((orderSubtotal * commissionPercentage) / 100).toFixed(2),
+    );
+
+    if (earnedCommission <= 0) return;
+
+    const currentPending = Number(matchedAffiliate.current_pending_commission ?? 0);
+
+    await strapi.db.query('api::affiliate.affiliate').updateMany({
+      where: { documentId: matchedAffiliate.documentId },
+      data: {
+        current_pending_commission: Number(
+          (currentPending + earnedCommission).toFixed(2),
+        ),
+      },
+    });
+
+    strapi.log.info(
+      `[AFFILIATE] Added ${earnedCommission} EGP commission to ${matchedAffiliate.name} (code: ${promoCode})`,
+    );
+  } catch (error) {
+    strapi.log.error('Failed to process affiliate commission:', error);
+  }
+}
+
 async function processNewOrder(result: any) {
   const orderItems = await getPopulatedOrderItems(result.documentId);
 
@@ -131,6 +184,9 @@ async function processNewOrder(result: any) {
     }
   }
 
+  // Process affiliate commission
+  await processAffiliateCommission(result);
+
   // Mark order as processed so subsequent publishes won't re-run
   try {
     await strapi.db.query('api::order.order').updateMany({
@@ -148,12 +204,16 @@ async function processNewOrder(result: any) {
     const shippingCost = Number(result.shipping_cost ?? 0);
     const giftWrapping = Boolean(result.gift_wrapping);
     const giftWrappingCost = Number(result.gift_wrapping_cost ?? 0);
+    const discountAmount = Number(result.discount_amount ?? 0);
+    const promoDiscountPercentage = Number(result.promo_discount_percentage ?? 0);
 
     const emailHtml = await render(
       React.createElement(ClientOrderEmail, {
         name: result.name,
         order_id: result.order_id,
         subtotal: Number(subtotal.toFixed(2)),
+        discount_amount: discountAmount,
+        promo_discount_percentage: promoDiscountPercentage,
         shipping_cost: Number(shippingCost.toFixed(2)),
         gift_wrapping: giftWrapping,
         gift_wrapping_cost: Number(giftWrappingCost.toFixed(2)),
@@ -178,6 +238,8 @@ async function processNewOrder(result: any) {
         name: result.name,
         order_id: result.order_id,
         subtotal: Number(subtotal.toFixed(2)),
+        discount_amount: discountAmount,
+        promo_discount_percentage: promoDiscountPercentage,
         shipping_cost: Number(shippingCost.toFixed(2)),
         gift_wrapping: giftWrapping,
         gift_wrapping_cost: Number(giftWrappingCost.toFixed(2)),

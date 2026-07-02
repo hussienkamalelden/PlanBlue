@@ -440,6 +440,47 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiAffiliateAffiliate extends Struct.CollectionTypeSchema {
+  collectionName: 'affiliates';
+  info: {
+    displayName: 'Affiliate';
+    pluralName: 'affiliates';
+    singularName: 'affiliate';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    avatar: Schema.Attribute.Media<'images'>;
+    commission_percentage: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<10>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    current_pending_commission: Schema.Attribute.Decimal &
+      Schema.Attribute.DefaultTo<0>;
+    email: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::affiliate.affiliate'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    phone: Schema.Attribute.String & Schema.Attribute.Required;
+    promocodes: Schema.Attribute.Component<'affiliate.affiliate-promo', true>;
+    publishedAt: Schema.Attribute.DateTime;
+    total_paid_commission: Schema.Attribute.Decimal &
+      Schema.Attribute.DefaultTo<0>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
   collectionName: 'categories';
   info: {
@@ -548,6 +589,7 @@ export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    discount_amount: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
     email: Schema.Attribute.String & Schema.Attribute.Required;
     extra_notes: Schema.Attribute.Text;
     follow_up_call: Schema.Attribute.Text;
@@ -567,6 +609,8 @@ export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
     order_items: Schema.Attribute.Component<'orders.order-item', true>;
     phone: Schema.Attribute.String & Schema.Attribute.Required;
     promo_code: Schema.Attribute.String;
+    promo_discount_percentage: Schema.Attribute.Decimal &
+      Schema.Attribute.DefaultTo<0>;
     publishedAt: Schema.Attribute.DateTime;
     shipping_cost: Schema.Attribute.Decimal &
       Schema.Attribute.Required &
@@ -575,6 +619,7 @@ export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
       ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled']
     > &
       Schema.Attribute.DefaultTo<'pending'>;
+    subtotal: Schema.Attribute.Decimal & Schema.Attribute.Required;
     total: Schema.Attribute.Decimal & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -1185,6 +1230,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
+      'api::affiliate.affiliate': ApiAffiliateAffiliate;
       'api::category.category': ApiCategoryCategory;
       'api::client.client': ApiClientClient;
       'api::extra.extra': ApiExtraExtra;

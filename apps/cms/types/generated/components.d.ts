@@ -1,5 +1,21 @@
 import type { Schema, Struct } from '@strapi/strapi';
 
+export interface AffiliateAffiliatePromo extends Struct.ComponentSchema {
+  collectionName: 'components_affiliate_promos';
+  info: {
+    displayName: 'Affiliate Promo';
+    icon: 'gift';
+  };
+  attributes: {
+    code: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    discount_percentage: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<10>;
+  };
+}
+
 export interface OrdersOrderItem extends Struct.ComponentSchema {
   collectionName: 'components_orders_order_items';
   info: {
@@ -24,6 +40,7 @@ export interface OrdersOrderItem extends Struct.ComponentSchema {
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
+      'affiliate.affiliate-promo': AffiliateAffiliatePromo;
       'orders.order-item': OrdersOrderItem;
     }
   }

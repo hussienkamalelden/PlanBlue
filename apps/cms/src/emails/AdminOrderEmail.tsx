@@ -27,6 +27,8 @@ interface AdminEmailProps {
   name: string;
   order_id: string | number;
   subtotal: number;
+  discount_amount: number;
+  promo_discount_percentage: number;
   shipping_cost: number;
   gift_wrapping: boolean;
   gift_wrapping_cost: number;
@@ -43,6 +45,8 @@ const AdminOrderEmail = ({
   name,
   order_id,
   subtotal,
+  discount_amount,
+  promo_discount_percentage,
   shipping_cost,
   gift_wrapping,
   gift_wrapping_cost,
@@ -126,6 +130,12 @@ const AdminOrderEmail = ({
                 <Text style={rowLabel}>Subtotal</Text>
                 <Text style={rowValue}>{subtotal} EGP</Text>
               </Row>
+              {discount_amount > 0 && (
+                <Row style={orderRow}>
+                  <Text style={rowLabel}>Discount ({promo_discount_percentage}%)</Text>
+                  <Text style={{ ...rowValue, color: '#16a34a' }}>-{discount_amount} EGP</Text>
+                </Row>
+              )}
               <Row style={orderRow}>
                 <Text style={rowLabel}>Shipping ({governorate})</Text>
                 <Text style={rowValue}>{shipping_cost} EGP</Text>
