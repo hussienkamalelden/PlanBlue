@@ -51,14 +51,15 @@ const AffiliateCommissionEmail = ({
     <Html lang="en" dir="ltr">
       <Head />
       <Preview>
-        You earned {earned_commission} EGP commission on order #{order_id}!
+        🎉 You just earned {earned_commission} EGP from order #{order_id}!
       </Preview>
+
       <Body style={main}>
         <Container style={container}>
           <Section style={headerSection}>
-            <Heading style={headerTitle}>PlanBlue Affiliate Program</Heading>
+            <Heading style={headerTitle}>🎉 You Got Paid!</Heading>
             <Text style={headerSubtitle}>
-              Great news — you just earned a new commission!
+              Another order, another commission!
             </Text>
           </Section>
 
@@ -74,51 +75,63 @@ const AffiliateCommissionEmail = ({
                 />
               ) : (
                 <Section style={avatarPlaceholder}>
-                  <Text style={avatarInitial}>{name.charAt(0).toUpperCase()}</Text>
+                  <Text style={avatarInitial}>
+                    {name.charAt(0).toUpperCase()}
+                  </Text>
                 </Section>
               )}
-              <Text style={welcomeText}>Congratulations, {name}! 🎉</Text>
+
+              <Text style={welcomeText}>Awesome, {name}! 🚀</Text>
             </Section>
 
             <Text style={paragraph}>
-              An order using your promo code was successfully delivered. Your
-              commission has been added to your pending balance — keep sharing
-              your code to earn even more!
+              Someone used your promo code, and you just earned a new
+              commission! Your earnings have been added to your pending balance.
+              Keep sharing your code—you’re getting closer to your next payout
+              with every order!
             </Text>
 
             <Section style={highlightCard}>
-              <Text style={highlightLabel}>Commission earned on this order</Text>
-              <Text style={highlightValue}>{earned_commission} EGP</Text>
+              <Text style={highlightLabel}>You Earned</Text>
+
+              <Text style={highlightValue}>{earned_commission} EGP 🎉</Text>
+
               <Text style={highlightSubtext}>
-                {commission_percentage}% of {order_subtotal} EGP subtotal
+                {commission_percentage}% commission from an order worth{' '}
+                {order_subtotal} EGP
               </Text>
             </Section>
 
             <Section style={statsRow}>
               <Section style={statCard}>
-                <Text style={statLabel}>Pending Commission</Text>
+                <Text style={statLabel}>Pending Balance</Text>
                 <Text style={statValue}>{current_pending_commission} EGP</Text>
               </Section>
+
               <Section style={statCard}>
-                <Text style={statLabel}>Total Paid Out</Text>
+                <Text style={statLabel}>Paid So Far</Text>
                 <Text style={statValue}>{total_paid_commission} EGP</Text>
               </Section>
             </Section>
 
             <Section style={orderCard}>
-              <Text style={cardTitle}>Order Details</Text>
+              <Text style={cardTitle}>Order Summary</Text>
+
               <Row style={orderRow}>
                 <Text style={rowLabel}>Order ID</Text>
                 <Text style={rowValue}>#{order_id}</Text>
               </Row>
+
               <Row style={orderRow}>
-                <Text style={rowLabel}>Promo Code Used</Text>
+                <Text style={rowLabel}>Promo Code</Text>
                 <Text style={rowValue}>{promo_code}</Text>
               </Row>
+
               <Row style={orderRow}>
-                <Text style={rowLabel}>Order Subtotal</Text>
+                <Text style={rowLabel}>Order Total</Text>
                 <Text style={rowValue}>{order_subtotal} EGP</Text>
               </Row>
+
               <Row style={orderRowLast}>
                 <Text style={rowLabel}>Products</Text>
                 <Text style={itemsValue}>{order_items}</Text>
@@ -126,13 +139,15 @@ const AffiliateCommissionEmail = ({
             </Section>
 
             <Text style={motivationText}>
-              Every successful order brings you closer to your next payout. Thank
-              you for being a valued PlanBlue affiliate!
+              Keep the momentum going! Every order means more earnings. Thanks
+              for being part of the PlanBlue family 💚
             </Text>
           </Section>
 
           <Section style={footerSection}>
-            <Text style={footerText}>© 2026 PlanBlue Store. All rights reserved.</Text>
+            <Text style={footerText}>
+              © 2026 PlanBlue Store. All rights reserved.
+            </Text>
           </Section>
         </Container>
       </Body>
