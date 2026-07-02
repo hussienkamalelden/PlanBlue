@@ -17,7 +17,9 @@
   "products": {
     "title": "Products",
     "empty": "No products available yet.",
-    "filteredEmpty": "No products in this category.",
+    "filteredEmpty": "No products match your filters.",
+    "filtersTitle": "Filters",
+    "removeFilter": "Remove filter",
     "sortTitle": "Sort by",
     "topSellers": "Top Sellers",
     "mostViewed": "Most Viewed",

@@ -12,6 +12,26 @@ export type AgeFilter =
   | '6+'
   | null;
 
+export type ActiveFilterTag =
+  | {
+      key: string;
+      type: 'category';
+      categoryId: string;
+      label: string;
+    }
+  | {
+      key: string;
+      type: 'age';
+      ageFilter: Exclude<AgeFilter, null>;
+      label: string;
+    }
+  | {
+      key: string;
+      type: 'sort';
+      sort: Exclude<ProductSort, null>;
+      label: string;
+    };
+
 export const AGE_FILTER_OPTIONS: Exclude<AgeFilter, null>[] = [
   '0-1',
   '1-2',

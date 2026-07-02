@@ -1,11 +1,13 @@
 "use client";
 
+import { ActiveFilterTags } from "@/components/shop/active-filter-tags";
 import { ProductCard } from "./product-card";
 import { useTranslations } from "@/lib/i18n/use-translations";
 import {
   filterProductsByAge,
   filterProductsByCategory,
   sortProducts,
+  type ActiveFilterTag,
   type AgeFilter,
   type ProductSort,
 } from "@/lib/product/filters";
@@ -16,6 +18,8 @@ type ProductGridProps = {
   selectedCategoryId: string | null;
   selectedAgeFilter: AgeFilter;
   selectedSort: ProductSort;
+  activeTags: ActiveFilterTag[];
+  onRemoveTag: (tag: ActiveFilterTag) => void;
 };
 
 export function ProductGrid({
@@ -23,6 +27,8 @@ export function ProductGrid({
   selectedCategoryId,
   selectedAgeFilter,
   selectedSort,
+  activeTags,
+  onRemoveTag,
 }: ProductGridProps) {
   const t = useTranslations();
 
@@ -34,10 +40,7 @@ export function ProductGrid({
     selectedSort,
   );
 
-  const hasActiveFilter =
-    selectedCategoryId !== null ||
-    selectedAgeFilter !== null ||
-    selectedSort !== null;
+  const hasActiveFilter = activeTags.length > 0;
 
   return (
     <section aria-label={t.products.title}>
@@ -45,12 +48,14 @@ export function ProductGrid({
         {t.products.title}
       </h2>
 
+      <ActiveFilterTags tags={activeTags} onRemove={onRemoveTag} />
+
       {visibleProducts.length === 0 ? (
         <p className="rounded-xl border border-dashed border-neutral-300 bg-neutral-50 px-4 py-10 text-center text-sm text-neutral-600">
           {hasActiveFilter ? t.products.filteredEmpty : t.products.empty}
         </p>
       ) : (
-        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {visibleProducts.map((product) => (
             <li key={product.documentId}>
               <ProductCard product={product} />

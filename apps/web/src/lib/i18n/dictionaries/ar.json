@@ -17,7 +17,9 @@
   "products": {
     "title": "المنتجات",
     "empty": "لا توجد منتجات متاحة حالياً.",
-    "filteredEmpty": "لا توجد منتجات في هذه الفئة.",
+    "filteredEmpty": "لا توجد منتجات تطابق الفلاتر المحددة.",
+    "filtersTitle": "الفلاتر",
+    "removeFilter": "إزالة الفلتر",
     "sortTitle": "ترتيب حسب",
     "topSellers": "الأكثر مبيعاً",
     "mostViewed": "الأكثر مشاهدة",
