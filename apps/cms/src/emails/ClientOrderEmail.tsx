@@ -8,6 +8,7 @@ import {
   Head as BaseHead,
   Section as BaseSection,
   Row as BaseRow,
+  Img as BaseImg,
 } from '@react-email/components';
 
 const Html = BaseHtml as any;
@@ -19,6 +20,7 @@ const Container = BaseContainer as any;
 const Text = BaseText as any;
 const Heading = BaseHeading as any;
 const Preview = BasePreview as any;
+const Img = BaseImg as any;
 
 interface EmailProps {
   name: string;
@@ -65,6 +67,12 @@ const ClientOrderEmail = ({
         <Container style={container}>
           {/* Header */}
           <Section style={headerSection}>
+            <Img
+              src="https://pub-eb8249647a93431092ad3c6652a821b0.r2.dev/logo_img_608eff4ce0.png"
+              width="90"
+              alt="PlanBlue Store"
+              style={logo}
+            />
             <Heading style={headerTitle}>PlanBlue Store</Heading>
             <Text style={headerSubtitle}>
               Thank you for your trust in us and your order from our store
@@ -76,8 +84,7 @@ const ClientOrderEmail = ({
             <Text style={welcomeText}>Hello {name} 👋</Text>
             <Text style={paragraph}>
               Your order has been received and is currently being processed by
-              our team. We will send you the shipping details as soon as the
-              order is dispatched.
+              our team.
             </Text>
             {/* Order Details Card */}
             <Section style={orderCard}>
@@ -116,8 +123,12 @@ const ClientOrderEmail = ({
               </Row>
               {discount_amount > 0 && (
                 <Row style={orderRow}>
-                  <Text style={rowLabel}>Discount ({promo_discount_percentage}%)</Text>
-                  <Text style={{ ...rowValue, color: '#16a34a' }}>-{discount_amount} EGP</Text>
+                  <Text style={rowLabel}>
+                    Discount ({promo_discount_percentage}%)
+                  </Text>
+                  <Text style={{ ...rowValue, color: '#16a34a' }}>
+                    -{discount_amount} EGP
+                  </Text>
                 </Row>
               )}
               <Row style={orderRow}>
@@ -178,6 +189,11 @@ const headerSection = {
   textAlign: 'center' as const,
 };
 
+const logo = {
+  display: 'block',
+  margin: '0 auto 10px',
+};
+
 const headerTitle = {
   color: '#ffffff',
   margin: '0',
@@ -200,7 +216,7 @@ const welcomeText = {
   fontSize: '18px',
   fontWeight: '600',
   color: '#111111',
-  margin: '0 0 15px 0',
+  margin: '0 0 10px 0',
 };
 
 const paragraph = {
