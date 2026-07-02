@@ -295,46 +295,6 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
               </div>
               <div className="sm:col-span-2">
                 <label className="mb-1 block text-sm font-medium text-neutral-700">
-                  {t.checkout.form.promoCode}
-                </label>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={form.promo_code}
-                    onChange={(e) => updateField("promo_code", e.target.value)}
-                    placeholder={t.checkout.form.promoCodePlaceholder}
-                    className={`flex-1 rounded-lg border px-3 py-2.5 text-sm transition-colors ${
-                      promoStatus === "invalid"
-                        ? "border-red-400 bg-red-50"
-                        : promoStatus === "valid"
-                          ? "border-green-400 bg-green-50"
-                          : "border-neutral-200 bg-white hover:border-neutral-300 focus:border-neutral-900"
-                    } focus:outline-none focus:ring-1 focus:ring-neutral-900`}
-                  />
-                  <button
-                    type="button"
-                    onClick={handleApplyPromo}
-                    disabled={
-                      !form.promo_code.trim() || promoStatus === "validating"
-                    }
-                    className="rounded-lg bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-500"
-                  >
-                    {promoStatus === "validating"
-                      ? "..."
-                      : t.checkout.promoApply}
-                  </button>
-                </div>
-                {promoStatus === "valid" && (
-                  <p className="mt-1 text-xs text-green-600">
-                    {t.checkout.promoApplied} ({promoDiscount}% {t.checkout.promoOff})
-                  </p>
-                )}
-                {promoStatus === "invalid" && promoError && (
-                  <p className="mt-1 text-xs text-red-600">{promoError}</p>
-                )}
-              </div>
-              <div className="sm:col-span-2">
-                <label className="mb-1 block text-sm font-medium text-neutral-700">
                   {t.checkout.form.extraNotes}
                 </label>
                 <textarea
@@ -401,6 +361,53 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
                 );
               })}
             </ul>
+
+            <div className="mt-4 border-t border-neutral-200 pt-4">
+              <label className="mb-1.5 block text-sm font-medium text-neutral-700">
+                {t.checkout.form.promoCode}
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={form.promo_code}
+                  onChange={(e) => updateField("promo_code", e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleApplyPromo();
+                    }
+                  }}
+                  placeholder={t.checkout.form.promoCodePlaceholder}
+                  className={`flex-1 rounded-lg border px-3 py-2 text-sm transition-colors ${
+                    promoStatus === "invalid"
+                      ? "border-red-400 bg-red-50"
+                      : promoStatus === "valid"
+                        ? "border-green-400 bg-green-50"
+                        : "border-neutral-200 bg-white hover:border-neutral-300 focus:border-neutral-900"
+                  } focus:outline-none focus:ring-1 focus:ring-neutral-900`}
+                />
+                <button
+                  type="button"
+                  onClick={handleApplyPromo}
+                  disabled={
+                    !form.promo_code.trim() || promoStatus === "validating"
+                  }
+                  className="shrink-0 rounded-lg bg-neutral-900 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-500"
+                >
+                  {promoStatus === "validating"
+                    ? "..."
+                    : t.checkout.promoApply}
+                </button>
+              </div>
+              {promoStatus === "valid" && (
+                <p className="mt-1.5 text-xs text-green-600">
+                  {t.checkout.promoApplied} ({promoDiscount}% {t.checkout.promoOff})
+                </p>
+              )}
+              {promoStatus === "invalid" && promoError && (
+                <p className="mt-1.5 text-xs text-red-600">{promoError}</p>
+              )}
+            </div>
 
             <div className="mt-4 border-t border-neutral-200 pt-4">
               <div className="flex items-center justify-between text-sm">
