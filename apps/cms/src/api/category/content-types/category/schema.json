@@ -24,7 +24,8 @@
     },
     "title_ar": {
       "type": "string",
-      "required": true
+      "required": true,
+      "unique": true
     }
   }
 }

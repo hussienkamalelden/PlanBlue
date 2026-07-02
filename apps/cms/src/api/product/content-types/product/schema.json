@@ -18,11 +18,13 @@
     },
     "title": {
       "type": "string",
-      "required": true
+      "required": true,
+      "unique": true
     },
     "title_ar": {
       "type": "string",
-      "required": true
+      "required": true,
+      "unique": true
     },
     "slug": {
       "type": "uid",
