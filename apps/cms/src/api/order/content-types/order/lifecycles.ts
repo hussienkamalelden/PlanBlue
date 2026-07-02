@@ -254,8 +254,14 @@ async function validateAndEnrichOrderData(data: any) {
 }
 
 async function processAffiliateCommission(result: any) {
-  const promoCode = result.promo_code;
+  const promoCode = result.promo_code?.trim();
   if (!promoCode) return;
+
+  if (!result.publishedAt) return;
+
+  if (result.status_type !== 'delivered') return;
+
+  if (result.is_commission_credited) return;
 
   try {
     const affiliates = await strapi.documents('api::affiliate.affiliate').findMany({
@@ -298,8 +304,13 @@ async function processAffiliateCommission(result: any) {
       },
     });
 
+    await strapi.db.query('api::order.order').updateMany({
+      where: { documentId: result.documentId },
+      data: { is_commission_credited: true },
+    });
+
     strapi.log.info(
-      `[AFFILIATE] Added ${earnedCommission} EGP commission to ${matchedAffiliate.name} (code: ${promoCode})`,
+      `[AFFILIATE] Credited ${earnedCommission} EGP to ${matchedAffiliate.name} on delivery (code: ${promoCode}, order: ${result.order_id})`,
     );
   } catch (error) {
     strapi.log.error('Failed to process affiliate commission:', error);
@@ -379,9 +390,6 @@ async function processNewOrder(result: any) {
       strapi.log.error(`Failed to update product ${item.product.documentId}:`, error);
     }
   }
-
-  // Process affiliate commission
-  await processAffiliateCommission(result);
 
   // Mark order as processed so subsequent publishes won't re-run
   try {
@@ -585,6 +593,10 @@ export default {
     } catch (error) {
       strapi.log.error('[ORDER-ENRICH] afterUpdate enrichment failed:', error);
     }
+
+    if (result.status_type === 'delivered' && !result.is_commission_credited) {
+      await processAffiliateCommission(result);
+    }
   },
 
   async afterCreate(event: any) {
@@ -595,7 +607,15 @@ export default {
     // First-time processing: decrease stock, send emails
     if (!result.is_processed) {
       await processNewOrder(result);
+
+      if (result.status_type === 'delivered' && !result.is_commission_credited) {
+        await processAffiliateCommission(result);
+      }
       return;
+    }
+
+    if (result.status_type === 'delivered' && !result.is_commission_credited) {
+      await processAffiliateCommission(result);
     }
 
     // Already processed — check if cancelled and stock not yet reversed

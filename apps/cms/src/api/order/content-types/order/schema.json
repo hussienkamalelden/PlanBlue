@@ -107,6 +107,10 @@
     "is_stock_reversed": {
       "type": "boolean",
       "default": false
+    },
+    "is_commission_credited": {
+      "type": "boolean",
+      "default": false
     }
   }
 }

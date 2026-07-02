@@ -598,6 +598,8 @@ export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<0>;
     governorate: Schema.Attribute.String & Schema.Attribute.Required;
+    is_commission_credited: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
     is_processed: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     is_stock_reversed: Schema.Attribute.Boolean &
       Schema.Attribute.DefaultTo<false>;
