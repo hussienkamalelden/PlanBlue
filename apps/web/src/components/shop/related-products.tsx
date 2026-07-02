@@ -23,7 +23,7 @@ export function RelatedProducts({ products }: RelatedProductsProps) {
       <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {products.map((product) => (
           <li key={product.documentId}>
-            <ProductCard product={product} showDescription={false} />
+            <ProductCard product={product} />
           </li>
         ))}
       </ul>

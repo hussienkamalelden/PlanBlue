@@ -21,7 +21,7 @@ type ProductCardProps = {
 
 export function ProductCard({
   product,
-  showDescription = true,
+  showDescription = false,
 }: ProductCardProps) {
   const locale = useLocaleStore((state) => state.locale);
   const t = useTranslations();
