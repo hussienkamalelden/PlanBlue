@@ -61,82 +61,155 @@ function calculateOrderSubtotal(items: OrderItem[]): number {
 }
 
 async function resolveProductFromItem(item: any): Promise<any | null> {
-  let productDocumentId: string | null = null;
-
   if (!item.product) return null;
 
+  // Already a full product object (from populate)
+  if (typeof item.product === 'object' && item.product.title && item.product.price !== undefined) {
+    return item.product;
+  }
+
+  // Numeric ID reference
+  if (typeof item.product === 'number') {
+    return strapi.db.query('api::product.product').findOne({ where: { id: item.product } });
+  }
+
+  // String documentId
   if (typeof item.product === 'string') {
-    productDocumentId = item.product;
-  } else if (typeof item.product === 'object') {
-    if (item.product.connect && Array.isArray(item.product.connect)) {
-      const first = item.product.connect[0];
+    const results = await strapi.db.query('api::product.product').findMany({
+      where: { documentId: item.product, publishedAt: { $ne: null } },
+    });
+    return results[0] ?? null;
+  }
+
+  // Object with connect/set arrays (admin panel format)
+  if (typeof item.product === 'object') {
+    const connectArray = item.product.connect ?? item.product.set;
+    if (Array.isArray(connectArray) && connectArray.length > 0) {
+      const first = connectArray[0];
       if (typeof first === 'string') {
-        productDocumentId = first;
-      } else if (first?.documentId) {
-        productDocumentId = first.documentId;
-      } else if (first?.id) {
-        const found = await strapi.db.query('api::product.product').findOne({
-          where: { id: first.id },
+        const results = await strapi.db.query('api::product.product').findMany({
+          where: { documentId: first, publishedAt: { $ne: null } },
         });
-        return found;
+        return results[0] ?? null;
       }
-    } else if (item.product.documentId) {
-      productDocumentId = item.product.documentId;
-    } else if (item.product.id) {
-      const found = await strapi.db.query('api::product.product').findOne({
-        where: { id: item.product.id },
+      if (first?.documentId) {
+        const results = await strapi.db.query('api::product.product').findMany({
+          where: { documentId: first.documentId, publishedAt: { $ne: null } },
+        });
+        return results[0] ?? null;
+      }
+      if (first?.id) {
+        return strapi.db.query('api::product.product').findOne({ where: { id: first.id } });
+      }
+    }
+
+    // Object with documentId or id
+    if (item.product.documentId) {
+      const results = await strapi.db.query('api::product.product').findMany({
+        where: { documentId: item.product.documentId, publishedAt: { $ne: null } },
       });
-      return found;
+      return results[0] ?? null;
+    }
+    if (item.product.id) {
+      return strapi.db.query('api::product.product').findOne({ where: { id: item.product.id } });
     }
   }
 
-  if (!productDocumentId) return null;
-
-  const results = await strapi.db.query('api::product.product').findMany({
-    where: { documentId: productDocumentId, publishedAt: { $ne: null } },
-  });
-
-  return results[0] ?? null;
+  return null;
 }
+
+type EnrichedItemData = {
+  product_title: string;
+  price_at_purchase: number;
+  quantity: number;
+};
 
 async function validateAndEnrichOrderData(data: any) {
   const orderItems = data.order_items;
+
+  strapi.log.info(`[ORDER-ENRICH] Called. items count: ${orderItems?.length ?? 0}`);
 
   if (!orderItems || !Array.isArray(orderItems) || orderItems.length === 0) {
     return;
   }
 
-  for (const item of orderItems) {
-    const product = await resolveProductFromItem(item);
-    if (!product) continue;
+  const enrichedItems: EnrichedItemData[] = [];
 
-    item.product_title = product.title;
+  for (let i = 0; i < orderItems.length; i++) {
+    const item = orderItems[i];
+    let product: any = null;
+    let quantity: number = 0;
+    let priceAtPurchase: number = 0;
 
-    if (!item.price_at_purchase || item.price_at_purchase === 0) {
-      let effectivePrice = Number(product.price);
-      if (product.has_sale && product.discount_percentage > 0) {
+    if (item.id && !item.product && !item.quantity) {
+      // Existing item sent as just {id} — load from DB
+      const existing = await strapi.db.query('orders.order-item').findOne({
+        where: { id: item.id },
+        populate: ['product'],
+      });
+      if (existing?.product) {
+        product = existing.product;
+        quantity = Number(existing.quantity ?? 0);
+        priceAtPurchase = Number(existing.price_at_purchase ?? 0);
+      }
+    } else {
+      // Item has inline data (new or admin modified fields)
+      product = await resolveProductFromItem(item);
+      quantity = Number(item.quantity ?? 0);
+      priceAtPurchase = Number(item.price_at_purchase ?? 0);
+    }
+
+    if (!product) {
+      strapi.log.warn(`[ORDER-ENRICH] Could not resolve product for item index ${i}`);
+      enrichedItems.push({
+        product_title: item.product_title ?? '',
+        price_at_purchase: priceAtPurchase,
+        quantity,
+      });
+      continue;
+    }
+
+    // Auto-fill product_title
+    const productTitle = product.title ?? '';
+
+    // Auto-fill price from product if missing/zero
+    if (!priceAtPurchase || priceAtPurchase === 0) {
+      let effectivePrice = Number(product.price ?? 0);
+      if (product.has_sale && Number(product.discount_percentage ?? 0) > 0) {
         effectivePrice = effectivePrice - (effectivePrice * Number(product.discount_percentage)) / 100;
       }
-      item.price_at_purchase = Number(effectivePrice.toFixed(2));
+      priceAtPurchase = Number(effectivePrice.toFixed(2));
     }
 
-    const requestedQty = Number(item.quantity ?? 0);
+    // Validate stock
     const availableStock = Number(product.available_stock ?? 0);
-    if (requestedQty > availableStock) {
+    if (quantity > availableStock) {
       throw new Error(
-        `Insufficient stock for "${product.title}". Requested: ${requestedQty}, Available: ${availableStock}`,
+        `Insufficient stock for "${productTitle}". Requested: ${quantity}, Available: ${availableStock}`,
       );
     }
+
+    // Set fields on the actual item for Strapi to persist
+    item.product_title = productTitle;
+    item.price_at_purchase = priceAtPurchase;
+
+    strapi.log.info(`[ORDER-ENRICH] Enriched: "${productTitle}" price=${priceAtPurchase} qty=${quantity}`);
+
+    enrichedItems.push({
+      product_title: productTitle,
+      price_at_purchase: priceAtPurchase,
+      quantity,
+    });
   }
 
-  const subtotal = orderItems.reduce((sum: number, item: any) => {
-    const price = Number(item.price_at_purchase ?? 0);
-    const qty = Number(item.quantity ?? 0);
-    return sum + price * qty;
-  }, 0);
-
+  // Calculate subtotal from enriched data
+  const subtotal = enrichedItems.reduce(
+    (sum, item) => sum + item.price_at_purchase * item.quantity,
+    0,
+  );
   data.subtotal = Number(subtotal.toFixed(2));
 
+  // Validate and apply promo code
   let discountAmount = 0;
   let promoDiscountPercentage = 0;
 
@@ -172,10 +245,12 @@ async function validateAndEnrichOrderData(data: any) {
   data.promo_discount_percentage = promoDiscountPercentage;
   data.discount_amount = discountAmount;
 
+  // Calculate total
   const shippingCost = Number(data.shipping_cost ?? 0);
   const giftWrappingCost = Number(data.gift_wrapping_cost ?? 0);
-
   data.total = Number((subtotal - discountAmount + shippingCost + giftWrappingCost).toFixed(2));
+
+  strapi.log.info(`[ORDER-ENRICH] Final: subtotal=${data.subtotal} discount=${data.discount_amount} total=${data.total}`);
 }
 
 async function processAffiliateCommission(result: any) {
@@ -420,12 +495,95 @@ export default {
 
   async beforeUpdate(event: any) {
     const { data } = event.params;
+    strapi.log.info(`[ORDER-ENRICH] beforeUpdate triggered. Keys: ${Object.keys(data).join(', ')}`);
     if (data.order_items) {
       try {
         await validateAndEnrichOrderData(data);
       } catch (error: any) {
         throw new Error(error.message);
       }
+    }
+  },
+
+  async afterUpdate(event: any) {
+    const { result } = event;
+    if (!result?.documentId) return;
+
+    // After save, directly update component items that need enrichment
+    try {
+      const fullOrder = await strapi.documents('api::order.order').findOne({
+        documentId: result.documentId,
+        populate: {
+          order_items: {
+            populate: {
+              product: { fields: ['title', 'price', 'has_sale', 'discount_percentage'] },
+            },
+          },
+        },
+      });
+
+      if (!fullOrder?.order_items) return;
+
+      for (const item of fullOrder.order_items as any[]) {
+        if (!item.product) continue;
+
+        let needsUpdate = false;
+        const updateData: any = {};
+
+        if (!item.product_title || item.product_title !== item.product.title) {
+          updateData.product_title = item.product.title;
+          needsUpdate = true;
+        }
+
+        if (!item.price_at_purchase || item.price_at_purchase === 0) {
+          let effectivePrice = Number(item.product.price ?? 0);
+          if (item.product.has_sale && Number(item.product.discount_percentage ?? 0) > 0) {
+            effectivePrice -= (effectivePrice * Number(item.product.discount_percentage)) / 100;
+          }
+          updateData.price_at_purchase = Number(effectivePrice.toFixed(2));
+          needsUpdate = true;
+        }
+
+        if (needsUpdate) {
+          await strapi.db.query('orders.order-item').update({
+            where: { id: item.id },
+            data: updateData,
+          });
+          strapi.log.info(`[ORDER-ENRICH] afterUpdate: updated item ${item.id} → ${JSON.stringify(updateData)}`);
+        }
+      }
+
+      // Recalculate totals based on actual persisted data
+      const items = fullOrder.order_items as any[];
+      let subtotal = 0;
+      for (const item of items) {
+        let price = Number(item.price_at_purchase ?? 0);
+        if (price === 0 && item.product) {
+          price = Number(item.product.price ?? 0);
+          if (item.product.has_sale && Number(item.product.discount_percentage ?? 0) > 0) {
+            price -= (price * Number(item.product.discount_percentage)) / 100;
+          }
+        }
+        subtotal += price * Number(item.quantity ?? 0);
+      }
+
+      const shippingCost = Number(result.shipping_cost ?? 0);
+      const giftWrappingCost = Number(result.gift_wrapping_cost ?? 0);
+      const discountAmount = Number(result.discount_amount ?? 0);
+      const total = Number((subtotal - discountAmount + shippingCost + giftWrappingCost).toFixed(2));
+
+      if (subtotal !== Number(result.subtotal ?? 0) || total !== Number(result.total ?? 0)) {
+        await strapi.db.query('api::order.order').updateMany({
+          where: { documentId: result.documentId },
+          data: {
+            subtotal: Number(subtotal.toFixed(2)),
+            total,
+          },
+        });
+        strapi.log.info(`[ORDER-ENRICH] afterUpdate: recalculated subtotal=${subtotal.toFixed(2)} total=${total}`);
+      }
+    } catch (error) {
+      strapi.log.error('[ORDER-ENRICH] afterUpdate enrichment failed:', error);
     }
   },
 
