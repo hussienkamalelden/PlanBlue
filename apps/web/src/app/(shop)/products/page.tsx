@@ -1,5 +1,10 @@
-import { ProductsView } from "@/components/shop/products-view";
-import { fetchCategories, fetchProducts } from "@/lib/api/strapi.server";
+import { ProductsView } from '@/components/shop/products-view';
+import { fetchCategories, fetchProducts } from '@/lib/api/strapi.server';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Products',
+};
 
 export default async function ProductsPage() {
   const [categories, products] = await Promise.all([

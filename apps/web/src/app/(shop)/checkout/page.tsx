@@ -1,10 +1,15 @@
-import { CheckoutForm } from "@/components/shop/checkout-form";
+import { CheckoutForm } from '@/components/shop/checkout-form';
+import type { Metadata } from 'next';
 import {
   fetchExtras,
   fetchShipping,
   findGiftWrappingExtra,
-} from "@/lib/api/strapi.server";
-import type { StrapiExtra, StrapiShipping } from "@/lib/types/strapi";
+} from '@/lib/api/strapi.server';
+import type { StrapiExtra, StrapiShipping } from '@/lib/types/strapi';
+
+export const metadata: Metadata = {
+  title: 'Checkout',
+};
 
 export default async function CheckoutPage() {
   let shippingOptions: StrapiShipping[] = [];
@@ -24,6 +29,9 @@ export default async function CheckoutPage() {
   }
 
   return (
-    <CheckoutForm shippingOptions={shippingOptions} giftWrapping={giftWrapping} />
+    <CheckoutForm
+      shippingOptions={shippingOptions}
+      giftWrapping={giftWrapping}
+    />
   );
 }
