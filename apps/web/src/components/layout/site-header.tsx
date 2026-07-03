@@ -24,7 +24,7 @@ export function SiteHeader() {
 
         <nav className="flex items-center gap-4">
           <Link
-            href="/products"
+            href="/"
             className="text-sm font-medium text-neutral-700 hover:text-neutral-900"
           >
             {t.header.products}

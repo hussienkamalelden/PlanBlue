@@ -92,7 +92,7 @@ export function ProductDetailView({
   return (
     <div className="space-y-8">
       <Link
-        href="/products"
+        href="/"
         className="inline-flex text-sm font-medium text-neutral-600 transition-colors hover:text-neutral-900"
       >
         ← {t.productDetail.backToProducts}

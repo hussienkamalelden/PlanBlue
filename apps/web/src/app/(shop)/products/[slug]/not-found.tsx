@@ -16,7 +16,7 @@ export default async function ProductNotFound() {
         {t.productDetail.notFoundDescription}
       </p>
       <Link
-        href="/products"
+        href="/"
         className="mt-8 inline-flex rounded-lg bg-neutral-900 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-neutral-800"
       >
         {t.productDetail.backToProducts}
