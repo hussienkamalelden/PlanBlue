@@ -135,8 +135,9 @@ export async function fetchAffiliates(): Promise<StrapiAffiliate[]> {
     '/affiliates',
     {
       'fields[0]': 'name',
-      'fields[1]': 'documentId',
-      'fields[2]': 'current_pending_commission',
+      'fields[1]': 'email',
+      'fields[2]': 'documentId',
+      'fields[3]': 'current_pending_commission',
       'populate[avatar][fields][0]': 'url',
       'populate[avatar][fields][1]': 'name',
       'populate[avatar][fields][2]': 'mime',

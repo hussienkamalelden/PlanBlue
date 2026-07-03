@@ -1,6 +1,6 @@
 'use client';
 
-import { Crown, Frown, Medal, Sparkles, Trophy } from 'lucide-react';
+import { Crown, Frown, Mail, Medal, Sparkles, Trophy } from 'lucide-react';
 
 import { formatCommission } from '@/lib/api/strapi';
 import { useTranslations } from '@/lib/i18n/use-translations';
@@ -73,6 +73,18 @@ function RankIcon({ rank }: { rank: 1 | 2 | 3 }) {
   return <Medal className={className} strokeWidth={2} aria-hidden />;
 }
 
+function AffiliateEmail({ email }: { email: string }) {
+  return (
+    <a
+      href={`mailto:${email}`}
+      className="mt-0.5 flex max-w-full items-center justify-center gap-1 truncate text-[11px] text-neutral-500 transition-colors hover:text-brand-primary sm:text-xs"
+    >
+      <Mail className="h-3 w-3 shrink-0" strokeWidth={2} aria-hidden />
+      <span className="truncate">{email}</span>
+    </a>
+  );
+}
+
 function PodiumCard({
   affiliate,
   rank,
@@ -116,11 +128,14 @@ function PodiumCard({
         </span>
       </div>
 
-      <div className="flex w-full max-w-[11rem] items-center justify-center gap-1.5 px-1 sm:max-w-[12rem]">
-        <RankIcon rank={rank} />
-        <h3 className="truncate text-sm font-semibold text-neutral-900 sm:text-base">
-          {affiliate.name}
-        </h3>
+      <div className="flex w-full max-w-[11rem] flex-col items-center px-1 sm:max-w-[12rem]">
+        <div className="flex w-full items-center justify-center gap-1.5">
+          <RankIcon rank={rank} />
+          <h3 className="truncate text-sm font-semibold text-neutral-900 sm:text-base">
+            {affiliate.name}
+          </h3>
+        </div>
+        {affiliate.email && <AffiliateEmail email={affiliate.email} />}
       </div>
 
       <p className="mt-1.5 flex items-center justify-center gap-1.5 text-base font-bold text-neutral-900 sm:mt-2 sm:text-lg md:text-xl">
@@ -154,16 +169,27 @@ function AffiliateListRow({
   const hasCommission = commission > 0;
 
   return (
-    <li className="flex items-center justify-between gap-2 border-b border-neutral-100 py-2.5 last:border-0 sm:gap-4 sm:py-3">
-      <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
-        <span className="w-5 shrink-0 text-xs tabular-nums text-neutral-400 sm:w-6 sm:text-sm">
-          {rank}
-        </span>
-        <span className="truncate text-xs text-neutral-800 sm:text-sm">
-          {affiliate.name}
-        </span>
+    <li className="flex items-start justify-between gap-2 border-b border-neutral-100 py-2.5 last:border-0 sm:gap-4 sm:py-3">
+      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+          <span className="w-5 shrink-0 text-xs tabular-nums text-neutral-400 sm:w-6 sm:text-sm">
+            {rank}
+          </span>
+          <span className="truncate text-xs font-medium text-neutral-800 sm:text-sm">
+            {affiliate.name}
+          </span>
+        </div>
+        {affiliate.email && (
+          <a
+            href={`mailto:${affiliate.email}`}
+            className="flex min-w-0 items-center gap-1 truncate ps-7 text-[11px] text-neutral-500 transition-colors hover:text-brand-primary sm:ps-9 sm:text-xs"
+          >
+            <Mail className="h-3 w-3 shrink-0" strokeWidth={2} aria-hidden />
+            <span className="truncate">{affiliate.email}</span>
+          </a>
+        )}
       </div>
-      <span className="flex shrink-0 items-center gap-1 text-xs tabular-nums text-neutral-700 sm:gap-1.5 sm:text-sm">
+      <span className="flex shrink-0 items-center gap-1 pt-0.5 text-xs tabular-nums text-neutral-700 sm:gap-1.5 sm:text-sm">
         {!hasCommission && (
           <Frown className="h-3 w-3 text-neutral-400 sm:h-3.5 sm:w-3.5" strokeWidth={2} />
         )}

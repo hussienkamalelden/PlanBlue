@@ -2,6 +2,7 @@ export type StrapiAffiliate = {
   id: number;
   documentId: string;
   name: string;
+  email: string;
   current_pending_commission: number;
   avatar?: StrapiMedia | null;
 };
