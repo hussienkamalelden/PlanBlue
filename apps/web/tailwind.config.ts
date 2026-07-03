@@ -18,6 +18,7 @@ const config: Config = {
           warm: '#EFBB72',
           light: '#E9E4DF',
           green: '#2A6E42',
+          silver: '#94A3B8',
         },
       },
     },

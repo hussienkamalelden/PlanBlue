@@ -32,6 +32,19 @@ export function formatPrice(amount: number, locale: Locale): string {
   return locale === "ar" ? `${formatted} جنيه` : `${formatted} EGP`;
 }
 
+/** Like formatPrice, but drops “.00” when the amount is a whole number. */
+export function formatCommission(amount: number, locale: Locale): string {
+  const value = Number(amount);
+  const isWhole = Math.abs(value - Math.round(value)) < 0.001;
+
+  const formatted = new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-EG", {
+    minimumFractionDigits: isWhole ? 0 : 2,
+    maximumFractionDigits: 2,
+  }).format(value);
+
+  return locale === "ar" ? `${formatted} جنيه` : `${formatted} EGP`;
+}
+
 export function getMediaUrl(url: string): string {
   if (url.startsWith("http://") || url.startsWith("https://")) {
     return url;
