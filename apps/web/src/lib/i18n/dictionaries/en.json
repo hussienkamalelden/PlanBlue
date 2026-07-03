@@ -7,7 +7,8 @@
   },
   "header": {
     "products": "Products",
-    "cart": "Cart"
+    "cart": "Cart",
+    "affiliates": "Affiliates"
   },
   "home": {
     "title": "Welcome to PlanBlue",
@@ -132,5 +133,15 @@
       "title": "Order Failed",
       "message": "Something went wrong while placing your order. Please try again."
     }
+  },
+  "affiliates": {
+    "badge": "PlanBlue Partners",
+    "title": "Affiliate Leaderboard",
+    "subtitle": "Our top partners ranked by pending commission. Share, sell, and climb the board!",
+    "topThree": "Top 3 Champions",
+    "allAffiliates": "All Affiliates",
+    "pendingCommission": "Pending commission",
+    "empty": "No affiliates yet. Check back soon!",
+    "moreComingSoon": "More affiliates joining soon — stay tuned!"
   }
 }

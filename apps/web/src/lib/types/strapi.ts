@@ -1,3 +1,11 @@
+export type StrapiAffiliate = {
+  id: number;
+  documentId: string;
+  name: string;
+  current_pending_commission: number;
+  avatar?: StrapiMedia | null;
+};
+
 export type StrapiShipping = {
   id: number;
   documentId: string;

@@ -1,4 +1,5 @@
 import type {
+  StrapiAffiliate,
   StrapiCategory,
   StrapiExtra,
   StrapiListResponse,
@@ -123,6 +124,24 @@ export async function fetchProducts(): Promise<StrapiProduct[]> {
       'populate[media][fields][1]': 'name',
       'populate[media][fields][2]': 'mime',
       sort: 'createdAt:desc',
+    },
+  );
+
+  return json.data;
+}
+
+export async function fetchAffiliates(): Promise<StrapiAffiliate[]> {
+  const json = await strapiFetch<StrapiListResponse<StrapiAffiliate>>(
+    '/affiliates',
+    {
+      'fields[0]': 'name',
+      'fields[1]': 'documentId',
+      'fields[2]': 'current_pending_commission',
+      'populate[avatar][fields][0]': 'url',
+      'populate[avatar][fields][1]': 'name',
+      'populate[avatar][fields][2]': 'mime',
+      sort: 'current_pending_commission:desc',
+      status: 'published',
     },
   );
 
