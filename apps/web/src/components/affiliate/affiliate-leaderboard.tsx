@@ -3,6 +3,7 @@
 import { Crown, Frown, Mail, Medal, Sparkles, Trophy } from 'lucide-react';
 
 import { formatCommission } from '@/lib/api/strapi';
+import type { Locale } from '@/lib/i18n/config';
 import { useTranslations } from '@/lib/i18n/use-translations';
 import type { StrapiAffiliate } from '@/lib/types/strapi';
 import { useLocaleStore } from '@/stores/locale-store';
@@ -31,6 +32,9 @@ const rankStyles = {
     pulse: true,
     avatar: 'podium-first' as const,
     crown: true,
+    commission:
+      'animate-shimmer-gold bg-gradient-to-r from-brand-secondary via-brand-warm to-brand-secondary text-neutral-900 shadow-[0_8px_24px_rgba(247,185,12,0.45)] ring-2 ring-brand-secondary/60',
+    commissionSize: 'text-xl sm:text-2xl md:text-3xl',
   },
   2: {
     order: 'order-2 md:order-1',
@@ -43,6 +47,9 @@ const rankStyles = {
     pulse: false,
     avatar: 'podium' as const,
     crown: false,
+    commission:
+      'bg-gradient-to-br from-neutral-50 via-white to-neutral-200 text-neutral-800 shadow-[0_4px_16px_rgba(148,163,184,0.35)] ring-2 ring-brand-silver/70',
+    commissionSize: 'text-lg sm:text-xl md:text-2xl',
   },
   3: {
     order: 'order-3 md:order-3',
@@ -55,6 +62,9 @@ const rankStyles = {
     pulse: false,
     avatar: 'podium' as const,
     crown: false,
+    commission:
+      'bg-gradient-to-br from-brand-orange/25 via-brand-warm/20 to-brand-orange/15 text-brand-orange shadow-[0_4px_14px_rgba(214,133,39,0.3)] ring-2 ring-brand-orange/50',
+    commissionSize: 'text-base sm:text-lg md:text-xl',
   },
 } as const;
 
@@ -85,6 +95,54 @@ function AffiliateEmail({ email }: { email: string }) {
   );
 }
 
+function CommissionBadge({
+  amount,
+  locale,
+  rank,
+  variant,
+}: {
+  amount: number;
+  locale: Locale;
+  rank?: 1 | 2 | 3;
+  variant: 'podium' | 'list';
+}) {
+  const hasCommission = amount > 0;
+  const formatted = formatCommission(amount, locale);
+
+  if (variant === 'podium' && rank) {
+    const style = rankStyles[rank];
+    return (
+      <div
+        className={`mt-2 inline-flex items-center gap-1.5 rounded-2xl px-4 py-2 font-extrabold tabular-nums sm:mt-3 sm:px-5 sm:py-2.5 ${style.commission} ${style.commissionSize} ${rank === 1 ? 'animate-float-gentle' : ''}`}
+      >
+        {!hasCommission && (
+          <Frown
+            className="h-4 w-4 shrink-0 opacity-70"
+            strokeWidth={2}
+            aria-hidden
+          />
+        )}
+        {formatted}
+      </div>
+    );
+  }
+
+  return (
+    <span
+      className={`inline-flex items-center gap-1 rounded-lg px-2 py-0.5 text-xs font-semibold tabular-nums sm:text-sm ${
+        hasCommission
+          ? 'bg-neutral-100 text-neutral-700'
+          : 'bg-neutral-50 text-neutral-400'
+      }`}
+    >
+      {!hasCommission && (
+        <Frown className="h-3 w-3 shrink-0" strokeWidth={2} aria-hidden />
+      )}
+      {formatted}
+    </span>
+  );
+}
+
 function PodiumCard({
   affiliate,
   rank,
@@ -93,7 +151,6 @@ function PodiumCard({
   const locale = useLocaleStore((state) => state.locale);
   const t = useTranslations();
   const commission = getCommission(affiliate);
-  const hasCommission = commission > 0;
   const style = rankStyles[rank];
 
   return (
@@ -138,21 +195,19 @@ function PodiumCard({
         {affiliate.email && <AffiliateEmail email={affiliate.email} />}
       </div>
 
-      <p className="mt-1.5 flex items-center justify-center gap-1.5 text-base font-bold text-neutral-900 sm:mt-2 sm:text-lg md:text-xl">
-        {!hasCommission && (
-          <Frown
-            className="h-3.5 w-3.5 shrink-0 text-neutral-400 sm:h-4 sm:w-4"
-            strokeWidth={2}
-            aria-label="no commission"
-          />
-        )}
-        {formatCommission(commission, locale)}
-      </p>
-      <p className="mt-0.5 text-[11px] text-neutral-500 sm:text-xs">
+      <CommissionBadge
+        amount={commission}
+        locale={locale}
+        rank={rank}
+        variant="podium"
+      />
+      <p className="mt-1 text-[11px] text-neutral-500 sm:text-xs">
         {t.affiliates.pendingCommission}
       </p>
 
-      <div className={`mt-4 w-full max-w-[10rem] rounded-t-lg sm:mt-5 sm:max-w-none ${style.pedestal}`} />
+      <div
+        className={`mt-4 w-full max-w-[10rem] rounded-t-lg sm:mt-5 sm:max-w-none ${style.pedestal}`}
+      />
     </article>
   );
 }
@@ -166,7 +221,6 @@ function AffiliateListRow({
 }) {
   const locale = useLocaleStore((state) => state.locale);
   const commission = getCommission(affiliate);
-  const hasCommission = commission > 0;
 
   return (
     <li className="flex items-start justify-between gap-2 border-b border-neutral-100 py-2.5 last:border-0 sm:gap-4 sm:py-3">
@@ -189,23 +243,23 @@ function AffiliateListRow({
           </a>
         )}
       </div>
-      <span className="flex shrink-0 items-center gap-1 pt-0.5 text-xs tabular-nums text-neutral-700 sm:gap-1.5 sm:text-sm">
-        {!hasCommission && (
-          <Frown className="h-3 w-3 text-neutral-400 sm:h-3.5 sm:w-3.5" strokeWidth={2} />
-        )}
-        {formatCommission(commission, locale)}
-      </span>
+      <CommissionBadge amount={commission} locale={locale} variant="list" />
     </li>
   );
 }
 
-export function AffiliateLeaderboard({ affiliates }: AffiliateLeaderboardProps) {
+export function AffiliateLeaderboard({
+  affiliates,
+}: AffiliateLeaderboardProps) {
   const t = useTranslations();
 
   if (affiliates.length === 0) {
     return (
       <div className="py-16 text-center sm:py-20">
-        <Trophy className="mx-auto h-8 w-8 text-neutral-300 sm:h-10 sm:w-10" strokeWidth={1.5} />
+        <Trophy
+          className="mx-auto h-8 w-8 text-neutral-300 sm:h-10 sm:w-10"
+          strokeWidth={1.5}
+        />
         <p className="mt-4 text-sm text-neutral-600 sm:text-base">
           {t.affiliates.empty}
         </p>
