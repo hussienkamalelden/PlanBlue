@@ -88,7 +88,7 @@ const ClientOrderEmail = ({
             {is_update && (
               <Section style={updateBanner}>
                 <Text style={updateBannerText}>
-                  Your order has been updated — latest details below
+                  Your order has been updated
                 </Text>
               </Section>
             )}
