@@ -22,7 +22,7 @@ type OrderItem = {
     price: number;
     has_sale: boolean;
     discount_percentage: number;
-  };
+  } | null;
 };
 
 function getStrapiMediaUrl(media: { url?: string } | null | undefined): string {
@@ -458,6 +458,7 @@ export default {
 
   async beforeUpdate(event: any) {
     const { data } = event.params;
+
     strapi.log.info(`[ORDER-ENRICH] beforeUpdate triggered. Keys: ${Object.keys(data).join(', ')}`);
     if (data.order_items) {
       try {
@@ -479,74 +480,108 @@ export default {
         populate: {
           order_items: {
             populate: {
-              product: { fields: ['title', 'price', 'has_sale', 'discount_percentage'] },
+              product: {
+                fields: [
+                  'documentId',
+                  'title',
+                  'price',
+                  'has_sale',
+                  'discount_percentage',
+                ],
+              },
             },
           },
         },
+        status: 'draft',
       });
 
-      if (!fullOrder?.order_items) return;
+      if (fullOrder?.order_items) {
+        for (const item of fullOrder.order_items as any[]) {
+          if (!item.product) continue;
 
-      for (const item of fullOrder.order_items as any[]) {
-        if (!item.product) continue;
+          let needsUpdate = false;
+          const updateData: any = {};
 
-        let needsUpdate = false;
-        const updateData: any = {};
-
-        if (!item.product_title || item.product_title !== item.product.title) {
-          updateData.product_title = item.product.title;
-          needsUpdate = true;
-        }
-
-        if (!item.price_at_purchase || item.price_at_purchase === 0) {
-          let effectivePrice = Number(item.product.price ?? 0);
-          if (item.product.has_sale && Number(item.product.discount_percentage ?? 0) > 0) {
-            effectivePrice -= (effectivePrice * Number(item.product.discount_percentage)) / 100;
+          if (!item.product_title || item.product_title !== item.product.title) {
+            updateData.product_title = item.product.title;
+            needsUpdate = true;
           }
-          updateData.price_at_purchase = Number(effectivePrice.toFixed(2));
-          needsUpdate = true;
+
+          if (!item.price_at_purchase || item.price_at_purchase === 0) {
+            let effectivePrice = Number(item.product.price ?? 0);
+            if (item.product.has_sale && Number(item.product.discount_percentage ?? 0) > 0) {
+              effectivePrice -= (effectivePrice * Number(item.product.discount_percentage)) / 100;
+            }
+            updateData.price_at_purchase = Number(effectivePrice.toFixed(2));
+            needsUpdate = true;
+          }
+
+          if (needsUpdate) {
+            await strapi.db.query('orders.order-item').update({
+              where: { id: item.id },
+              data: updateData,
+            });
+            strapi.log.info(`[ORDER-ENRICH] afterUpdate: updated item ${item.id} → ${JSON.stringify(updateData)}`);
+          }
         }
 
-        if (needsUpdate) {
-          await strapi.db.query('orders.order-item').update({
-            where: { id: item.id },
-            data: updateData,
+        // Recalculate totals based on actual persisted data
+        const items = fullOrder.order_items as any[];
+        let subtotal = 0;
+        for (const item of items) {
+          let price = Number(item.price_at_purchase ?? 0);
+          if (price === 0 && item.product) {
+            price = Number(item.product.price ?? 0);
+            if (item.product.has_sale && Number(item.product.discount_percentage ?? 0) > 0) {
+              price -= (price * Number(item.product.discount_percentage)) / 100;
+            }
+          }
+          subtotal += price * Number(item.quantity ?? 0);
+        }
+
+        const shippingCost = Number(result.shipping_cost ?? 0);
+        const giftWrappingCost = Number(result.gift_wrapping_cost ?? 0);
+        const discountAmount = Number(result.discount_amount ?? 0);
+        const total = Number((subtotal - discountAmount + shippingCost + giftWrappingCost).toFixed(2));
+
+        if (subtotal !== Number(result.subtotal ?? 0) || total !== Number(result.total ?? 0)) {
+          await strapi.db.query('api::order.order').updateMany({
+            where: { documentId: result.documentId },
+            data: {
+              subtotal: Number(subtotal.toFixed(2)),
+              total,
+            },
           });
-          strapi.log.info(`[ORDER-ENRICH] afterUpdate: updated item ${item.id} → ${JSON.stringify(updateData)}`);
+          strapi.log.info(`[ORDER-ENRICH] afterUpdate: recalculated subtotal=${subtotal.toFixed(2)} total=${total}`);
         }
-      }
-
-      // Recalculate totals based on actual persisted data
-      const items = fullOrder.order_items as any[];
-      let subtotal = 0;
-      for (const item of items) {
-        let price = Number(item.price_at_purchase ?? 0);
-        if (price === 0 && item.product) {
-          price = Number(item.product.price ?? 0);
-          if (item.product.has_sale && Number(item.product.discount_percentage ?? 0) > 0) {
-            price -= (price * Number(item.product.discount_percentage)) / 100;
-          }
-        }
-        subtotal += price * Number(item.quantity ?? 0);
-      }
-
-      const shippingCost = Number(result.shipping_cost ?? 0);
-      const giftWrappingCost = Number(result.gift_wrapping_cost ?? 0);
-      const discountAmount = Number(result.discount_amount ?? 0);
-      const total = Number((subtotal - discountAmount + shippingCost + giftWrappingCost).toFixed(2));
-
-      if (subtotal !== Number(result.subtotal ?? 0) || total !== Number(result.total ?? 0)) {
-        await strapi.db.query('api::order.order').updateMany({
-          where: { documentId: result.documentId },
-          data: {
-            subtotal: Number(subtotal.toFixed(2)),
-            total,
-          },
-        });
-        strapi.log.info(`[ORDER-ENRICH] afterUpdate: recalculated subtotal=${subtotal.toFixed(2)} total=${total}`);
       }
     } catch (error) {
       strapi.log.error('[ORDER-ENRICH] afterUpdate enrichment failed:', error);
+    }
+
+    const publishedOrder = await strapi.documents('api::order.order').findOne({
+      documentId: result.documentId,
+      status: 'published',
+    });
+
+    if (
+      publishedOrder?.is_processed &&
+      publishedOrder.status_type === 'cancelled' &&
+      !publishedOrder.is_stock_reversed
+    ) {
+      strapi.log.info(
+        `[ORDER] Cancelling order ${result.documentId} on update — restoring stock`,
+      );
+      await handleCancellation(result);
+
+      try {
+        await strapi.db.query('api::order.order').updateMany({
+          where: { documentId: result.documentId },
+          data: { is_stock_reversed: true },
+        });
+      } catch (error) {
+        strapi.log.error('Failed to mark stock reversal:', error);
+      }
     }
 
     if (result.status_type === 'delivered' && !result.is_commission_credited) {

@@ -42,6 +42,7 @@ function formatOrderItemsForEmail(items: OrderItem[]): string {
 async function getPopulatedOrderItems(
   strapi: Core.Strapi,
   documentId: string,
+  status: 'draft' | 'published' = 'published',
 ): Promise<OrderItem[]> {
   try {
     const fullOrder = await strapi.documents('api::order.order').findOne({
@@ -51,6 +52,7 @@ async function getPopulatedOrderItems(
           populate: {
             product: {
               fields: [
+                'documentId',
                 'title',
                 'sku',
                 'available_stock',
@@ -63,14 +65,27 @@ async function getPopulatedOrderItems(
           },
         },
       },
-      status: 'published',
+      status,
     });
 
     return (fullOrder?.order_items ?? []) as OrderItem[];
   } catch (error) {
-    strapi.log.error('Failed to fetch order items:', error);
+    strapi.log.error(`Failed to fetch ${status} order items:`, error);
     return [];
   }
+}
+
+async function getLatestOrderItemsForStock(
+  strapi: Core.Strapi,
+  documentId: string,
+): Promise<OrderItem[]> {
+  const draftItems = await getPopulatedOrderItems(strapi, documentId, 'draft');
+
+  if (draftItems.length > 0) {
+    return draftItems;
+  }
+
+  return getPopulatedOrderItems(strapi, documentId, 'published');
 }
 
 function calculateOrderSubtotal(items: OrderItem[]): number {
@@ -178,5 +193,6 @@ export async function sendOrderNotificationEmails(
 export {
   calculateOrderSubtotal,
   formatOrderItemsForEmail,
+  getLatestOrderItemsForStock,
   getPopulatedOrderItems,
 };
