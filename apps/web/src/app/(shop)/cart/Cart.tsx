@@ -3,9 +3,14 @@
 import Link from 'next/link';
 import { useState } from 'react';
 
+import {
+  CartItemValidationMessages,
+  CartValidationBanner,
+} from '@/components/shop/cart-validation-messages';
+import { useCartValidation } from '@/lib/cart/use-cart-validation';
 import { useCartStore } from '@/lib/cart/cart-store';
+import { getItemValidation } from '@/lib/cart/validate-cart';
 import { formatPrice } from '@/lib/api/strapi';
-import { interpolate } from '@/lib/i18n/dictionary';
 import { useTranslations } from '@/lib/i18n/use-translations';
 import { useLocaleStore } from '@/stores/locale-store';
 
@@ -16,6 +21,7 @@ export default function Cart() {
   const setItemQuantity = useCartStore((state) => state.setItemQuantity);
   const removeItem = useCartStore((state) => state.removeItem);
   const clearCart = useCartStore((state) => state.clearCart);
+  const { status, validation, isBlocked } = useCartValidation();
 
   const [showClearConfirm, setShowClearConfirm] = useState(false);
 
@@ -27,13 +33,14 @@ export default function Cart() {
     return sum + unitPrice * item.quantity;
   }, 0);
 
-  const hasStockIssue = items.some(
-    (item) => item.quantity > item.stockQuantity,
-  );
-
   function handleClearCart() {
     clearCart();
     setShowClearConfirm(false);
+  }
+
+  function itemHasIssue(documentId: string): boolean {
+    const itemValidation = getItemValidation(validation, documentId);
+    return itemValidation !== null && !itemValidation.valid;
   }
 
   return (
@@ -54,20 +61,21 @@ export default function Cart() {
         </div>
       ) : (
         <div className="space-y-6">
-          {/* Cart items */}
+          <CartValidationBanner status={status} validation={validation} />
+
           <ul className="space-y-4">
             {items.map((item) => {
               const unitPrice =
                 item.has_sale && item.discountPrice !== null
                   ? item.discountPrice
                   : item.price;
-              const exceedsStock = item.quantity > item.stockQuantity;
+              const hasIssue = itemHasIssue(item.documentId);
 
               return (
                 <li
                   key={item.documentId}
                   className={`rounded-xl border bg-white p-5 ${
-                    exceedsStock
+                    hasIssue
                       ? 'border-amber-300 bg-amber-50/50'
                       : 'border-neutral-200'
                   }`}
@@ -84,14 +92,12 @@ export default function Cart() {
                         {formatPrice(unitPrice, locale)} × {item.quantity}
                       </p>
 
-                      {exceedsStock && (
-                        <p className="mt-2 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-medium text-amber-800">
-                          {interpolate(t.cart.stockWarning, {
-                            stock: item.stockQuantity,
-                            quantity: item.quantity,
-                          })}
-                        </p>
-                      )}
+                      <CartItemValidationMessages
+                        documentId={item.documentId}
+                        item={item}
+                        validation={validation}
+                        locale={locale}
+                      />
                     </div>
 
                     <p className="text-base font-bold text-neutral-900">
@@ -99,7 +105,6 @@ export default function Cart() {
                     </p>
                   </div>
 
-                  {/* Quantity controls */}
                   <div className="mt-4 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <button
@@ -124,7 +129,10 @@ export default function Cart() {
                         onClick={() =>
                           setItemQuantity(item.documentId, item.quantity + 1)
                         }
-                        disabled={item.quantity >= item.stockQuantity}
+                        disabled={
+                          isBlocked ||
+                          item.quantity >= item.stockQuantity
+                        }
                         className="flex h-8 w-8 items-center justify-center rounded-md border border-neutral-200 text-neutral-600 transition-colors hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-40"
                       >
                         +
@@ -144,8 +152,11 @@ export default function Cart() {
             })}
           </ul>
 
-          {/* Summary and actions */}
-          <div className="rounded-xl border border-neutral-200 bg-white p-6">
+          <div
+            className={`rounded-xl border bg-white p-6 ${
+              isBlocked ? 'border-amber-200 opacity-95' : 'border-neutral-200'
+            }`}
+          >
             <div className="flex items-center justify-between text-base">
               <span className="text-neutral-600">
                 {t.cart.total} ({items.length} {t.cart.items})
@@ -157,12 +168,13 @@ export default function Cart() {
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <Link
-                href={hasStockIssue ? '#' : '/checkout'}
+                href={isBlocked ? '#' : '/checkout'}
                 onClick={(e) => {
-                  if (hasStockIssue) e.preventDefault();
+                  if (isBlocked) e.preventDefault();
                 }}
+                aria-disabled={isBlocked}
                 className={`flex-1 rounded-lg px-6 py-3 text-center text-sm font-semibold text-white transition-colors ${
-                  hasStockIssue
+                  isBlocked
                     ? 'cursor-not-allowed bg-neutral-300 text-neutral-500'
                     : 'bg-neutral-900 hover:bg-neutral-800'
                 }`}
@@ -178,7 +190,6 @@ export default function Cart() {
               </Link>
             </div>
 
-            {/* Clear cart */}
             <div className="mt-4 border-t border-neutral-100 pt-4">
               {!showClearConfirm ? (
                 <button

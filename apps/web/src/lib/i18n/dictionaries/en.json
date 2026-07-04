@@ -78,7 +78,17 @@
     "stockWarning": "Only {stock} available — you selected {quantity}.",
     "subtotal": "Subtotal",
     "total": "Total",
-    "items": "items"
+    "items": "items",
+    "validation": {
+      "checking": "Checking item availability and prices...",
+      "failed": "We couldn't verify your cart right now. Please try again in a moment.",
+      "blockedTitle": "Some items need your attention",
+      "blockedMessage": "Review the messages below. Checkout is disabled until all issues are resolved.",
+      "notFound": "This product no longer exists.",
+      "unavailable": "This product is no longer available.",
+      "insufficientStock": "Only {stock} left in stock — you have {quantity} in your cart.",
+      "priceChanged": "Price changed from {oldPrice} to {newPrice}. Remove this item and add it again."
+    }
   },
   "checkout": {
     "title": "Checkout",
@@ -136,6 +146,12 @@
     "error": {
       "title": "Order Failed",
       "message": "Something went wrong while placing your order. Please try again."
+    },
+    "cartValidation": {
+      "checking": "Checking item availability and prices...",
+      "failed": "We couldn't verify your cart right now. Please return to the cart and try again.",
+      "blockedTitle": "Your order can't be placed yet",
+      "blockedMessage": "Some cart items are unavailable, out of stock, or have price changes. Go back to your cart to fix them."
     }
   },
   "affiliates": {

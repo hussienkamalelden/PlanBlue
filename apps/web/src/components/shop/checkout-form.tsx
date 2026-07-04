@@ -3,9 +3,15 @@
 import Link from "next/link";
 import { useState } from "react";
 
+import {
+  CartItemValidationMessages,
+  CheckoutBlockedNotice,
+} from "@/components/shop/cart-validation-messages";
 import { createOrder, calculateTotal, validatePromoCode } from "@/lib/api/orders";
 import { formatPrice } from "@/lib/api/strapi";
 import { useCartStore } from "@/lib/cart/cart-store";
+import { useCartValidation } from "@/lib/cart/use-cart-validation";
+import { getItemValidation } from "@/lib/cart/validate-cart";
 import { useTranslations } from "@/lib/i18n/use-translations";
 import type { StrapiExtra, StrapiShipping } from "@/lib/types/strapi";
 import { useLocaleStore } from "@/stores/locale-store";
@@ -30,6 +36,11 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
   const locale = useLocaleStore((state) => state.locale);
   const items = useCartStore((state) => state.items);
   const clearCart = useCartStore((state) => state.clearCart);
+  const {
+    status: cartValidationStatus,
+    validation,
+    isBlocked: isCartBlocked,
+  } = useCartValidation();
 
   const [form, setForm] = useState({
     name: "",
@@ -120,7 +131,9 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    if (!validate() || items.length === 0 || !selectedShipping) return;
+    if (!validate() || items.length === 0 || !selectedShipping || isCartBlocked) {
+      return;
+    }
 
     setStatus("submitting");
 
@@ -200,7 +213,28 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="mt-8 grid gap-8 lg:grid-cols-3">
+      <CheckoutBlockedNotice
+        status={cartValidationStatus}
+        validation={validation}
+      />
+
+      {isCartBlocked && cartValidationStatus === 'ready' && (
+        <div className="mt-4">
+          <Link
+            href="/cart"
+            className="inline-flex rounded-lg border border-amber-300 bg-white px-4 py-2 text-sm font-medium text-amber-900 transition-colors hover:bg-amber-50"
+          >
+            {t.checkout.backToCart}
+          </Link>
+        </div>
+      )}
+
+      <form
+        onSubmit={handleSubmit}
+        className={`mt-8 grid gap-8 lg:grid-cols-3 ${
+          isCartBlocked ? 'pointer-events-none opacity-60' : ''
+        }`}
+      >
         <div className="space-y-6 lg:col-span-2">
           <section className="rounded-xl border border-neutral-200 bg-white p-6">
             <h2 className="mb-3 text-lg font-semibold text-neutral-900">
@@ -342,21 +376,33 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
                   item.has_sale && item.discountPrice !== null
                     ? item.discountPrice
                     : item.price;
+                const hasIssue =
+                  getItemValidation(validation, item.documentId)?.valid === false;
 
                 return (
                   <li
                     key={item.documentId}
-                    className="flex items-center justify-between py-3 text-sm"
+                    className={`py-3 text-sm ${
+                      hasIssue ? 'rounded-lg bg-amber-50 px-2' : ''
+                    }`}
                   >
-                    <div>
-                      <p className="font-medium text-neutral-900">{item.title}</p>
-                      <p className="text-xs text-neutral-500">
-                        {item.quantity} × {formatPrice(unitPrice, locale)}
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium text-neutral-900">{item.title}</p>
+                        <p className="text-xs text-neutral-500">
+                          {item.quantity} × {formatPrice(unitPrice, locale)}
+                        </p>
+                      </div>
+                      <p className="font-medium text-neutral-900">
+                        {formatPrice(unitPrice * item.quantity, locale)}
                       </p>
                     </div>
-                    <p className="font-medium text-neutral-900">
-                      {formatPrice(unitPrice * item.quantity, locale)}
-                    </p>
+                    <CartItemValidationMessages
+                      documentId={item.documentId}
+                      item={item}
+                      validation={validation}
+                      locale={locale}
+                    />
                   </li>
                 );
               })}
@@ -463,7 +509,7 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
 
             <button
               type="submit"
-              disabled={status === "submitting"}
+              disabled={status === "submitting" || isCartBlocked}
               className="mt-6 w-full rounded-lg bg-neutral-900 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-500"
             >
               {status === "submitting" ? t.checkout.placing : t.checkout.placeOrder}

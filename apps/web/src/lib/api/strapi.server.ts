@@ -149,6 +149,41 @@ export async function fetchAffiliates(): Promise<StrapiAffiliate[]> {
   return json.data;
 }
 
+export async function fetchProductsByDocumentIds(
+  documentIds: string[],
+): Promise<StrapiProduct[]> {
+  if (documentIds.length === 0) {
+    return [];
+  }
+
+  const params: Record<string, string> = {
+    'fields[0]': 'documentId',
+    'fields[1]': 'title',
+    'fields[2]': 'slug',
+    'fields[3]': 'price',
+    'fields[4]': 'has_sale',
+    'fields[5]': 'discount_percentage',
+    'fields[6]': 'available',
+    'fields[7]': 'available_stock',
+    sort: 'createdAt:desc',
+  };
+
+  documentIds.forEach((documentId, index) => {
+    params[`filters[documentId][$in][${index}]`] = documentId;
+  });
+
+  try {
+    const json = await strapiFetch<StrapiListResponse<StrapiProduct>>(
+      '/products',
+      params,
+    );
+
+    return json.data;
+  } catch {
+    return [];
+  }
+}
+
 /** findOne by documentId */
 export async function fetchProductByDocumentId(
   documentId: string,

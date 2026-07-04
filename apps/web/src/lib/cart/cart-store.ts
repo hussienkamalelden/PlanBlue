@@ -23,6 +23,9 @@ type CartState = {
   removeItem: (documentId: string) => void;
   clearCart: () => void;
   isInCart: (documentId: string) => boolean;
+  syncItemSnapshots: (
+    snapshots: Array<{ documentId: string; stockQuantity: number }>,
+  ) => void;
 };
 
 export const useCartStore = create<CartState>()(
@@ -71,6 +74,25 @@ export const useCartStore = create<CartState>()(
 
       isInCart: (documentId) => {
         return get().items.some((line) => line.documentId === documentId);
+      },
+
+      syncItemSnapshots: (snapshots) => {
+        if (snapshots.length === 0) {
+          return;
+        }
+
+        const snapshotMap = new Map(
+          snapshots.map((snapshot) => [snapshot.documentId, snapshot.stockQuantity]),
+        );
+
+        set({
+          items: get().items.map((line) => {
+            const stockQuantity = snapshotMap.get(line.documentId);
+            return stockQuantity === undefined
+              ? line
+              : { ...line, stockQuantity };
+          }),
+        });
       },
     }),
     { name: CART_STORAGE_KEY },
