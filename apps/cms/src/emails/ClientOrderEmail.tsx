@@ -38,6 +38,7 @@ interface EmailProps {
   order_items: string;
   governorate: string;
   promo_code: string;
+  is_update?: boolean;
 }
 
 const ClientOrderEmail = ({
@@ -56,12 +57,15 @@ const ClientOrderEmail = ({
   order_items,
   governorate,
   promo_code,
+  is_update = false,
 }: EmailProps) => {
   return (
     <Html lang="ar" dir="rtl">
       <Head />
       <Preview>
-        Thank you for your order from PlanBlue! Your order ID is #{order_id}
+        {is_update
+          ? `Your PlanBlue order #${order_id} has been updated`
+          : `Thank you for your order from PlanBlue! Your order ID is #${order_id}`}
       </Preview>
       <Body style={main}>
         <Container style={container}>
@@ -81,10 +85,18 @@ const ClientOrderEmail = ({
 
           {/* Content */}
           <Section style={contentSection}>
+            {is_update && (
+              <Section style={updateBanner}>
+                <Text style={updateBannerText}>
+                  Your order has been updated — latest details below
+                </Text>
+              </Section>
+            )}
             <Text style={welcomeText}>Hello {name} 👋</Text>
             <Text style={paragraph}>
-              Your order has been received and is currently being processed by
-              our team.
+              {is_update
+                ? 'Your order details have been updated. Please review the latest information below.'
+                : 'Your order has been received and is currently being processed by our team.'}
             </Text>
             {/* Order Details Card */}
             <Section style={orderCard}>
@@ -210,6 +222,22 @@ const headerSubtitle = {
 
 const contentSection = {
   padding: '30px',
+};
+
+const updateBanner = {
+  backgroundColor: '#fef3c7',
+  border: '1px solid #f59e0b',
+  borderRadius: '10px',
+  padding: '12px 16px',
+  marginBottom: '20px',
+};
+
+const updateBannerText = {
+  color: '#92400e',
+  fontSize: '14px',
+  fontWeight: '600',
+  margin: '0',
+  textAlign: 'center' as const,
 };
 
 const welcomeText = {

@@ -39,6 +39,7 @@ interface AdminEmailProps {
   order_items: string;
   governorate: string;
   promo_code: string;
+  is_update?: boolean;
 }
 
 const AdminOrderEmail = ({
@@ -57,12 +58,15 @@ const AdminOrderEmail = ({
   order_items,
   governorate,
   promo_code,
+  is_update = false,
 }: AdminEmailProps) => {
   return (
     <Html lang="en" dir="ltr">
       <Head />
       <Preview>
-        🚨 New Order Received! Order #{order_id} • Total: {total} EGP
+        {is_update
+          ? `Order #${order_id} updated • Total: ${total} EGP`
+          : `🚨 New Order Received! Order #${order_id} • Total: ${total} EGP`}
       </Preview>
       <Body style={main}>
         <Container style={container}>
@@ -70,8 +74,9 @@ const AdminOrderEmail = ({
           <Section style={headerSection}>
             <Heading style={headerTitle}>PlanBlue Control Panel</Heading>
             <Text style={headerSubtitle}>
-              Automated System Alert: A new order has been logged successfully
-              🚀
+              {is_update
+                ? 'Order update notification — latest order details below'
+                : 'Automated System Alert: A new order has been logged successfully 🚀'}
             </Text>
           </Section>
 
@@ -79,13 +84,27 @@ const AdminOrderEmail = ({
           <Section style={contentSection}>
             {/* Urgency/Status Badge */}
             <Section style={badgeContainer}>
-              <Text style={statusBadge}>📦 New Order Awaiting Fulfillment</Text>
+              <Text style={statusBadge}>
+                {is_update
+                  ? '🔄 Order Updated — Review Latest Details'
+                  : '📦 New Order Awaiting Fulfillment'}
+              </Text>
             </Section>
 
             <Text style={paragraph}>
-              Customer <strong>{name}</strong> has just completed a new checkout
-              session on the storefront. Please review the customer manifest and
-              shipping payload below to begin processing the package.
+              {is_update ? (
+                <>
+                  Order <strong>#{order_id}</strong> for customer{' '}
+                  <strong>{name}</strong> was updated in the dashboard. The
+                  details below reflect the latest changes.
+                </>
+              ) : (
+                <>
+                  Customer <strong>{name}</strong> has just completed a new checkout
+                  session on the storefront. Please review the customer manifest and
+                  shipping payload below to begin processing the package.
+                </>
+              )}
             </Text>
 
             {/* Order Details Manifest Card */}

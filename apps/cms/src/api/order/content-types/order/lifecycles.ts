@@ -1,8 +1,12 @@
 import { render } from '@react-email/components';
-import ClientOrderEmail from '../../../../emails/ClientOrderEmail';
-import AdminOrderEmail from '../../../../emails/AdminOrderEmail';
 import AffiliateCommissionEmail from '../../../../emails/AffiliateCommissionEmail';
 import React from 'react';
+
+import {
+  formatOrderItemsForEmail,
+  getPopulatedOrderItems,
+  sendOrderNotificationEmails,
+} from '../../utils/order-emails';
 
 type OrderItem = {
   id: number;
@@ -20,46 +24,6 @@ type OrderItem = {
     discount_percentage: number;
   };
 };
-
-function formatOrderItemsForEmail(items: OrderItem[]): string {
-  return items
-    .map((item) => {
-      const title = item.product?.title ?? item.product_title ?? 'Product';
-      const sku = item.product?.sku ? ` (${item.product.sku})` : '';
-      return `• ${title}${sku} × ${item.quantity} — ${item.price_at_purchase} EGP`;
-    })
-    .join('\n');
-}
-
-async function getPopulatedOrderItems(documentId: string): Promise<OrderItem[]> {
-  try {
-    const fullOrder = await strapi.documents('api::order.order').findOne({
-      documentId,
-      populate: {
-        order_items: {
-          populate: {
-            product: {
-              fields: ['title', 'sku', 'available_stock', 'total_sold', 'price', 'has_sale', 'discount_percentage'],
-            },
-          },
-        },
-      },
-      status: 'published',
-    });
-
-    return (fullOrder?.order_items ?? []) as OrderItem[];
-  } catch (error) {
-    strapi.log.error('Failed to fetch order items:', error);
-    return [];
-  }
-}
-
-function calculateOrderSubtotal(items: OrderItem[]): number {
-  return items.reduce(
-    (sum, item) => sum + item.price_at_purchase * item.quantity,
-    0,
-  );
-}
 
 function getStrapiMediaUrl(media: { url?: string } | null | undefined): string {
   if (!media?.url) return '';
@@ -333,7 +297,7 @@ async function processAffiliateCommission(result: any) {
     );
 
     try {
-      const orderItems = await getPopulatedOrderItems(result.documentId);
+      const orderItems = await getPopulatedOrderItems(strapi, result.documentId);
       const formattedItems = formatOrderItemsForEmail(orderItems);
       const avatarUrl = getStrapiMediaUrl(matchedAffiliate.avatar);
 
@@ -367,7 +331,7 @@ async function processAffiliateCommission(result: any) {
 }
 
 async function processNewOrder(result: any) {
-  const orderItems = await getPopulatedOrderItems(result.documentId);
+  const orderItems = await getPopulatedOrderItems(strapi, result.documentId);
 
   // Set product_title on each order item for dashboard visibility
   try {
@@ -452,72 +416,14 @@ async function processNewOrder(result: any) {
 
   // Send order confirmation emails
   try {
-    const formattedItems = formatOrderItemsForEmail(orderItems);
-    const subtotal = calculateOrderSubtotal(orderItems);
-    const shippingCost = Number(result.shipping_cost ?? 0);
-    const giftWrapping = Boolean(result.gift_wrapping);
-    const giftWrappingCost = Number(result.gift_wrapping_cost ?? 0);
-    const discountAmount = Number(result.discount_amount ?? 0);
-    const promoDiscountPercentage = Number(result.promo_discount_percentage ?? 0);
-
-    const emailHtml = await render(
-      React.createElement(ClientOrderEmail, {
-        name: result.name,
-        order_id: result.order_id,
-        subtotal: Number(subtotal.toFixed(2)),
-        discount_amount: discountAmount,
-        promo_discount_percentage: promoDiscountPercentage,
-        shipping_cost: Number(shippingCost.toFixed(2)),
-        gift_wrapping: giftWrapping,
-        gift_wrapping_cost: Number(giftWrappingCost.toFixed(2)),
-        total: result.total,
-        address: result.address,
-        phone: result.phone,
-        extra_notes: result.extra_notes || '',
-        order_items: formattedItems,
-        governorate: result.governorate,
-        promo_code: result.promo_code || '',
-      }),
-    );
-    await strapi.plugins['email'].services.email.send({
-      to: result.email,
-      from: process.env.RESEND_DEFAULT_FROM,
-      subject: `PlanBlue - Order Confirmation #${result.order_id}`,
-      html: emailHtml,
-    });
-
-    const adminEmailHtml = await render(
-      React.createElement(AdminOrderEmail, {
-        name: result.name,
-        order_id: result.order_id,
-        subtotal: Number(subtotal.toFixed(2)),
-        discount_amount: discountAmount,
-        promo_discount_percentage: promoDiscountPercentage,
-        shipping_cost: Number(shippingCost.toFixed(2)),
-        gift_wrapping: giftWrapping,
-        gift_wrapping_cost: Number(giftWrappingCost.toFixed(2)),
-        total: result.total,
-        address: result.address,
-        phone: result.phone,
-        extra_notes: result.extra_notes || '',
-        order_items: formattedItems,
-        governorate: result.governorate,
-        promo_code: result.promo_code || '',
-      }),
-    );
-    await strapi.plugins['email'].services.email.send({
-      to: 'planbluestore@gmail.com',
-      from: process.env.RESEND_DEFAULT_FROM,
-      subject: `New Order Received! Order #${result.order_id}`,
-      html: adminEmailHtml,
-    });
+    await sendOrderNotificationEmails(strapi, result.documentId);
   } catch (error) {
     strapi.log.error('Failed to send order emails:', error);
   }
 }
 
 async function handleCancellation(result: any) {
-  const orderItems = await getPopulatedOrderItems(result.documentId);
+  const orderItems = await getPopulatedOrderItems(strapi, result.documentId);
 
   for (const item of orderItems) {
     if (!item.product?.documentId || !item.quantity) continue;
