@@ -1,4 +1,5 @@
 import { LocaleProvider } from '@/components/locale/locale-provider';
+import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
 import { getLocaleDirection } from '@/lib/i18n/config';
 import { getLocale } from '@/lib/i18n/get-locale';
@@ -28,8 +29,11 @@ export default async function RootLayout({
         className="min-h-screen bg-neutral-50 text-neutral-900 antialiased"
       >
         <LocaleProvider>
-          <SiteHeader />
-          {children}
+          <div className="flex min-h-screen flex-col">
+            <SiteHeader />
+            <div className="flex-1">{children}</div>
+            <SiteFooter />
+          </div>
         </LocaleProvider>
       </body>
     </html>

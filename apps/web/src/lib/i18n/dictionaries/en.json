@@ -147,5 +147,87 @@
     "pendingCommission": "Pending commission",
     "empty": "No affiliates yet. Check back soon!",
     "moreComingSoon": "More affiliates joining soon — stay tuned!"
+  },
+  "footer": {
+    "about": "Quality toys for every age — delivered across Egypt with care.",
+    "linksTitle": "Quick links",
+    "terms": "Terms & Conditions",
+    "socialTitle": "Follow us",
+    "socialEmpty": "Social links coming soon.",
+    "copyright": "© {year} PlanBlue. All rights reserved.",
+    "social": {
+      "facebook": "PlanBlue on Facebook",
+      "instagram": "PlanBlue on Instagram",
+      "twitter": "PlanBlue on X (Twitter)",
+      "tiktok": "PlanBlue on TikTok",
+      "whatsapp": "Contact PlanBlue on WhatsApp"
+    }
+  },
+  "terms": {
+    "title": "Terms & Conditions",
+    "metaDescription": "PlanBlue terms and conditions for orders, delivery, returns, and use of our online toy store.",
+    "lastUpdated": "Last updated: July 2026",
+    "intro": "Welcome to PlanBlue. By browsing our website or placing an order, you agree to the terms below. Please read them carefully before completing a purchase.",
+    "sections": [
+      {
+        "title": "1. General",
+        "paragraphs": [
+          "PlanBlue operates an online toy store serving customers in Egypt. These terms govern your use of our website and any purchase you make from us.",
+          "We may update these terms from time to time. Continued use of the site after changes are posted constitutes acceptance of the revised terms."
+        ]
+      },
+      {
+        "title": "2. Orders & Payment",
+        "paragraphs": [
+          "When you place an order, you confirm that the information you provide is accurate and that you are authorized to use the selected payment method.",
+          "We currently accept cash on delivery (COD). Payment is due when your order is delivered unless otherwise stated at checkout.",
+          "We reserve the right to refuse or cancel orders in cases of pricing errors, suspected fraud, or stock unavailability. If your order is cancelled after payment, any amount collected will be refunded."
+        ]
+      },
+      {
+        "title": "3. Pricing & Promotions",
+        "paragraphs": [
+          "All prices are displayed in Egyptian Pounds (EGP) unless stated otherwise. Sale prices and discounts apply only while the promotion is active.",
+          "Promo codes must be entered at checkout and are subject to validity dates, usage limits, and eligibility rules defined for each code."
+        ]
+      },
+      {
+        "title": "4. Shipping & Delivery",
+        "paragraphs": [
+          "We deliver to governorates listed at checkout. Delivery times are estimates and may vary due to location, holidays, or circumstances beyond our control.",
+          "Please ensure your delivery address and phone number are correct. We are not responsible for delays caused by incorrect contact or address details.",
+          "If you are unavailable at delivery, our courier may attempt redelivery or contact you using the phone number provided."
+        ]
+      },
+      {
+        "title": "5. Returns & Refunds",
+        "paragraphs": [
+          "If you receive a damaged, defective, or incorrect item, contact us within 48 hours of delivery with your order number and photos of the issue.",
+          "Eligible returns must be unused and in original packaging where applicable. Refunds or replacements are processed after we review the reported issue.",
+          "Change-of-mind returns may not be accepted for opened toys or items that cannot be resold for hygiene or safety reasons."
+        ]
+      },
+      {
+        "title": "6. Product Information",
+        "paragraphs": [
+          "We aim to display accurate product descriptions, images, and age recommendations. Minor variations in color or packaging may occur.",
+          "Toys may contain small parts. Please follow age labels and supervise children during play as recommended by the manufacturer."
+        ]
+      },
+      {
+        "title": "7. Privacy",
+        "paragraphs": [
+          "We collect personal information such as your name, email, phone number, and delivery address solely to process orders and communicate with you about your purchase.",
+          "We do not sell your personal data to third parties. Order-related data may be shared with delivery partners only as needed to fulfill your order."
+        ]
+      },
+      {
+        "title": "8. Contact",
+        "paragraphs": [
+          "For questions about these terms, your order, or our products, reach us through the contact channels listed on our website or social media pages.",
+          "By placing an order on PlanBlue, you acknowledge that you have read and agree to these Terms & Conditions."
+        ]
+      }
+    ]
   }
 }
