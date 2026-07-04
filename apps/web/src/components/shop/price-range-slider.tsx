@@ -25,6 +25,40 @@ function toPercent(value: number, min: number, max: number): number {
   return ((value - min) / (max - min)) * 100;
 }
 
+function getPriceSliderStep(boundMin: number, boundMax: number): number | 'any' {
+  const range = boundMax - boundMin;
+  if (range <= 0) {
+    return 1;
+  }
+
+  // Allow exact catalog min/max regardless of decimal prices.
+  return 'any';
+}
+
+function snapToRangeEdge(
+  value: number,
+  boundMin: number,
+  boundMax: number,
+  edge: 'min' | 'max',
+): number {
+  const range = boundMax - boundMin;
+  if (range <= 0) {
+    return value;
+  }
+
+  const pct = (value - boundMin) / range;
+
+  if (edge === 'max' && pct >= 0.985) {
+    return boundMax;
+  }
+
+  if (edge === 'min' && pct <= 0.015) {
+    return boundMin;
+  }
+
+  return value;
+}
+
 export function PriceRangeSlider({
   bounds,
   min,
@@ -40,9 +74,7 @@ export function PriceRangeSlider({
   const { min: boundMin, max: boundMax } = bounds;
   const isSinglePrice = boundMax <= boundMin;
   const isActive = isPriceFilterActive(min, max, bounds);
-  const step = isSinglePrice
-    ? 1
-    : Math.max(1, Math.round((boundMax - boundMin) / 50));
+  const step = getPriceSliderStep(boundMin, boundMax);
 
   const left = toPercent(min, boundMin, boundMax);
   const right = toPercent(max, boundMin, boundMax);
@@ -78,25 +110,27 @@ export function PriceRangeSlider({
           <input
             type="range"
             min={boundMin}
-            max={boundMax}
+            max={max}
             step={step}
             value={min}
             aria-label={fromLabel}
             onChange={(event) => {
-              const next = Number(event.target.value);
+              const raw = Number(event.target.value);
+              const next = snapToRangeEdge(raw, boundMin, boundMax, 'min');
               onMinChange(Math.min(next, max));
             }}
             className="price-range-thumb absolute inset-0 z-20 w-full cursor-pointer appearance-none bg-transparent"
           />
           <input
             type="range"
-            min={boundMin}
+            min={min}
             max={boundMax}
             step={step}
             value={max}
             aria-label={toLabel}
             onChange={(event) => {
-              const next = Number(event.target.value);
+              const raw = Number(event.target.value);
+              const next = snapToRangeEdge(raw, boundMin, boundMax, 'max');
               onMaxChange(Math.max(next, min));
             }}
             className="price-range-thumb absolute inset-0 z-30 w-full cursor-pointer appearance-none bg-transparent"
