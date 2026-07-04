@@ -40,6 +40,7 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
     status: cartValidationStatus,
     validation,
     isBlocked: isCartBlocked,
+    validateNow,
   } = useCartValidation();
 
   const [form, setForm] = useState({
@@ -62,6 +63,7 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
   >("idle");
   const [promoDiscount, setPromoDiscount] = useState(0);
   const [promoError, setPromoError] = useState("");
+  const [submitRecheck, setSubmitRecheck] = useState(false);
 
   const subtotal = calculateTotal(items);
   const discountAmount =
@@ -131,7 +133,17 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    if (!validate() || items.length === 0 || !selectedShipping || isCartBlocked) {
+    if (!validate() || items.length === 0 || !selectedShipping) {
+      return;
+    }
+
+    setSubmitRecheck(true);
+    const cartResult = await validateNow();
+
+    if (!cartResult?.valid) {
+      document
+        .getElementById("checkout-cart-validation")
+        ?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
 
@@ -201,6 +213,9 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
     );
   }
 
+  const isCheckingCart = cartValidationStatus === "loading";
+  const isPlacingOrder = status === "submitting";
+
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
       <h1 className="text-3xl font-bold text-neutral-900">{t.checkout.title}</h1>
@@ -216,9 +231,11 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
       <CheckoutBlockedNotice
         status={cartValidationStatus}
         validation={validation}
+        submitRecheck={submitRecheck}
       />
 
-      {isCartBlocked && cartValidationStatus === 'ready' && (
+      {(isCartBlocked || (submitRecheck && validation && !validation.valid)) &&
+        cartValidationStatus === "ready" && (
         <div className="mt-4">
           <Link
             href="/cart"
@@ -229,12 +246,7 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
         </div>
       )}
 
-      <form
-        onSubmit={handleSubmit}
-        className={`mt-8 grid gap-8 lg:grid-cols-3 ${
-          isCartBlocked ? 'pointer-events-none opacity-60' : ''
-        }`}
-      >
+      <form onSubmit={handleSubmit} className="mt-8 grid gap-8 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
           <section className="rounded-xl border border-neutral-200 bg-white p-6">
             <h2 className="mb-3 text-lg font-semibold text-neutral-900">
@@ -509,10 +521,16 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
 
             <button
               type="submit"
-              disabled={status === "submitting" || isCartBlocked}
+              disabled={isPlacingOrder || isCheckingCart}
               className="mt-6 w-full rounded-lg bg-neutral-900 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-500"
             >
-              {status === "submitting" ? t.checkout.placing : t.checkout.placeOrder}
+              {isPlacingOrder
+                ? t.checkout.placing
+                : isCheckingCart && submitRecheck
+                  ? t.checkout.cartValidation.submitRechecking
+                  : isCheckingCart
+                    ? t.checkout.cartValidation.checking
+                    : t.checkout.placeOrder}
             </button>
           </div>
         </aside>

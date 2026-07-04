@@ -151,7 +151,9 @@
       "checking": "Checking item availability and prices...",
       "failed": "We couldn't verify your cart right now. Please return to the cart and try again.",
       "blockedTitle": "Your order can't be placed yet",
-      "blockedMessage": "Some cart items are unavailable, out of stock, or have price changes. Go back to your cart to fix them."
+      "blockedMessage": "Some cart items are unavailable, out of stock, or have price changes. Go back to your cart to fix them.",
+      "submitRechecking": "Rechecking your cart before placing the order...",
+      "submitRecheckFailed": "We rechecked your cart and found issues. Review the messages below, then return to your cart to fix them."
     }
   },
   "affiliates": {

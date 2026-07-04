@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useCartStore } from '@/lib/cart/cart-store';
+import { requestCartValidation } from '@/lib/cart/request-cart-validation';
 import type { CartValidationResult } from '@/lib/cart/validate-cart';
 import { hasBlockingCartIssues } from '@/lib/cart/validate-cart';
 
@@ -13,6 +14,7 @@ type UseCartValidationResult = {
   validation: CartValidationResult | null;
   isBlocked: boolean;
   refresh: () => void;
+  validateNow: () => Promise<CartValidationResult | null>;
 };
 
 export function useCartValidation(): UseCartValidationResult {
@@ -34,6 +36,29 @@ export function useCartValidation(): UseCartValidationResult {
     [items],
   );
 
+  const validateNow = useCallback(async (): Promise<CartValidationResult | null> => {
+    const currentItems = useCartStore.getState().items;
+
+    if (currentItems.length === 0) {
+      setValidation(null);
+      setStatus('idle');
+      return null;
+    }
+
+    setStatus('loading');
+
+    try {
+      const result = await requestCartValidation(currentItems);
+      setValidation(result);
+      setStatus('ready');
+      return result;
+    } catch {
+      setValidation(null);
+      setStatus('error');
+      return null;
+    }
+  }, []);
+
   useEffect(() => {
     const currentItems = useCartStore.getState().items;
 
@@ -49,40 +74,11 @@ export function useCartValidation(): UseCartValidationResult {
       setStatus('loading');
 
       try {
-        const response = await fetch('/api/cart/validate', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            items: currentItems.map((item) => ({
-              documentId: item.documentId,
-              quantity: item.quantity,
-              price: item.price,
-              discountPrice: item.discountPrice,
-              has_sale: item.has_sale,
-            })),
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error('Cart validation failed');
-        }
-
-        const result = (await response.json()) as CartValidationResult;
+        const result = await requestCartValidation(currentItems);
 
         if (cancelled) {
           return;
         }
-
-        useCartStore.getState().syncItemSnapshots(
-          result.items
-            .filter((item) => item.stockQuantity !== null)
-            .map((item) => ({
-              documentId: item.documentId,
-              stockQuantity: item.stockQuantity as number,
-            })),
-        );
 
         setValidation(result);
         setStatus('ready');
@@ -109,5 +105,6 @@ export function useCartValidation(): UseCartValidationResult {
       status === 'error' ||
       hasBlockingCartIssues(validation),
     refresh: () => setRefreshToken((value) => value + 1),
+    validateNow,
   };
 }

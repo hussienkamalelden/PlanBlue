@@ -15,6 +15,7 @@ import { useTranslations } from '@/lib/i18n/use-translations';
 type CartValidationBannerProps = {
   status: 'idle' | 'loading' | 'ready' | 'error';
   validation: CartValidationResult | null;
+  submitRecheck?: boolean;
 };
 
 export function CartValidationBanner({
@@ -125,20 +126,29 @@ function renderIssueMessage(
 export function CheckoutBlockedNotice({
   status,
   validation,
+  submitRecheck = false,
 }: CartValidationBannerProps) {
   const t = useTranslations();
 
   if (status === 'loading') {
     return (
-      <div className="mt-6 rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-600">
-        {t.checkout.cartValidation.checking}
+      <div
+        id="checkout-cart-validation"
+        className="mt-6 rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-600"
+      >
+        {submitRecheck
+          ? t.checkout.cartValidation.submitRechecking
+          : t.checkout.cartValidation.checking}
       </div>
     );
   }
 
   if (status === 'error') {
     return (
-      <div className="mt-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+      <div
+        id="checkout-cart-validation"
+        className="mt-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+      >
         {t.checkout.cartValidation.failed}
       </div>
     );
@@ -149,12 +159,17 @@ export function CheckoutBlockedNotice({
   }
 
   return (
-    <div className="mt-6 rounded-xl border border-amber-300 bg-amber-50 px-4 py-4">
+    <div
+      id="checkout-cart-validation"
+      className="mt-6 rounded-xl border border-amber-300 bg-amber-50 px-4 py-4"
+    >
       <p className="text-sm font-semibold text-amber-900">
         {t.checkout.cartValidation.blockedTitle}
       </p>
       <p className="mt-1 text-sm text-amber-800">
-        {t.checkout.cartValidation.blockedMessage}
+        {submitRecheck
+          ? t.checkout.cartValidation.submitRecheckFailed
+          : t.checkout.cartValidation.blockedMessage}
       </p>
     </div>
   );
