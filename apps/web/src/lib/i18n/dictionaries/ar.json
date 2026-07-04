@@ -31,7 +31,11 @@
     "age2to3": "2–3 سنوات",
     "age3to4": "3–4 سنوات",
     "age4to6": "4–6 سنوات",
-    "ageAbove6": "أكثر من 6"
+    "ageAbove6": "أكثر من 6",
+    "priceTitle": "السعر",
+    "priceFrom": "من",
+    "priceTo": "إلى",
+    "priceReset": "إعادة ضبط"
   },
   "category": {
     "title": "الفئات",

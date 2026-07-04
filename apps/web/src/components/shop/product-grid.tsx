@@ -6,6 +6,7 @@ import { useTranslations } from "@/lib/i18n/use-translations";
 import {
   filterProductsByAge,
   filterProductsByCategory,
+  filterProductsByPrice,
   sortProducts,
   type ActiveFilterTag,
   type AgeFilter,
@@ -18,6 +19,8 @@ type ProductGridProps = {
   selectedCategoryId: string | null;
   selectedAgeFilter: AgeFilter;
   selectedSort: ProductSort;
+  priceMin: number;
+  priceMax: number;
   activeTags: ActiveFilterTag[];
   onRemoveTag: (tag: ActiveFilterTag) => void;
 };
@@ -27,15 +30,21 @@ export function ProductGrid({
   selectedCategoryId,
   selectedAgeFilter,
   selectedSort,
+  priceMin,
+  priceMax,
   activeTags,
   onRemoveTag,
 }: ProductGridProps) {
   const t = useTranslations();
 
   const visibleProducts = sortProducts(
-    filterProductsByAge(
-      filterProductsByCategory(products, selectedCategoryId),
-      selectedAgeFilter,
+    filterProductsByPrice(
+      filterProductsByAge(
+        filterProductsByCategory(products, selectedCategoryId),
+        selectedAgeFilter,
+      ),
+      priceMin,
+      priceMax,
     ),
     selectedSort,
   );

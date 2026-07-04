@@ -31,7 +31,11 @@
     "age2to3": "2–3 years",
     "age3to4": "3–4 years",
     "age4to6": "4–6 years",
-    "ageAbove6": "Above 6"
+    "ageAbove6": "Above 6",
+    "priceTitle": "Price",
+    "priceFrom": "From",
+    "priceTo": "To",
+    "priceReset": "Reset"
   },
   "category": {
     "title": "Categories",

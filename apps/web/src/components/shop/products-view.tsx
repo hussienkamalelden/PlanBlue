@@ -4,9 +4,12 @@ import { useEffect, useMemo, useState } from "react";
 
 import { ProductFiltersSidebar } from "@/components/shop/product-filters-sidebar";
 import { ProductGrid } from "@/components/shop/product-grid";
+import { formatPrice } from "@/lib/api/strapi";
 import {
   type ActiveFilterTag,
   type AgeFilter,
+  getProductPriceBounds,
+  isPriceFilterActive,
   type ProductSort,
 } from "@/lib/product/filters";
 import { useTranslations } from "@/lib/i18n/use-translations";
@@ -28,11 +31,20 @@ export function ProductsView({ categories, products }: ProductsViewProps) {
   const [selectedSort, setSelectedSort] = useState<ProductSort>(null);
   const [selectedAgeFilter, setSelectedAgeFilter] = useState<AgeFilter>(null);
 
+  const priceBounds = useMemo(
+    () => getProductPriceBounds(products),
+    [products],
+  );
+  const [priceMin, setPriceMin] = useState(priceBounds.min);
+  const [priceMax, setPriceMax] = useState(priceBounds.max);
+
   useEffect(() => {
     setSelectedCategoryId(null);
     setSelectedSort(null);
     setSelectedAgeFilter(null);
-  }, [categories, products]);
+    setPriceMin(priceBounds.min);
+    setPriceMax(priceBounds.max);
+  }, [categories, products, priceBounds.min, priceBounds.max]);
 
   const activeTags = useMemo(() => {
     const tags: ActiveFilterTag[] = [];
@@ -67,6 +79,16 @@ export function ProductsView({ categories, products }: ProductsViewProps) {
       });
     }
 
+    if (isPriceFilterActive(priceMin, priceMax, priceBounds)) {
+      tags.push({
+        key: 'price-range',
+        type: 'price',
+        min: priceMin,
+        max: priceMax,
+        label: `${formatPrice(priceMin, locale)} – ${formatPrice(priceMax, locale)}`,
+      });
+    }
+
     if (selectedCategoryId) {
       const category = categories.find(
         (item) => item.documentId === selectedCategoryId,
@@ -83,7 +105,17 @@ export function ProductsView({ categories, products }: ProductsViewProps) {
     }
 
     return tags;
-  }, [categories, locale, selectedAgeFilter, selectedCategoryId, selectedSort, t]);
+  }, [
+    categories,
+    locale,
+    priceBounds,
+    priceMax,
+    priceMin,
+    selectedAgeFilter,
+    selectedCategoryId,
+    selectedSort,
+    t,
+  ]);
 
   function handleRemoveTag(tag: ActiveFilterTag) {
     if (tag.type === 'category') {
@@ -93,6 +125,12 @@ export function ProductsView({ categories, products }: ProductsViewProps) {
 
     if (tag.type === 'age') {
       setSelectedAgeFilter(null);
+      return;
+    }
+
+    if (tag.type === 'price') {
+      setPriceMin(priceBounds.min);
+      setPriceMax(priceBounds.max);
       return;
     }
 
@@ -106,9 +144,14 @@ export function ProductsView({ categories, products }: ProductsViewProps) {
         selectedCategoryId={selectedCategoryId}
         selectedSort={selectedSort}
         selectedAgeFilter={selectedAgeFilter}
+        priceMin={priceMin}
+        priceMax={priceMax}
+        priceBounds={priceBounds}
         onSelectCategory={setSelectedCategoryId}
         onSelectSort={setSelectedSort}
         onSelectAgeFilter={setSelectedAgeFilter}
+        onPriceMinChange={setPriceMin}
+        onPriceMaxChange={setPriceMax}
       />
 
       <ProductGrid
@@ -116,6 +159,8 @@ export function ProductsView({ categories, products }: ProductsViewProps) {
         selectedCategoryId={selectedCategoryId}
         selectedAgeFilter={selectedAgeFilter}
         selectedSort={selectedSort}
+        priceMin={priceMin}
+        priceMax={priceMax}
         activeTags={activeTags}
         onRemoveTag={handleRemoveTag}
       />

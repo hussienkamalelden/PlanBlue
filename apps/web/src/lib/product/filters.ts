@@ -1,7 +1,7 @@
+import { getProductPrices } from '@/lib/api/strapi';
 import type { StrapiProduct } from '@/lib/types/strapi';
 
 export type ProductSort = 'top_sellers' | 'most_viewed' | null;
-
 /** Age bucket filter — null means no age filter (show all products). */
 export type AgeFilter =
   | '0-1'
@@ -30,6 +30,13 @@ export type ActiveFilterTag =
       type: 'sort';
       sort: Exclude<ProductSort, null>;
       label: string;
+    }
+  | {
+      key: string;
+      type: 'price';
+      min: number;
+      max: number;
+      label: string;
     };
 
 export const AGE_FILTER_OPTIONS: Exclude<AgeFilter, null>[] = [
@@ -49,6 +56,45 @@ export function getProductAgeBucket(age: number): Exclude<AgeFilter, null> {
   if (age === 3) return '3-4';
   if (age === 4 || age === 5) return '4-6';
   return '6+';
+}
+
+export function getProductDisplayPrice(product: StrapiProduct): number {
+  const { basePrice, salePrice } = getProductPrices(product);
+  return salePrice ?? basePrice;
+}
+
+export function getProductPriceBounds(products: StrapiProduct[]): {
+  min: number;
+  max: number;
+} {
+  if (products.length === 0) {
+    return { min: 0, max: 0 };
+  }
+
+  const prices = products.map(getProductDisplayPrice);
+  return {
+    min: Math.min(...prices),
+    max: Math.max(...prices),
+  };
+}
+
+export function isPriceFilterActive(
+  min: number,
+  max: number,
+  bounds: { min: number; max: number },
+): boolean {
+  return min > bounds.min || max < bounds.max;
+}
+
+export function filterProductsByPrice(
+  products: StrapiProduct[],
+  min: number,
+  max: number,
+): StrapiProduct[] {
+  return products.filter((product) => {
+    const price = getProductDisplayPrice(product);
+    return price >= min && price <= max;
+  });
 }
 
 export function filterProductsByCategory(

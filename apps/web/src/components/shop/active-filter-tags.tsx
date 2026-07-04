@@ -20,7 +20,7 @@ export function ActiveFilterTags({ tags, onRemove }: ActiveFilterTagsProps) {
       {tags.map((tag) => (
         <span
           key={tag.key}
-          className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 bg-neutral-100 py-1 pl-3 pr-1.5 text-sm text-neutral-800"
+          className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 bg-neutral-100 py-1 ps-3 pe-1.5 text-sm text-neutral-800"
         >
           <span>{tag.label}</span>
           <button

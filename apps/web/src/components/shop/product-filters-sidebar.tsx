@@ -1,5 +1,6 @@
 'use client';
 
+import { PriceRangeSlider } from '@/components/shop/price-range-slider';
 import { useTranslations } from '@/lib/i18n/use-translations';
 import {
   AGE_FILTER_OPTIONS,
@@ -8,15 +9,19 @@ import {
 } from '@/lib/product/filters';
 import type { StrapiCategory } from '@/lib/types/strapi';
 import { useLocaleStore } from '@/stores/locale-store';
-
 type ProductFiltersSidebarProps = {
   categories: StrapiCategory[];
   selectedCategoryId: string | null;
   selectedSort: ProductSort;
   selectedAgeFilter: AgeFilter;
+  priceMin: number;
+  priceMax: number;
+  priceBounds: { min: number; max: number };
   onSelectCategory: (categoryId: string | null) => void;
   onSelectSort: (sort: ProductSort) => void;
   onSelectAgeFilter: (filter: AgeFilter) => void;
+  onPriceMinChange: (value: number) => void;
+  onPriceMaxChange: (value: number) => void;
 };
 
 const SORT_OPTIONS: Exclude<ProductSort, null>[] = ['top_sellers', 'most_viewed'];
@@ -26,9 +31,14 @@ export function ProductFiltersSidebar({
   selectedCategoryId,
   selectedSort,
   selectedAgeFilter,
+  priceMin,
+  priceMax,
+  priceBounds,
   onSelectCategory,
   onSelectSort,
   onSelectAgeFilter,
+  onPriceMinChange,
+  onPriceMaxChange,
 }: ProductFiltersSidebarProps) {
   const t = useTranslations();
   const locale = useLocaleStore((state) => state.locale);
@@ -78,6 +88,25 @@ export function ProductFiltersSidebar({
           </ul>
         </FilterSection>
 
+        {priceBounds.max > 0 && (
+          <FilterSection title={t.products.priceTitle}>
+            <PriceRangeSlider
+              bounds={priceBounds}
+              min={priceMin}
+              max={priceMax}
+              locale={locale}
+              fromLabel={t.products.priceFrom}
+              toLabel={t.products.priceTo}
+              resetLabel={t.products.priceReset}
+              onMinChange={onPriceMinChange}
+              onMaxChange={onPriceMaxChange}
+              onReset={() => {
+                onPriceMinChange(priceBounds.min);
+                onPriceMaxChange(priceBounds.max);
+              }}
+            />
+          </FilterSection>
+        )}
         <FilterSection title={t.products.ageTitle}>
           <ul className="space-y-1">
             {AGE_FILTER_OPTIONS.map((filter) => (
