@@ -353,6 +353,9 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
               </div>
               {giftWrapping && (
                 <div className="sm:col-span-2">
+                  <p className="mb-2 text-sm font-semibold text-neutral-600">
+                    {t.checkout.giftWrappingNote}
+                  </p>
                   <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-neutral-200 bg-neutral-50 p-4 transition-colors hover:border-neutral-300">
                     <input
                       type="checkbox"
