@@ -648,7 +648,7 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     available_stock: Schema.Attribute.Integer & Schema.Attribute.Required;
     batteries_quantity: Schema.Attribute.String;
     batteries_size: Schema.Attribute.Enumeration<
-      ['Size AAA', 'Size AA', 'Size C', 'Size D', 'Other']
+      ['Size AAA', 'Size AA', 'Size C', 'Size D', 'Others']
     >;
     categories: Schema.Attribute.Relation<
       'manyToMany',
