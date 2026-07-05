@@ -157,6 +157,15 @@ const AdminOrderEmail = ({
                   <Text style={{ ...rowValue, color: '#16a34a' }}>-{discount_amount} EGP</Text>
                 </Row>
               )}
+              {batteries_summary && (
+                <Row style={batteriesRow}>
+                  <Text style={batteriesRowTitle}>🔋 BATTERIES TO PREPARE (FREE)</Text>
+                  <Text style={batteriesRowList}>{batteries_summary}</Text>
+                  <Text style={batteriesRowNote}>
+                    Include these batteries in the package before sealing.
+                  </Text>
+                </Row>
+              )}
               <Row style={orderRow}>
                 <Text style={rowLabel}>Shipping ({governorate})</Text>
                 <Text style={rowValue}>{shipping_cost} EGP</Text>
@@ -175,24 +184,6 @@ const AdminOrderEmail = ({
               </Row>
             </Section>
           </Section>
-
-          {/* Batteries Preparation Notice */}
-          {batteries_summary && (
-            <Section style={contentSection}>
-              <Section style={batteriesAlertCard}>
-                <Text style={batteriesAlertTitle}>
-                  🔋 BATTERIES TO PREPARE WITH THIS ORDER
-                </Text>
-                <Text style={batteriesAlertDescription}>
-                  The following batteries must be included in the shipment package (FREE for customer):
-                </Text>
-                <Text style={batteriesAlertList}>{batteries_summary}</Text>
-                <Text style={batteriesAlertNote}>
-                  Please verify battery stock and include them before sealing the package.
-                </Text>
-              </Section>
-            </Section>
-          )}
 
           {/* Email Footer metadata */}
           <Section style={footerSection}>
@@ -372,42 +363,34 @@ const footerText = {
   margin: '0',
 };
 
-const batteriesAlertCard = {
+const batteriesRow = {
+  borderBottom: '1px solid #eab308',
+  padding: '12px',
   backgroundColor: '#fef9c3',
-  borderRadius: '12px',
-  padding: '20px',
-  border: '2px solid #eab308',
-};
-
-const batteriesAlertTitle = {
-  fontWeight: '700',
-  fontSize: '15px',
-  color: '#854d0e',
-  margin: '0 0 10px 0',
-  textTransform: 'uppercase' as const,
-  letterSpacing: '0.5px',
-};
-
-const batteriesAlertDescription = {
-  fontSize: '14px',
-  color: '#713f12',
-  margin: '0 0 12px 0',
-  lineHeight: '1.5',
-};
-
-const batteriesAlertList = {
-  fontSize: '14px',
-  fontWeight: '700',
-  color: '#854d0e',
-  margin: '0 0 12px 0',
-  whiteSpace: 'pre-line' as const,
-  backgroundColor: '#fef08a',
-  padding: '12px 16px',
   borderRadius: '8px',
+  marginTop: '4px',
+  marginBottom: '4px',
 };
 
-const batteriesAlertNote = {
+const batteriesRowTitle = {
+  fontWeight: '700',
   fontSize: '13px',
+  color: '#854d0e',
+  margin: '0 0 6px 0',
+  textTransform: 'uppercase' as const,
+  letterSpacing: '0.3px',
+};
+
+const batteriesRowList = {
+  fontSize: '14px',
+  fontWeight: '700',
+  color: '#854d0e',
+  margin: '0 0 6px 0',
+  whiteSpace: 'pre-line' as const,
+};
+
+const batteriesRowNote = {
+  fontSize: '12px',
   color: '#a16207',
   margin: '0',
   fontWeight: '600',
