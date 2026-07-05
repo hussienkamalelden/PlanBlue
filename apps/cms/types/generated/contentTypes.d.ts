@@ -646,6 +646,10 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<true>;
     available_stock: Schema.Attribute.Integer & Schema.Attribute.Required;
+    batteries_quantity: Schema.Attribute.String;
+    batteries_size: Schema.Attribute.Enumeration<
+      ['Size AAA', 'Size AA', 'Size C', 'Size D', 'Other']
+    >;
     categories: Schema.Attribute.Relation<
       'manyToMany',
       'api::category.category'
@@ -670,6 +674,9 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
       true
     > &
       Schema.Attribute.Required;
+    need_batteries: Schema.Attribute.Boolean &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<false>;
     price: Schema.Attribute.Decimal & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
     sku: Schema.Attribute.String &

@@ -113,6 +113,45 @@
     "all_ages": {
       "type": "boolean",
       "default": true
+    },
+    "need_batteries": {
+      "type": "boolean",
+      "required": true,
+      "default": false
+    },
+    "batteries_size": {
+      "type": "enumeration",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "need_batteries"
+            },
+            true
+          ]
+        }
+      },
+      "enum": [
+        "Size AAA",
+        "Size AA",
+        "Size C",
+        "Size D",
+        "Other"
+      ]
+    },
+    "batteries_quantity": {
+      "type": "string",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "need_batteries"
+            },
+            true
+          ]
+        }
+      },
+      "required": false
     }
   }
 }
