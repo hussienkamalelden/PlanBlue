@@ -19,8 +19,39 @@ type OrderItem = {
     price: number;
     has_sale: boolean;
     discount_percentage: number;
+    need_batteries: boolean;
+    batteries_size: string | null;
+    batteries_quantity: string | null;
   };
 };
+
+type BatterySummaryItem = {
+  size: string;
+  quantity: number;
+};
+
+function buildBatteriesSummary(items: OrderItem[]): BatterySummaryItem[] {
+  const map = new Map<string, number>();
+
+  for (const item of items) {
+    const product = item.product;
+    if (!product?.need_batteries || !product.batteries_size) continue;
+
+    const perUnit = Number(product.batteries_quantity ?? 0);
+    if (perUnit <= 0) continue;
+
+    const totalQty = perUnit * item.quantity;
+    const size = product.batteries_size;
+    map.set(size, (map.get(size) ?? 0) + totalQty);
+  }
+
+  return Array.from(map.entries()).map(([size, quantity]) => ({ size, quantity }));
+}
+
+function formatBatteriesSummaryText(batteries: BatterySummaryItem[]): string {
+  if (batteries.length === 0) return '';
+  return batteries.map((b) => `${b.size} × ${b.quantity}`).join('\n');
+}
 
 type SendOrderEmailsOptions = {
   isUpdate?: boolean;
@@ -60,6 +91,9 @@ async function getPopulatedOrderItems(
                 'price',
                 'has_sale',
                 'discount_percentage',
+                'need_batteries',
+                'batteries_size',
+                'batteries_quantity',
               ],
             },
           },
@@ -122,6 +156,8 @@ export async function sendOrderNotificationEmails(
   }
 
   const formattedItems = formatOrderItemsForEmail(orderItems);
+  const batteriesSummary = buildBatteriesSummary(orderItems);
+  const batteriesText = formatBatteriesSummaryText(batteriesSummary);
   const subtotal = Number(
     (order.subtotal ?? calculateOrderSubtotal(orderItems)).toFixed(2),
   );
@@ -148,6 +184,7 @@ export async function sendOrderNotificationEmails(
     governorate: String(order.governorate ?? ''),
     promo_code: order.promo_code || '',
     is_update: isUpdate,
+    batteries_summary: batteriesText,
   };
 
   const clientSubject = isUpdate

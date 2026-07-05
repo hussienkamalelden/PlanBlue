@@ -39,6 +39,7 @@ interface EmailProps {
   governorate: string;
   promo_code: string;
   is_update?: boolean;
+  batteries_summary?: string;
 }
 
 const ClientOrderEmail = ({
@@ -58,6 +59,7 @@ const ClientOrderEmail = ({
   governorate,
   promo_code,
   is_update = false,
+  batteries_summary = '',
 }: EmailProps) => {
   return (
     <Html lang="ar" dir="rtl">
@@ -159,6 +161,19 @@ const ClientOrderEmail = ({
                 <Text style={totalValue}>{total} EGP</Text>
               </Row>
             </Section>
+            {batteries_summary && (
+              <Section style={batteriesCard}>
+                <Text style={batteriesTitle}>🔋 FREE Batteries Included!</Text>
+                <Text style={batteriesDescription}>
+                  Great news! The batteries needed for your toys are included for FREE with your order:
+                </Text>
+                <Text style={batteriesList}>{batteries_summary}</Text>
+                <Text style={batteriesNote}>
+                  No need to buy batteries separately — we have it covered!
+                </Text>
+              </Section>
+            )}
+
             <Text style={noticeText}>
               If you have any questions, we are always here to serve you
               directly through planbluestore@gmail.com
@@ -346,4 +361,44 @@ const footerSubtext = {
   fontSize: '11px',
   color: '#cbd5e1',
   margin: '5px 0 0 0',
+};
+
+const batteriesCard = {
+  backgroundColor: '#ecfdf5',
+  borderRadius: '12px',
+  padding: '20px',
+  border: '1px solid #a7f3d0',
+  marginBottom: '24px',
+};
+
+const batteriesTitle = {
+  fontWeight: '700',
+  fontSize: '16px',
+  color: '#065f46',
+  margin: '0 0 8px 0',
+};
+
+const batteriesDescription = {
+  fontSize: '14px',
+  color: '#047857',
+  margin: '0 0 12px 0',
+  lineHeight: '1.5',
+};
+
+const batteriesList = {
+  fontSize: '14px',
+  fontWeight: '600',
+  color: '#065f46',
+  margin: '0 0 12px 0',
+  whiteSpace: 'pre-line' as const,
+  backgroundColor: '#d1fae5',
+  padding: '10px 14px',
+  borderRadius: '8px',
+};
+
+const batteriesNote = {
+  fontSize: '13px',
+  color: '#059669',
+  margin: '0',
+  fontStyle: 'italic' as const,
 };

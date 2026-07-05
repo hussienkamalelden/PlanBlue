@@ -40,6 +40,7 @@ interface AdminEmailProps {
   governorate: string;
   promo_code: string;
   is_update?: boolean;
+  batteries_summary?: string;
 }
 
 const AdminOrderEmail = ({
@@ -59,6 +60,7 @@ const AdminOrderEmail = ({
   governorate,
   promo_code,
   is_update = false,
+  batteries_summary = '',
 }: AdminEmailProps) => {
   return (
     <Html lang="en" dir="ltr">
@@ -173,6 +175,24 @@ const AdminOrderEmail = ({
               </Row>
             </Section>
           </Section>
+
+          {/* Batteries Preparation Notice */}
+          {batteries_summary && (
+            <Section style={contentSection}>
+              <Section style={batteriesAlertCard}>
+                <Text style={batteriesAlertTitle}>
+                  🔋 BATTERIES TO PREPARE WITH THIS ORDER
+                </Text>
+                <Text style={batteriesAlertDescription}>
+                  The following batteries must be included in the shipment package (FREE for customer):
+                </Text>
+                <Text style={batteriesAlertList}>{batteries_summary}</Text>
+                <Text style={batteriesAlertNote}>
+                  Please verify battery stock and include them before sealing the package.
+                </Text>
+              </Section>
+            </Section>
+          )}
 
           {/* Email Footer metadata */}
           <Section style={footerSection}>
@@ -350,4 +370,45 @@ const footerText = {
   fontSize: '11px',
   color: '#94a3b8',
   margin: '0',
+};
+
+const batteriesAlertCard = {
+  backgroundColor: '#fef9c3',
+  borderRadius: '12px',
+  padding: '20px',
+  border: '2px solid #eab308',
+};
+
+const batteriesAlertTitle = {
+  fontWeight: '700',
+  fontSize: '15px',
+  color: '#854d0e',
+  margin: '0 0 10px 0',
+  textTransform: 'uppercase' as const,
+  letterSpacing: '0.5px',
+};
+
+const batteriesAlertDescription = {
+  fontSize: '14px',
+  color: '#713f12',
+  margin: '0 0 12px 0',
+  lineHeight: '1.5',
+};
+
+const batteriesAlertList = {
+  fontSize: '14px',
+  fontWeight: '700',
+  color: '#854d0e',
+  margin: '0 0 12px 0',
+  whiteSpace: 'pre-line' as const,
+  backgroundColor: '#fef08a',
+  padding: '12px 16px',
+  borderRadius: '8px',
+};
+
+const batteriesAlertNote = {
+  fontSize: '13px',
+  color: '#a16207',
+  margin: '0',
+  fontWeight: '600',
 };
