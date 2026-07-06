@@ -10,6 +10,31 @@
     "cart": "Cart",
     "affiliates": "Affiliates"
   },
+  "kiddex": {
+    "openHours": "Open Hours: Mon - Fri 8am - 6pm",
+    "liveChat": "Live Chat",
+    "promoPrefix": "Supper Value Deals -",
+    "promoCode": "Save more with coupons 2BD30X",
+    "phone": "91 2345 678",
+    "hotline": "Call out Hotline 24/7",
+    "searchPlaceholder": "Search Products",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "nav": {
+      "home": "Home",
+      "shop": "Shop",
+      "contact": "Contact",
+      "wishlist": "Wishlist",
+      "account": "Account"
+    },
+    "hero": {
+      "title": "The Best Kids Toy Store in the City",
+      "pricePrefix": "From",
+      "priceAmount": 42.99,
+      "cta": "View Shop",
+      "imageAlt": "Kids toys collection"
+    }
+  },
   "home": {
     "title": "Welcome to PlanBlue",
     "description": "Browse our toy collection — no account required.",

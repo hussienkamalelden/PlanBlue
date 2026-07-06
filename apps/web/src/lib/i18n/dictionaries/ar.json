@@ -10,6 +10,31 @@
     "cart": "السلة",
     "affiliates": "المسوقون"
   },
+  "kiddex": {
+    "openHours": "ساعات العمل: الإثنين - الجمعة 8 ص - 6 م",
+    "liveChat": "دردشة مباشرة",
+    "promoPrefix": "عروض قيمة -",
+    "promoCode": "وفّر أكثر مع كوبون 2BD30X",
+    "phone": "91 2345 678",
+    "hotline": "خط ساخن على مدار 24/7",
+    "searchPlaceholder": "ابحث عن المنتجات",
+    "openMenu": "فتح القائمة",
+    "closeMenu": "إغلاق القائمة",
+    "nav": {
+      "home": "الرئيسية",
+      "shop": "المتجر",
+      "contact": "تواصل",
+      "wishlist": "المفضلة",
+      "account": "الحساب"
+    },
+    "hero": {
+      "title": "أفضل متجر ألعاب أطفال في المدينة",
+      "pricePrefix": "من",
+      "priceAmount": 42.99,
+      "cta": "تسوق الآن",
+      "imageAlt": "مجموعة ألعاب أطفال"
+    }
+  },
   "home": {
     "title": "مرحباً بك في PlanBlue",
     "description": "تصفح مجموعتنا من الألعاب — لا حاجة لحساب.",

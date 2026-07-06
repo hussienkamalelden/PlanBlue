@@ -29,7 +29,7 @@ export function formatPrice(amount: number, locale: Locale): string {
     maximumFractionDigits: 2,
   }).format(amount);
 
-  return locale === "ar" ? `${formatted} جنيه` : `${formatted} EGP`;
+  return locale === "ar" ? `${formatted} جنيه مصري` : `${formatted} EGP`;
 }
 
 /** Like formatPrice, but drops “.00” when the amount is a whole number. */
@@ -42,7 +42,7 @@ export function formatCommission(amount: number, locale: Locale): string {
     maximumFractionDigits: 2,
   }).format(value);
 
-  return locale === "ar" ? `${formatted} جنيه` : `${formatted} EGP`;
+  return locale === "ar" ? `${formatted} جنيه مصري` : `${formatted} EGP`;
 }
 
 export function getMediaUrl(url: string): string {
