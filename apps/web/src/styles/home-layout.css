@@ -355,7 +355,7 @@
   font-size: clamp(24px, 3vw, 32px);
   line-height: 1.25;
   font-weight: 400;
-  color: var(--pb-title);
+  color: var(--pb-theme);
 }
 
 .pb-banner-section .pb-content-box h3 span {

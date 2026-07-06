@@ -1,10 +1,10 @@
-import Image from "next/image";
-import Link from "next/link";
+import Image from 'next/image';
+import Link from 'next/link';
 
-import { HOME_ASSETS } from "@/lib/assets/home";
-import { formatPrice } from "@/lib/api/strapi";
-import { getDictionary } from "@/lib/i18n/dictionary";
-import { getLocale } from "@/lib/i18n/get-locale";
+import { HOME_ASSETS } from '@/lib/assets/home';
+import { formatPrice } from '@/lib/api/strapi';
+import { getDictionary } from '@/lib/i18n/dictionary';
+import { getLocale } from '@/lib/i18n/get-locale';
 
 export async function HomeHero() {
   const locale = await getLocale();
@@ -80,10 +80,7 @@ export async function HomeHero() {
 
           <div className="pb-content-box">
             <h2>{t.home.hero.title}</h2>
-            <h3>
-              {t.home.hero.pricePrefix}{" "}
-              <span>{formatPrice(t.home.hero.priceAmount, locale)}</span>
-            </h3>
+
             <div>
               <Link href="/shop" className="pb-theme-btn">
                 {t.home.hero.cta}
