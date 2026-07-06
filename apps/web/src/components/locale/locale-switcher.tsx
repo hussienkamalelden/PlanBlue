@@ -14,11 +14,7 @@ const SWITCH_LABELS: Record<Locale, string> = {
   ar: "Switch to English",
 };
 
-type LocaleSwitcherProps = {
-  variant?: "default" | "compact";
-};
-
-export function LocaleSwitcher({ variant = "default" }: LocaleSwitcherProps) {
+export function LocaleSwitcher() {
   const locale = useLocaleStore((state) => state.locale);
   const setLocale = useLocaleStore((state) => state.setLocale);
 
@@ -33,12 +29,10 @@ export function LocaleSwitcher({ variant = "default" }: LocaleSwitcherProps) {
     <button
       type="button"
       onClick={handleToggle}
-      className={
-        variant === "compact" ? "kiddex-locale-toggle" : "kiddex-locale-toggle kiddex-locale-toggle--nav"
-      }
+      className="inline-flex h-[38px] min-w-[48px] items-center justify-center rounded-full border border-dashed border-neutral-300 bg-white px-3.5 text-sm font-bold text-neutral-900 transition-colors hover:border-[#f76188] hover:text-[#f76188]"
       aria-label={SWITCH_LABELS[locale]}
     >
-      {LABELS[locale]}
+      {LABELS[nextLocale]}
     </button>
   );
 }

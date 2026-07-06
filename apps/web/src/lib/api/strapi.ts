@@ -32,6 +32,16 @@ export function formatPrice(amount: number, locale: Locale): string {
   return locale === "ar" ? `${formatted} جنيه مصري` : `${formatted} EGP`;
 }
 
+/** Whole-number price display (no decimal fraction). */
+export function formatPriceWhole(amount: number, locale: Locale): string {
+  const formatted = new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-EG", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(Math.round(amount));
+
+  return locale === "ar" ? `${formatted} جنيه مصري` : `${formatted} EGP`;
+}
+
 /** Like formatPrice, but drops “.00” when the amount is a whole number. */
 export function formatCommission(amount: number, locale: Locale): string {
   const value = Number(amount);

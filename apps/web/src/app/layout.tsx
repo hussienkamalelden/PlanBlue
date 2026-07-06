@@ -10,7 +10,6 @@ import { getLocale } from '@/lib/i18n/get-locale';
 import type { Metadata } from 'next';
 import './globals.css';
 import '@/styles/kiddex-home.css';
-import '@/styles/page-loader.css';
 
 const nunito = Nunito({
   subsets: ['latin'],

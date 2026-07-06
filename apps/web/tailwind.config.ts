@@ -21,6 +21,19 @@ const config: Config = {
           silver: '#94A3B8',
         },
       },
+      keyframes: {
+        "pb-spinner": {
+          to: { transform: "rotate(360deg)" },
+        },
+        "pb-letter": {
+          "0%, 75%, 100%": { opacity: "0", transform: "rotateY(-90deg)" },
+          "25%, 50%": { opacity: "1", transform: "rotateY(0deg)" },
+        },
+      },
+      animation: {
+        "pb-spinner": "pb-spinner 1s linear infinite",
+        "pb-letter": "pb-letter 4s infinite",
+      },
     },
   },
   plugins: [],
