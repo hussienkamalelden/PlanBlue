@@ -140,8 +140,8 @@ function CarouselCard({
   }
 
   return (
-    <article className="flex h-full flex-col  border border-dashed border-neutral-300 hover:border-[#4389F7] bg-white px-6 pb-4 pt-8 text-center transition-shadow hover:shadow-md">
-      <div className=" mx-auto mb-6 h-[235px] w-full max-w-[235px] shrink-0">
+    <article className="group flex h-full flex-col overflow-hidden border border-dashed border-neutral-300 bg-white px-6 pb-4 pt-8 text-center transition-shadow hover:border-[#4389F7] hover:shadow-md">
+      <div className="mx-auto mb-6 h-[235px] w-full max-w-[235px] shrink-0">
         {item.has_sale && item.discount_percentage > 0 && (
           <span className="absolute start-0 top-0 z-10  bg-[#27D82E]/15 px-2.5 py-1 text-md font-semibold text-[#27D82E]">
             {item.discount_percentage}% {t.shopItem.sale}
@@ -158,7 +158,7 @@ function CarouselCard({
               alt={firstImage.name || title}
               width={235}
               height={235}
-              className="max-h-full max-w-full object-contain transition-transform duration-500 hover:scale-105"
+              className="max-h-full max-w-full object-contain transition-transform duration-500 group-hover:scale-105"
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center rounded-lg bg-neutral-100 text-4xl text-neutral-300">
@@ -168,7 +168,7 @@ function CarouselCard({
         </Link>
       </div>
 
-      <div className="flex flex-1 flex-col">
+      <div className="relative z-10 flex flex-1 flex-col bg-white transition-all duration-500 ease-in-out group-hover:-mt-[73px] group-hover:pb-[90px]">
         <h3 className="mb-1 line-clamp-2 min-h-[2.75rem] text-lg capitalize font-bold leading-snug text-neutral-900">
           <Link
             href={`/shop/${item.slug}`}
@@ -195,22 +195,24 @@ function CarouselCard({
           )}
         </div>
 
-        <button
-          type="button"
-          onClick={handleAddToCart}
-          disabled={outOfStock || isAdded}
-          className={`mt-auto rounded-full border-2 px-6 py-2.5 text-sm font-bold transition-colors ${
-            isAdded
-              ? 'cursor-default border-neutral-200 bg-neutral-100 text-neutral-500'
-              : 'border-dashed border-[#4389F7] bg-white text-[#4389F7] hover:bg-[#4389F7] hover:text-white disabled:cursor-not-allowed disabled:border-neutral-200 disabled:text-neutral-400 disabled:hover:bg-white disabled:hover:text-neutral-400'
-          }`}
-        >
-          {outOfStock
-            ? t.shopItem.outOfStock
-            : isAdded
-              ? t.shopItemDetail.addedToCart
-              : t.shopItemDetail.addToCart}
-        </button>
+        <div className="absolute bottom-10 left-0 w-full scale-x-0 opacity-0 transition-all duration-500 ease-in-out group-hover:scale-x-100 group-hover:opacity-100">
+          <button
+            type="button"
+            onClick={handleAddToCart}
+            disabled={outOfStock || isAdded}
+            className={`w-full rounded-full border-2 px-6 py-2.5 text-sm font-bold transition-colors ${
+              isAdded
+                ? 'cursor-default border-neutral-200 bg-neutral-100 text-neutral-500'
+                : 'border-dashed border-[#4389F7] bg-white text-[#4389F7] hover:bg-[#4389F7] hover:text-white disabled:cursor-not-allowed disabled:border-neutral-200 disabled:text-neutral-400 disabled:hover:bg-white disabled:hover:text-neutral-400'
+            }`}
+          >
+            {outOfStock
+              ? t.shopItem.outOfStock
+              : isAdded
+                ? t.shopItemDetail.addedToCart
+                : t.shopItemDetail.addToCart}
+          </button>
+        </div>
       </div>
     </article>
   );
