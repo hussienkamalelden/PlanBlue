@@ -6,7 +6,7 @@
     "error": "حدث خطأ. يرجى المحاولة مرة أخرى."
   },
   "header": {
-    "products": "المنتجات",
+    "products": "المتجر",
     "cart": "السلة",
     "affiliates": "المسوقون"
   },
@@ -17,7 +17,7 @@
     "promoCode": "وفّر أكثر مع كوبون 2BD30X",
     "phone": "91 2345 678",
     "hotline": "خط ساخن على مدار 24/7",
-    "searchPlaceholder": "ابحث عن المنتجات",
+    "searchPlaceholder": "ابحث في المتجر",
     "openMenu": "فتح القائمة",
     "closeMenu": "إغلاق القائمة",
     "nav": {
@@ -41,7 +41,7 @@
     "cta": "تسوق المنتجات"
   },
   "products": {
-    "title": "المنتجات",
+    "title": "المتجر",
     "empty": "لا توجد منتجات متاحة حالياً.",
     "filteredEmpty": "لا توجد منتجات تطابق الفلاتر المحددة.",
     "filtersTitle": "الفلاتر",
@@ -72,7 +72,7 @@
     "outOfStock": "غير متوفر"
   },
   "productDetail": {
-    "backToProducts": "العودة إلى المنتجات",
+    "backToProducts": "العودة إلى المتجر",
     "description": "الوصف",
     "basePrice": "السعر الأساسي",
     "discountPrice": "سعر التخفيض",

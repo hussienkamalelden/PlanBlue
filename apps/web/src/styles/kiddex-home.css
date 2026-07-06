@@ -10,7 +10,7 @@
 }
 
 .kiddex-home {
-  --kiddex-theme: #f76188;
+  --kiddex-theme: #4389F7;
   --kiddex-title: #111111;
   --kiddex-text: #666666;
   font-family: var(--font-nunito, 'Nunito', sans-serif);
@@ -302,7 +302,7 @@
   position: relative;
   padding: 70px 0 115px;
   overflow: hidden;
-  background: linear-gradient(78.33deg, #ffcf78 5.9%, #fee2b1 97.88%);
+  background: linear-gradient(78.33deg, #4389F7 5.9%, #7EB0FF 97.88%);
 }
 
 .kiddex-banner-section .kiddex-pattern-layer {

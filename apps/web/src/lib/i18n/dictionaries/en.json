@@ -6,7 +6,7 @@
     "error": "Something went wrong. Please try again."
   },
   "header": {
-    "products": "Products",
+    "products": "Shop",
     "cart": "Cart",
     "affiliates": "Affiliates"
   },
@@ -17,7 +17,7 @@
     "promoCode": "Save more with coupons 2BD30X",
     "phone": "91 2345 678",
     "hotline": "Call out Hotline 24/7",
-    "searchPlaceholder": "Search Products",
+    "searchPlaceholder": "Search Shop",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "nav": {
@@ -41,7 +41,7 @@
     "cta": "Shop products"
   },
   "products": {
-    "title": "Products",
+    "title": "Shop",
     "empty": "No products available yet.",
     "filteredEmpty": "No products match your filters.",
     "filtersTitle": "Filters",
@@ -72,7 +72,7 @@
     "outOfStock": "Out of stock"
   },
   "productDetail": {
-    "backToProducts": "Back to products",
+    "backToProducts": "Back to shop",
     "description": "Description",
     "basePrice": "Base price",
     "discountPrice": "Sale price",

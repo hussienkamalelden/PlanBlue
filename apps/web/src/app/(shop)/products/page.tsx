@@ -3,7 +3,7 @@ import { fetchCategories, fetchProducts } from '@/lib/api/strapi.server';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Products',
+  title: 'Shop',
 };
 
 export default async function ProductsPage() {

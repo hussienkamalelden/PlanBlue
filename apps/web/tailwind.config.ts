@@ -10,7 +10,7 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          primary: '#027DDA',
+          primary: '#4389F7',
           accent: '#0362C1',
           secondary: '#F7B90C',
           red: '#E42932',

@@ -29,7 +29,7 @@ export function PageLoader({ visible }: PageLoaderProps) {
 
   return createPortal(
     <div
-      className={`fixed inset-0 z-[99999] flex min-h-dvh w-full items-center justify-center bg-[#f76188] transition-opacity duration-300 ${
+      className={`fixed inset-0 z-[99999] flex min-h-dvh w-full items-center justify-center bg-[#4389F7] transition-opacity duration-300 ${
         visible
           ? "visible opacity-100"
           : "pointer-events-none invisible opacity-0"
@@ -40,7 +40,10 @@ export function PageLoader({ visible }: PageLoaderProps) {
       <div className="relative z-10 text-center">
         <div className="mx-auto mb-10 h-28 w-28 animate-pb-spinner rounded-full border-[3px] border-white border-t-white/30 sm:h-32 sm:w-32 md:mb-11 md:h-[150px] md:w-[150px]" />
 
-        <div className="select-none uppercase tracking-[0.35em] sm:tracking-[0.5em] md:tracking-[0.9em]">
+        <div
+          dir="ltr"
+          className="select-none uppercase tracking-[0.35em] sm:tracking-[0.5em] md:tracking-[0.9em]"
+        >
           {LOADER_LETTERS.map((letter, index) => (
             <span
               key={`${letter}-${index}`}

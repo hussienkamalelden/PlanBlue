@@ -5,9 +5,11 @@ import { useEffect, useRef, useState } from "react";
 
 import { PageLoader } from "@/components/ui/page-loader";
 import { PAGE_LOADER_START_EVENT } from "@/lib/ui/page-loader";
+import { useLocaleStore } from "@/stores/locale-store";
 
 const INITIAL_DELAY_MS = 900;
 const NAVIGATION_DELAY_MS = 500;
+const LOCALE_SWITCH_DELAY_MS = 450;
 
 function isInternalNavigationLink(anchor: HTMLAnchorElement, pathname: string) {
   const href = anchor.getAttribute("href");
@@ -29,21 +31,26 @@ function isInternalNavigationLink(anchor: HTMLAnchorElement, pathname: string) {
 
 export function NavigationLoader() {
   const pathname = usePathname();
+  const locale = useLocaleStore((state) => state.locale);
   const [visible, setVisible] = useState(true);
   const isFirstLoad = useRef(true);
+  const prevLocaleRef = useRef(locale);
   const hideTimer = useRef<number | null>(null);
 
-  useEffect(() => {
+  function scheduleHide(delay: number) {
     if (hideTimer.current) {
       window.clearTimeout(hideTimer.current);
     }
 
-    const delay = isFirstLoad.current ? INITIAL_DELAY_MS : NAVIGATION_DELAY_MS;
-    isFirstLoad.current = false;
-
     hideTimer.current = window.setTimeout(() => {
       setVisible(false);
     }, delay);
+  }
+
+  useEffect(() => {
+    const delay = isFirstLoad.current ? INITIAL_DELAY_MS : NAVIGATION_DELAY_MS;
+    isFirstLoad.current = false;
+    scheduleHide(delay);
 
     return () => {
       if (hideTimer.current) {
@@ -51,6 +58,22 @@ export function NavigationLoader() {
       }
     };
   }, [pathname]);
+
+  useEffect(() => {
+    if (prevLocaleRef.current === locale) {
+      return;
+    }
+
+    prevLocaleRef.current = locale;
+    setVisible(true);
+    scheduleHide(LOCALE_SWITCH_DELAY_MS);
+
+    return () => {
+      if (hideTimer.current) {
+        window.clearTimeout(hideTimer.current);
+      }
+    };
+  }, [locale]);
 
   useEffect(() => {
     function handleNavigationStart() {
