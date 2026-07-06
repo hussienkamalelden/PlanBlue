@@ -91,7 +91,7 @@ export function PopularShopCarousel({ items }: PopularShopCarouselProps) {
           swiper.navigation.update();
         }}
         breakpoints={breakpoints}
-        className="popular-shop-swiper !overflow-visible"
+        className="popular-shop-swiper "
       >
         {items.map((item) => (
           <SwiperSlide key={item.documentId} className="!h-auto">
