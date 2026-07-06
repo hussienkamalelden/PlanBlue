@@ -1,5 +1,5 @@
 import {
-  fetchProductsByDocumentIds,
+  fetchShopItemsByDocumentIds,
 } from '@/lib/api/strapi.server';
 import type { CartValidationPayloadItem } from '@/lib/cart/validate-cart';
 import { validateCartItems } from '@/lib/cart/validate-cart';
@@ -20,8 +20,8 @@ export async function POST(request: Request) {
     }
 
     const documentIds = [...new Set(items.map((item) => item.documentId))];
-    const products = await fetchProductsByDocumentIds(documentIds);
-    const result = validateCartItems(items, products);
+    const shopItems = await fetchShopItemsByDocumentIds(documentIds);
+    const result = validateCartItems(items, shopItems);
 
     return NextResponse.json(result);
   } catch {

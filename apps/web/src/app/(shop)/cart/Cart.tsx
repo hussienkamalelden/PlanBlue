@@ -53,7 +53,7 @@ export default function Cart() {
         <div className="rounded-xl border border-dashed border-neutral-300 bg-neutral-50 px-4 py-12 text-center">
           <p className="text-sm text-neutral-600">{t.cart.empty}</p>
           <Link
-            href="/products"
+            href="/shop"
             className="mt-6 inline-flex rounded-lg bg-neutral-900 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-neutral-800"
           >
             {t.cart.continueShopping}
@@ -83,7 +83,7 @@ export default function Cart() {
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
                       <Link
-                        href={`/products/${item.slug}`}
+                        href={`/shop/${item.slug}`}
                         className="text-base font-semibold text-neutral-900 hover:underline"
                       >
                         {item.title}
@@ -183,7 +183,7 @@ export default function Cart() {
               </Link>
 
               <Link
-                href="/products"
+                href="/shop"
                 className="flex-1 rounded-lg border border-neutral-200 px-6 py-3 text-center text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50"
               >
                 {t.cart.continueShopping}

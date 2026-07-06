@@ -2,7 +2,7 @@
 
 import { formatPrice } from '@/lib/api/strapi';
 import type { Locale } from '@/lib/i18n/config';
-import { isPriceFilterActive } from '@/lib/product/filters';
+import { isPriceFilterActive } from '@/lib/shop/filters';
 
 type PriceRangeSliderProps = {
   bounds: { min: number; max: number };

@@ -118,4 +118,30 @@
     background: transparent;
     border: none;
   }
+
+  .popular-shop-swiper .swiper-button-prev,
+  .popular-shop-swiper .swiper-button-next {
+    width: 44px;
+    height: 44px;
+    border-radius: 9999px;
+    background: #4389f7;
+    color: #fff;
+    transition: opacity 0.2s;
+  }
+
+  .popular-shop-swiper .swiper-button-prev::after,
+  .popular-shop-swiper .swiper-button-next::after {
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .popular-shop-swiper .swiper-button-prev:hover,
+  .popular-shop-swiper .swiper-button-next:hover {
+    opacity: 0.85;
+  }
+
+  .popular-shop-swiper .swiper-button-disabled {
+    opacity: 0.35;
+    pointer-events: none;
+  }
 }

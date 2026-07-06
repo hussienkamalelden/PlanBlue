@@ -12,5 +12,7 @@ export const HOME_ASSETS = {
     anim8: '/images/home/shapes/shape-8.png',
     anim9: '/images/home/shapes/shape-9.png',
     anim10: '/images/home/shapes/shape-10.png',
+    carouselPattern1: '/images/home/shapes/shape-19.png',
+    carouselPattern2: '/images/home/shapes/shape-20.png',
   },
 } as const;

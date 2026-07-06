@@ -34,7 +34,7 @@ export type StrapiCategory = {
   title_ar: string;
 };
 
-export type StrapiProduct = {
+export type StrapiShopItem = {
   id: number;
   documentId: string;
   title: string;

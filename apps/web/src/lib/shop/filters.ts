@@ -1,8 +1,8 @@
-import { getProductPrices } from '@/lib/api/strapi';
-import type { StrapiProduct } from '@/lib/types/strapi';
+import { getShopItemPrices } from '@/lib/api/strapi';
+import type { StrapiShopItem } from '@/lib/types/strapi';
 
-export type ProductSort = 'top_sellers' | 'most_viewed' | null;
-/** Age bucket filter — null means no age filter (show all products). */
+export type ShopSort = 'top_sellers' | 'most_viewed' | null;
+/** Age bucket filter — null means no age filter (show all items). */
 export type AgeFilter =
   | '0-1'
   | '1-2'
@@ -28,7 +28,7 @@ export type ActiveFilterTag =
   | {
       key: string;
       type: 'sort';
-      sort: Exclude<ProductSort, null>;
+      sort: Exclude<ShopSort, null>;
       label: string;
     }
   | {
@@ -48,8 +48,8 @@ export const AGE_FILTER_OPTIONS: Exclude<AgeFilter, null>[] = [
   '6+',
 ];
 
-/** Map a product's age integer to its filter bucket. */
-export function getProductAgeBucket(age: number): Exclude<AgeFilter, null> {
+/** Map a shop item's age integer to its filter bucket. */
+export function getShopItemAgeBucket(age: number): Exclude<AgeFilter, null> {
   if (age <= 0) return '0-1';
   if (age === 1) return '1-2';
   if (age === 2) return '2-3';
@@ -58,20 +58,20 @@ export function getProductAgeBucket(age: number): Exclude<AgeFilter, null> {
   return '6+';
 }
 
-export function getProductDisplayPrice(product: StrapiProduct): number {
-  const { basePrice, salePrice } = getProductPrices(product);
+export function getShopItemDisplayPrice(item: StrapiShopItem): number {
+  const { basePrice, salePrice } = getShopItemPrices(item);
   return salePrice ?? basePrice;
 }
 
-export function getProductPriceBounds(products: StrapiProduct[]): {
+export function getShopItemPriceBounds(items: StrapiShopItem[]): {
   min: number;
   max: number;
 } {
-  if (products.length === 0) {
+  if (items.length === 0) {
     return { min: 0, max: 0 };
   }
 
-  const prices = products.map(getProductDisplayPrice);
+  const prices = items.map(getShopItemDisplayPrice);
   return {
     min: Math.min(...prices),
     max: Math.max(...prices),
@@ -86,57 +86,57 @@ export function isPriceFilterActive(
   return min > bounds.min || max < bounds.max;
 }
 
-export function filterProductsByPrice(
-  products: StrapiProduct[],
+export function filterShopItemsByPrice(
+  items: StrapiShopItem[],
   min: number,
   max: number,
-): StrapiProduct[] {
-  return products.filter((product) => {
-    const price = getProductDisplayPrice(product);
+): StrapiShopItem[] {
+  return items.filter((item) => {
+    const price = getShopItemDisplayPrice(item);
     return price >= min && price <= max;
   });
 }
 
-export function filterProductsByCategory(
-  products: StrapiProduct[],
+export function filterShopItemsByCategory(
+  items: StrapiShopItem[],
   categoryId: string | null,
-): StrapiProduct[] {
+): StrapiShopItem[] {
   if (!categoryId) {
-    return products;
+    return items;
   }
 
-  return products.filter((product) =>
-    product.categories?.some((category) => category.documentId === categoryId),
+  return items.filter((item) =>
+    item.categories?.some((category) => category.documentId === categoryId),
   );
 }
 
-export function filterProductsByAge(
-  products: StrapiProduct[],
+export function filterShopItemsByAge(
+  items: StrapiShopItem[],
   ageFilter: AgeFilter,
-): StrapiProduct[] {
+): StrapiShopItem[] {
   if (!ageFilter) {
-    return products;
+    return items;
   }
 
-  return products.filter((product) => {
-    if (product.all_ages) {
+  return items.filter((item) => {
+    if (item.all_ages) {
       return true;
     }
 
-    const age = Number(product.age ?? 0);
-    return getProductAgeBucket(age) === ageFilter;
+    const age = Number(item.age ?? 0);
+    return getShopItemAgeBucket(age) === ageFilter;
   });
 }
 
-export function sortProducts(
-  products: StrapiProduct[],
-  sort: ProductSort,
-): StrapiProduct[] {
+export function sortShopItems(
+  items: StrapiShopItem[],
+  sort: ShopSort,
+): StrapiShopItem[] {
   if (!sort) {
-    return products;
+    return items;
   }
 
-  const sorted = [...products];
+  const sorted = [...items];
 
   if (sort === 'top_sellers') {
     return sorted.sort(

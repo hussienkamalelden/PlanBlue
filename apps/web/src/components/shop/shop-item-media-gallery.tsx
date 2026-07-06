@@ -8,12 +8,12 @@ import { interpolate } from '@/lib/i18n/dictionary';
 import { useTranslations } from '@/lib/i18n/use-translations';
 import type { StrapiMedia } from '@/lib/types/strapi';
 
-type ProductMediaGalleryProps = {
+type ShopItemMediaGalleryProps = {
   media: StrapiMedia[];
   alt: string;
 };
 
-export function ProductMediaGallery({ media, alt }: ProductMediaGalleryProps) {
+export function ShopItemMediaGallery({ media, alt }: ShopItemMediaGalleryProps) {
   const t = useTranslations();
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -55,16 +55,16 @@ export function ProductMediaGallery({ media, alt }: ProductMediaGalleryProps) {
 
       {media.length > 1 && (
         <div className="flex gap-2 overflow-x-auto pb-1">
-          {media.map((item, index) => {
-            const isVideo = isVideoMedia(item.mime);
+          {media.map((entry, index) => {
+            const isVideo = isVideoMedia(entry.mime);
             const isActive = index === activeIndex;
             const label = isVideo
-              ? interpolate(t.productDetail.mediaVideo, { index: index + 1 })
-              : interpolate(t.productDetail.mediaImage, { index: index + 1 });
+              ? interpolate(t.shopItemDetail.mediaVideo, { index: index + 1 })
+              : interpolate(t.shopItemDetail.mediaImage, { index: index + 1 });
 
             return (
               <button
-                key={`${item.url}-${index}`}
+                key={`${entry.url}-${index}`}
                 type="button"
                 onClick={() => setActiveIndex(index)}
                 aria-label={label}
@@ -83,7 +83,7 @@ export function ProductMediaGallery({ media, alt }: ProductMediaGalleryProps) {
                   </div>
                 ) : (
                   <Image
-                    src={getMediaUrl(item.url)}
+                    src={getMediaUrl(entry.url)}
                     alt=""
                     fill
                     className="object-cover"

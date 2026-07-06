@@ -8,9 +8,7 @@
   "header": {
     "products": "Shop",
     "cart": "Cart",
-    "affiliates": "Affiliates"
-  },
-  "kiddex": {
+    "affiliates": "Affiliates",
     "openHours": "Open Hours: Mon - Fri 8am - 6pm",
     "liveChat": "Live Chat",
     "promoPrefix": "Supper Value Deals -",
@@ -26,21 +24,25 @@
       "contact": "Contact",
       "wishlist": "Wishlist",
       "account": "Account"
-    },
+    }
+  },
+  "home": {
+    "title": "Welcome to PlanBlue",
+    "description": "Browse our toy collection — no account required.",
+    "cta": "Shop products",
     "hero": {
       "title": "The Best Kids Toy Store in the City",
       "pricePrefix": "From",
       "priceAmount": 42.99,
       "cta": "View Shop",
       "imageAlt": "Kids toys collection"
+    },
+    "popular": {
+      "title": "Today's",
+      "highlight": "popular picks"
     }
   },
-  "home": {
-    "title": "Welcome to PlanBlue",
-    "description": "Browse our toy collection — no account required.",
-    "cta": "Shop products"
-  },
-  "products": {
+  "shop": {
     "title": "Shop",
     "empty": "No products available yet.",
     "filteredEmpty": "No products match your filters.",
@@ -66,13 +68,13 @@
     "title": "Categories",
     "all": "All products"
   },
-  "productCard": {
+  "shopItem": {
     "views": "views",
     "sale": "Sale",
     "outOfStock": "Out of stock"
   },
-  "productDetail": {
-    "backToProducts": "Back to shop",
+  "shopItemDetail": {
+    "backToShop": "Back to shop",
     "description": "Description",
     "basePrice": "Base price",
     "discountPrice": "Sale price",
@@ -88,7 +90,7 @@
     "addedToCart": "Added to cart",
     "mediaImage": "Product image {index}",
     "mediaVideo": "Product video {index}",
-    "relatedProducts": "Related Products",
+    "relatedItems": "Related Products",
     "notFound": "Product not found",
     "notFoundDescription": "The product you are looking for does not exist or has been removed."
   },

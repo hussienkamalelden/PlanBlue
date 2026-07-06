@@ -3,7 +3,7 @@ import type {
   StrapiCategory,
   StrapiExtra,
   StrapiListResponse,
-  StrapiProduct,
+  StrapiShopItem,
   StrapiShipping,
   StrapiSingleResponse,
 } from '@/lib/types/strapi';
@@ -98,8 +98,8 @@ export async function fetchCategories(): Promise<StrapiCategory[]> {
   return json.data;
 }
 
-export async function fetchProducts(): Promise<StrapiProduct[]> {
-  const json = await strapiFetch<StrapiListResponse<StrapiProduct>>(
+export async function fetchShopItems(): Promise<StrapiShopItem[]> {
+  const json = await strapiFetch<StrapiListResponse<StrapiShopItem>>(
     '/products',
     {
       'fields[0]': 'title',
@@ -149,9 +149,9 @@ export async function fetchAffiliates(): Promise<StrapiAffiliate[]> {
   return json.data;
 }
 
-export async function fetchProductsByDocumentIds(
+export async function fetchShopItemsByDocumentIds(
   documentIds: string[],
-): Promise<StrapiProduct[]> {
+): Promise<StrapiShopItem[]> {
   if (documentIds.length === 0) {
     return [];
   }
@@ -173,7 +173,7 @@ export async function fetchProductsByDocumentIds(
   });
 
   try {
-    const json = await strapiFetch<StrapiListResponse<StrapiProduct>>(
+    const json = await strapiFetch<StrapiListResponse<StrapiShopItem>>(
       '/products',
       params,
     );
@@ -185,11 +185,11 @@ export async function fetchProductsByDocumentIds(
 }
 
 /** findOne by documentId */
-export async function fetchProductByDocumentId(
+export async function fetchShopItemByDocumentId(
   documentId: string,
-): Promise<StrapiProduct | null> {
+): Promise<StrapiShopItem | null> {
   try {
-    const json = await strapiFetch<StrapiSingleResponse<StrapiProduct>>(
+    const json = await strapiFetch<StrapiSingleResponse<StrapiShopItem>>(
       `/products/${documentId}`,
       {
         'populate[categories][fields][0]': 'title',
@@ -207,12 +207,12 @@ export async function fetchProductByDocumentId(
   }
 }
 
-/** Find product by slug, then hit findOne to increment views */
-export async function fetchProductBySlug(
+/** Find shop item by slug, then hit findOne to increment views */
+export async function fetchShopItemBySlug(
   slug: string,
-): Promise<StrapiProduct | null> {
+): Promise<StrapiShopItem | null> {
   try {
-    const json = await strapiFetch<StrapiListResponse<StrapiProduct>>(
+    const json = await strapiFetch<StrapiListResponse<StrapiShopItem>>(
       '/products',
       {
         'filters[slug][$eq]': slug,
@@ -223,19 +223,18 @@ export async function fetchProductBySlug(
     const match = json.data?.[0];
     if (!match) return null;
 
-    // Call findOne to trigger view increment and get full product data
-    return await fetchProductByDocumentId(match.documentId);
+    return await fetchShopItemByDocumentId(match.documentId);
   } catch {
     return null;
   }
 }
 
-export async function fetchRelatedProducts(
-  product: StrapiProduct,
+export async function fetchRelatedShopItems(
+  item: StrapiShopItem,
   limit = 4,
-): Promise<StrapiProduct[]> {
+): Promise<StrapiShopItem[]> {
   const categoryIds =
-    product.categories?.map((category) => category.documentId) ?? [];
+    item.categories?.map((category) => category.documentId) ?? [];
 
   if (categoryIds.length === 0) {
     return [];
@@ -248,7 +247,7 @@ export async function fetchRelatedProducts(
     'populate[media][fields][0]': 'url',
     'populate[media][fields][1]': 'name',
     'populate[media][fields][2]': 'mime',
-    'filters[documentId][$ne]': product.documentId,
+    'filters[documentId][$ne]': item.documentId,
     'pagination[pageSize]': String(limit),
     sort: 'createdAt:desc',
   };
@@ -258,7 +257,7 @@ export async function fetchRelatedProducts(
   });
 
   try {
-    const json = await strapiFetch<StrapiListResponse<StrapiProduct>>(
+    const json = await strapiFetch<StrapiListResponse<StrapiShopItem>>(
       '/products',
       params,
     );

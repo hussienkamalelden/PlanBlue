@@ -1,7 +1,7 @@
 import { Nunito } from 'next/font/google';
 
 import { LocaleProvider } from '@/components/locale/locale-provider';
-import { KiddexHeader } from '@/components/kiddex/kiddex-header';
+import { PlanBlueHeader } from '@/components/layout/planblue-header';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { NavigationLoader } from '@/components/ui/navigation-loader';
 import { getLocaleDirection } from '@/lib/i18n/config';
@@ -9,7 +9,7 @@ import { getLocale } from '@/lib/i18n/get-locale';
 
 import type { Metadata } from 'next';
 import './globals.css';
-import '@/styles/kiddex-home.css';
+import '@/styles/home-layout.css';
 
 const nunito = Nunito({
   subsets: ['latin'],
@@ -36,12 +36,12 @@ export default async function RootLayout({
     <html lang={locale} dir={getLocaleDirection(locale)}>
       <body
         suppressHydrationWarning
-        className={`${nunito.variable} kiddex-home min-h-screen bg-white text-neutral-900 antialiased`}
+        className={`${nunito.variable} planblue-site min-h-screen bg-white text-neutral-900 antialiased`}
       >
         <LocaleProvider>
           <NavigationLoader />
           <div className="flex min-h-screen flex-col">
-            <KiddexHeader />
+            <PlanBlueHeader />
             <div className="flex-1">{children}</div>
             <SiteFooter />
           </div>

@@ -2,38 +2,38 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import { ProductFiltersSidebar } from "@/components/shop/product-filters-sidebar";
-import { ProductGrid } from "@/components/shop/product-grid";
+import { ShopFiltersSidebar } from "@/components/shop/shop-filters-sidebar";
+import { ShopGrid } from "@/components/shop/shop-grid";
 import { formatPrice } from "@/lib/api/strapi";
 import {
   type ActiveFilterTag,
   type AgeFilter,
-  getProductPriceBounds,
+  getShopItemPriceBounds,
   isPriceFilterActive,
-  type ProductSort,
-} from "@/lib/product/filters";
+  type ShopSort,
+} from "@/lib/shop/filters";
 import { useTranslations } from "@/lib/i18n/use-translations";
-import type { StrapiCategory, StrapiProduct } from "@/lib/types/strapi";
+import type { StrapiCategory, StrapiShopItem } from "@/lib/types/strapi";
 import { useLocaleStore } from "@/stores/locale-store";
 
-type ProductsViewProps = {
+type ShopViewProps = {
   categories: StrapiCategory[];
-  products: StrapiProduct[];
+  items: StrapiShopItem[];
 };
 
-export function ProductsView({ categories, products }: ProductsViewProps) {
+export function ShopView({ categories, items }: ShopViewProps) {
   const t = useTranslations();
   const locale = useLocaleStore((state) => state.locale);
 
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
     null,
   );
-  const [selectedSort, setSelectedSort] = useState<ProductSort>(null);
+  const [selectedSort, setSelectedSort] = useState<ShopSort>(null);
   const [selectedAgeFilter, setSelectedAgeFilter] = useState<AgeFilter>(null);
 
   const priceBounds = useMemo(
-    () => getProductPriceBounds(products),
-    [products],
+    () => getShopItemPriceBounds(items),
+    [items],
   );
   const [priceMin, setPriceMin] = useState(priceBounds.min);
   const [priceMax, setPriceMax] = useState(priceBounds.max);
@@ -44,7 +44,7 @@ export function ProductsView({ categories, products }: ProductsViewProps) {
     setSelectedAgeFilter(null);
     setPriceMin(priceBounds.min);
     setPriceMax(priceBounds.max);
-  }, [categories, products, priceBounds.min, priceBounds.max]);
+  }, [categories, items, priceBounds.min, priceBounds.max]);
 
   const activeTags = useMemo(() => {
     const tags: ActiveFilterTag[] = [];
@@ -56,19 +56,19 @@ export function ProductsView({ categories, products }: ProductsViewProps) {
         sort: selectedSort,
         label:
           selectedSort === 'top_sellers'
-            ? t.products.topSellers
-            : t.products.mostViewed,
+            ? t.shop.topSellers
+            : t.shop.mostViewed,
       });
     }
 
     if (selectedAgeFilter) {
       const ageLabels: Record<Exclude<AgeFilter, null>, string> = {
-        '0-1': t.products.age0to1,
-        '1-2': t.products.age1to2,
-        '2-3': t.products.age2to3,
-        '3-4': t.products.age3to4,
-        '4-6': t.products.age4to6,
-        '6+': t.products.ageAbove6,
+        '0-1': t.shop.age0to1,
+        '1-2': t.shop.age1to2,
+        '2-3': t.shop.age2to3,
+        '3-4': t.shop.age3to4,
+        '4-6': t.shop.age4to6,
+        '6+': t.shop.ageAbove6,
       };
 
       tags.push({
@@ -91,7 +91,7 @@ export function ProductsView({ categories, products }: ProductsViewProps) {
 
     if (selectedCategoryId) {
       const category = categories.find(
-        (item) => item.documentId === selectedCategoryId,
+        (entry) => entry.documentId === selectedCategoryId,
       );
 
       if (category) {
@@ -139,7 +139,7 @@ export function ProductsView({ categories, products }: ProductsViewProps) {
 
   return (
     <div className="grid gap-8 lg:grid-cols-[260px_minmax(0,1fr)]">
-      <ProductFiltersSidebar
+      <ShopFiltersSidebar
         categories={categories}
         selectedCategoryId={selectedCategoryId}
         selectedSort={selectedSort}
@@ -154,8 +154,8 @@ export function ProductsView({ categories, products }: ProductsViewProps) {
         onPriceMaxChange={setPriceMax}
       />
 
-      <ProductGrid
-        products={products}
+      <ShopGrid
+        items={items}
         selectedCategoryId={selectedCategoryId}
         selectedAgeFilter={selectedAgeFilter}
         selectedSort={selectedSort}

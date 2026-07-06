@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from '@/lib/i18n/use-translations';
-import type { ActiveFilterTag } from '@/lib/product/filters';
+import type { ActiveFilterTag } from '@/lib/shop/filters';
 
 type ActiveFilterTagsProps = {
   tags: ActiveFilterTag[];
@@ -26,7 +26,7 @@ export function ActiveFilterTags({ tags, onRemove }: ActiveFilterTagsProps) {
           <button
             type="button"
             onClick={() => onRemove(tag)}
-            aria-label={`${t.products.removeFilter}: ${tag.label}`}
+            aria-label={`${t.shop.removeFilter}: ${tag.label}`}
             className="flex h-5 w-5 items-center justify-center rounded-full text-neutral-500 transition-colors hover:bg-neutral-200 hover:text-neutral-900"
           >
             ×

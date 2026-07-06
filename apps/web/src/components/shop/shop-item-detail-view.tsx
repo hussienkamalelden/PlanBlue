@@ -5,30 +5,30 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { QuantitySelector } from '@/components/shop/quantity-selector';
-import { ProductMediaGallery } from '@/components/shop/product-media-gallery';
-import { RelatedProducts } from '@/components/shop/related-products';
-import { formatPrice, getProductPrices } from '@/lib/api/strapi';
+import { ShopItemMediaGallery } from '@/components/shop/shop-item-media-gallery';
+import { RelatedShopItems } from '@/components/shop/related-shop-items';
+import { formatPrice, getShopItemPrices } from '@/lib/api/strapi';
 import { useCartStore } from '@/lib/cart/cart-store';
 import { interpolate } from '@/lib/i18n/dictionary';
 import { useTranslations } from '@/lib/i18n/use-translations';
 import {
   arePurchaseActionsDisabled,
   getStockQuantity,
-  isProductOutOfStock,
+  isShopItemOutOfStock,
   isQuantityExceedsStock,
-} from '@/lib/product/stock';
-import type { StrapiProduct } from '@/lib/types/strapi';
+} from '@/lib/shop/stock';
+import type { StrapiShopItem } from '@/lib/types/strapi';
 import { useLocaleStore } from '@/stores/locale-store';
 
-type ProductDetailViewProps = {
-  product: StrapiProduct;
-  relatedProducts: StrapiProduct[];
+type ShopItemDetailViewProps = {
+  item: StrapiShopItem;
+  relatedItems: StrapiShopItem[];
 };
 
-export function ProductDetailView({
-  product,
-  relatedProducts,
-}: ProductDetailViewProps) {
+export function ShopItemDetailView({
+  item,
+  relatedItems,
+}: ShopItemDetailViewProps) {
   const router = useRouter();
   const locale = useLocaleStore((state) => state.locale);
   const t = useTranslations();
@@ -38,12 +38,12 @@ export function ProductDetailView({
   const [quantity, setQuantity] = useState(1);
   const [feedback, setFeedback] = useState<string | null>(null);
 
-  const stockQuantity = getStockQuantity(product);
-  const outOfStock = isProductOutOfStock(product);
-  const exceedsStock = isQuantityExceedsStock(quantity, product);
-  const actionsDisabled = arePurchaseActionsDisabled(quantity, product);
-  const { basePrice, salePrice } = getProductPrices(product);
-  const title = locale === 'ar' ? product.title_ar : product.title;
+  const stockQuantity = getStockQuantity(item);
+  const outOfStock = isShopItemOutOfStock(item);
+  const exceedsStock = isQuantityExceedsStock(quantity, item);
+  const actionsDisabled = arePurchaseActionsDisabled(quantity, item);
+  const { basePrice, salePrice } = getShopItemPrices(item);
+  const title = locale === 'ar' ? item.title_ar : item.title;
 
   function incrementQuantity() {
     setFeedback(null);
@@ -57,14 +57,13 @@ export function ProductDetailView({
 
   function buildCartLine() {
     return {
-      documentId: product.documentId,
-      slug: product.slug,
-      title: product.title,
-      title_ar: product.title_ar,
+      documentId: item.documentId,
+      slug: item.slug,
+      title: item.title,
       quantity,
       price: basePrice,
       discountPrice: salePrice,
-      has_sale: product.has_sale,
+      has_sale: item.has_sale,
       stockQuantity,
     };
   }
@@ -75,7 +74,7 @@ export function ProductDetailView({
     }
 
     addItem(buildCartLine());
-    setFeedback(t.productDetail.addedToCart);
+    setFeedback(t.shopItemDetail.addedToCart);
   }
 
   function handleBuyNow() {
@@ -83,7 +82,7 @@ export function ProductDetailView({
       return;
     }
 
-    if (!isInCart(product.documentId)) {
+    if (!isInCart(item.documentId)) {
       addItem(buildCartLine());
     }
     router.push('/checkout');
@@ -92,15 +91,15 @@ export function ProductDetailView({
   return (
     <div className="space-y-8">
       <Link
-        href="/products"
+        href="/shop"
         className="inline-flex text-sm font-medium text-neutral-600 transition-colors hover:text-neutral-900"
       >
-        ← {t.productDetail.backToProducts}
+        ← {t.shopItemDetail.backToShop}
       </Link>
 
       <div className="grid gap-10 lg:grid-cols-2">
         <div className="rounded-2xl border border-neutral-200 bg-white p-8 shadow-sm">
-          <ProductMediaGallery media={product.media ?? []} alt={title} />
+          <ShopItemMediaGallery media={item.media ?? []} alt={title} />
         </div>
 
         <div className="space-y-6">
@@ -109,19 +108,19 @@ export function ProductDetailView({
               {title}
             </h1>
 
-            {product.sku && (
+            {item.sku && (
               <p className="mt-1 text-xs font-medium text-neutral-400">
-                {t.productDetail.sku}: {product.sku}
+                {t.shopItemDetail.sku}: {item.sku}
               </p>
             )}
 
-            {product.categories && product.categories.length > 0 && (
+            {item.categories && item.categories.length > 0 && (
               <div className="mt-4">
                 <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">
-                  {t.productDetail.categories}
+                  {t.shopItemDetail.categories}
                 </p>
                 <div className="mt-2 flex flex-wrap gap-2">
-                  {product.categories.map((cat) => (
+                  {item.categories.map((cat) => (
                     <span
                       key={cat.documentId}
                       className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700"
@@ -135,7 +134,7 @@ export function ProductDetailView({
 
             {outOfStock && (
               <p className="mt-2 text-sm font-medium text-red-600">
-                {t.productDetail.outOfStock}
+                {t.shopItemDetail.outOfStock}
               </p>
             )}
           </div>
@@ -143,12 +142,12 @@ export function ProductDetailView({
           <div className="space-y-2 rounded-xl border border-neutral-200 bg-neutral-50 p-4">
             <div className="flex items-baseline justify-between gap-4">
               <span className="text-sm text-neutral-600">
-                {product.has_sale && salePrice !== null
-                  ? t.productDetail.discountPrice
-                  : t.productDetail.basePrice}
+                {item.has_sale && salePrice !== null
+                  ? t.shopItemDetail.discountPrice
+                  : t.shopItemDetail.basePrice}
               </span>
               <div className="flex items-baseline gap-2">
-                {product.has_sale && salePrice !== null ? (
+                {item.has_sale && salePrice !== null ? (
                   <>
                     <span className="text-2xl font-bold text-red-600">
                       {formatPrice(salePrice, locale)}
@@ -167,7 +166,7 @@ export function ProductDetailView({
 
             {!outOfStock && (
               <p className="text-sm text-neutral-500">
-                {interpolate(t.productDetail.inStock, { stock: stockQuantity })}
+                {interpolate(t.shopItemDetail.inStock, { stock: stockQuantity })}
               </p>
             )}
           </div>
@@ -178,7 +177,7 @@ export function ProductDetailView({
               stockQuantity={stockQuantity}
               onIncrement={incrementQuantity}
               onDecrement={decrementQuantity}
-              label={t.productDetail.quantity}
+              label={t.shopItemDetail.quantity}
             />
 
             {exceedsStock && !outOfStock && (
@@ -186,7 +185,7 @@ export function ProductDetailView({
                 role="alert"
                 className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800"
               >
-                {interpolate(t.productDetail.quantityWarning, {
+                {interpolate(t.shopItemDetail.quantityWarning, {
                   stock: stockQuantity,
                 })}
               </p>
@@ -201,7 +200,7 @@ export function ProductDetailView({
               aria-disabled={actionsDisabled}
               className="flex-1 rounded-lg bg-neutral-900 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-500"
             >
-              {t.productDetail.addToCart}
+              {t.shopItemDetail.addToCart}
             </button>
 
             <button
@@ -211,7 +210,7 @@ export function ProductDetailView({
               aria-disabled={actionsDisabled}
               className="flex-1 rounded-lg border border-neutral-900 px-6 py-3 text-sm font-semibold text-neutral-900 transition-colors hover:bg-neutral-50 disabled:cursor-not-allowed disabled:border-neutral-200 disabled:bg-neutral-100 disabled:text-neutral-400"
             >
-              {t.productDetail.buyNow}
+              {t.shopItemDetail.buyNow}
             </button>
           </div>
 
@@ -223,16 +222,16 @@ export function ProductDetailView({
 
           <section className="border-t border-neutral-200 pt-6">
             <h2 className="mb-3 text-lg font-semibold text-neutral-900">
-              {t.productDetail.description}
+              {t.shopItemDetail.description}
             </h2>
             <p className="whitespace-pre-line text-sm leading-relaxed text-neutral-600">
-              {locale === 'ar' ? product.description_ar : product.description}
+              {locale === 'ar' ? item.description_ar : item.description}
             </p>
           </section>
         </div>
       </div>
 
-      <RelatedProducts products={relatedProducts} />
+      <RelatedShopItems items={relatedItems} />
     </div>
   );
 }

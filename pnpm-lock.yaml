@@ -74,6 +74,9 @@ importers:
       react-dom:
         specifier: ^19.0.0
         version: 19.2.7(react@19.2.7)
+      swiper:
+        specifier: ^14.0.1
+        version: 14.0.1
       zustand:
         specifier: ^5.0.14
         version: 5.0.14(@types/react@19.2.17)(immer@9.0.21)(react@19.2.7)(use-sync-external-store@1.6.0(react@19.2.7))
@@ -7657,6 +7660,10 @@ packages:
   supports-preserve-symlinks-flag@1.0.0:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
+
+  swiper@14.0.1:
+    resolution: {integrity: sha512-dibQY282S5rn6S9Ba+GTIvofyY4Qujy526a0cPaJnjR2S18Z7HMGKZBr8k/3ukboeKW/ig5h0q//7CYip0MCQw==}
+    engines: {node: '>= 4.7.0'}
 
   swr@2.4.2:
     resolution: {integrity: sha512-ej644Y2bvkIajfR32KGeSSdBXQW+ScjGjkybZgSE7kFpk9eGnV44XY9FJylXi+W75pavSX1PVNB57W5EbhGIYw==}
@@ -17253,6 +17260,8 @@ snapshots:
       has-flag: 4.0.0
 
   supports-preserve-symlinks-flag@1.0.0: {}
+
+  swiper@14.0.1: {}
 
   swr@2.4.2(react@18.3.1):
     dependencies:

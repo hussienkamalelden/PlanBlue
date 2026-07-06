@@ -1,10 +1,10 @@
-import { getProductPrices } from '@/lib/api/strapi';
+import { getShopItemPrices } from '@/lib/api/strapi';
 import type { CartLineItem } from '@/lib/cart/cart-store';
 import {
   getStockQuantity,
-  isProductOutOfStock,
-} from '@/lib/product/stock';
-import type { StrapiProduct } from '@/lib/types/strapi';
+  isShopItemOutOfStock,
+} from '@/lib/shop/stock';
+import type { StrapiShopItem } from '@/lib/types/strapi';
 
 export type CartValidationPayloadItem = Pick<
   CartLineItem,
@@ -63,9 +63,9 @@ export function getCartLineUnitPrice(item: CartLineItem): number {
 
 export function validateCartItem(
   cartItem: CartValidationPayloadItem,
-  product: StrapiProduct | null,
+  shopItem: StrapiShopItem | null,
 ): CartItemValidation {
-  if (!product) {
+  if (!shopItem) {
     return {
       documentId: cartItem.documentId,
       valid: false,
@@ -74,24 +74,24 @@ export function validateCartItem(
     };
   }
 
-  const stockQuantity = getStockQuantity(product);
+  const stockQuantity = getStockQuantity(shopItem);
   const issues: CartItemIssue[] = [];
-  const { basePrice, salePrice } = getProductPrices(product);
+  const { basePrice, salePrice } = getShopItemPrices(shopItem);
 
   if (
     !pricesEqual(cartItem.price, basePrice) ||
-    cartItem.has_sale !== product.has_sale ||
+    cartItem.has_sale !== shopItem.has_sale ||
     !nullablePricesEqual(cartItem.discountPrice, salePrice)
   ) {
     issues.push({
       type: 'price_changed',
       currentPrice: basePrice,
       currentDiscountPrice: salePrice,
-      currentHasSale: product.has_sale,
+      currentHasSale: shopItem.has_sale,
     });
   }
 
-  if (isProductOutOfStock(product)) {
+  if (isShopItemOutOfStock(shopItem)) {
     issues.push({ type: 'unavailable' });
   } else if (cartItem.quantity > stockQuantity) {
     issues.push({
@@ -110,14 +110,14 @@ export function validateCartItem(
 
 export function validateCartItems(
   cartItems: CartValidationPayloadItem[],
-  products: StrapiProduct[],
+  shopItems: StrapiShopItem[],
 ): CartValidationResult {
-  const productMap = new Map(
-    products.map((product) => [product.documentId, product]),
+  const itemMap = new Map(
+    shopItems.map((shopItem) => [shopItem.documentId, shopItem]),
   );
 
   const items = cartItems.map((cartItem) =>
-    validateCartItem(cartItem, productMap.get(cartItem.documentId) ?? null),
+    validateCartItem(cartItem, itemMap.get(cartItem.documentId) ?? null),
   );
 
   return {

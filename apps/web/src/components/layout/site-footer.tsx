@@ -68,7 +68,7 @@ export function SiteFooter() {
             <ul className="mt-3 space-y-2">
               <li>
                 <Link
-                  href="/products"
+                  href="/shop"
                   className="text-sm text-neutral-600 transition-colors hover:text-brand-primary"
                 >
                   {t.header.products}

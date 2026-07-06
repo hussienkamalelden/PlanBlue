@@ -5,34 +5,34 @@ import Link from 'next/link';
 
 import {
   formatPrice,
-  getFirstProductImage,
+  getFirstShopItemImage,
   getMediaUrl,
-  getProductPrices,
+  getShopItemPrices,
 } from '@/lib/api/strapi';
 import { useTranslations } from '@/lib/i18n/use-translations';
-import { isProductOutOfStock } from '@/lib/product/stock';
-import type { StrapiProduct } from '@/lib/types/strapi';
+import { isShopItemOutOfStock } from '@/lib/shop/stock';
+import type { StrapiShopItem } from '@/lib/types/strapi';
 import { useLocaleStore } from '@/stores/locale-store';
 
-type ProductCardProps = {
-  product: StrapiProduct;
+type ShopItemCardProps = {
+  item: StrapiShopItem;
   showDescription?: boolean;
 };
 
-export function ProductCard({
-  product,
+export function ShopItemCard({
+  item,
   showDescription = false,
-}: ProductCardProps) {
+}: ShopItemCardProps) {
   const locale = useLocaleStore((state) => state.locale);
   const t = useTranslations();
-  const { basePrice, salePrice } = getProductPrices(product);
-  const unavailable = isProductOutOfStock(product);
-  const title = locale === 'ar' ? product.title_ar : product.title;
-  const firstImage = getFirstProductImage(product.media);
+  const { basePrice, salePrice } = getShopItemPrices(item);
+  const unavailable = isShopItemOutOfStock(item);
+  const title = locale === 'ar' ? item.title_ar : item.title;
+  const firstImage = getFirstShopItemImage(item.media);
 
   return (
     <Link
-      href={`/products/${product.slug}`}
+      href={`/shop/${item.slug}`}
       className={`group block h-full transition-opacity hover:opacity-90 ${
         unavailable ? 'opacity-50' : ''
       }`}
@@ -59,14 +59,14 @@ export function ProductCard({
           <div className="mb-3 flex items-start justify-between gap-3">
             <h3 className="text-lg font-semibold text-neutral-900">{title}</h3>
             <div className="flex shrink-0 flex-col items-end gap-1">
-              {product.has_sale && salePrice !== null && (
+              {item.has_sale && salePrice !== null && (
                 <span className="rounded-full bg-red-50 px-2.5 py-1 text-xs font-medium text-red-700">
-                  {t.productCard.sale}
+                  {t.shopItem.sale}
                 </span>
               )}
               {unavailable && (
                 <span className="rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-medium text-neutral-600">
-                  {t.productCard.outOfStock}
+                  {t.shopItem.outOfStock}
                 </span>
               )}
             </div>
@@ -74,7 +74,7 @@ export function ProductCard({
 
           {showDescription && (
             <p className="mb-4 line-clamp-3 flex-1 text-sm leading-relaxed text-neutral-600">
-              {locale === 'ar' ? product.description_ar : product.description}
+              {locale === 'ar' ? item.description_ar : item.description}
             </p>
           )}
 
@@ -82,7 +82,7 @@ export function ProductCard({
             className={`${showDescription ? 'mt-auto' : 'mt-0'} space-y-2 border-t border-neutral-100 pt-4`}
           >
             <div className="flex items-baseline gap-2">
-              {product.has_sale && salePrice !== null ? (
+              {item.has_sale && salePrice !== null ? (
                 <>
                   <span className="text-xl font-bold text-red-600">
                     {formatPrice(salePrice, locale)}

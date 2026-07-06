@@ -1,21 +1,21 @@
 import type { Locale } from "@/lib/i18n/config";
-import type { StrapiMedia, StrapiProduct } from "@/lib/types/strapi";
+import type { StrapiMedia, StrapiShopItem } from "@/lib/types/strapi";
 
 export const STRAPI_URL =
   process.env.NEXT_PUBLIC_STRAPI_URL ?? "http://localhost:1337";
 
 /** Resolve display price — uses controller `discount_price` or computes from `price`. */
-export function getProductPrices(product: StrapiProduct) {
-  const basePrice = Number(product.price);
+export function getShopItemPrices(item: StrapiShopItem) {
+  const basePrice = Number(item.price);
 
-  if (!product.has_sale) {
+  if (!item.has_sale) {
     return { basePrice, salePrice: null as number | null };
   }
 
   const salePrice =
-    product.discount_price ??
+    item.discount_price ??
     Number(
-      (basePrice - basePrice * (Number(product.discount_percentage) / 100)).toFixed(
+      (basePrice - basePrice * (Number(item.discount_percentage) / 100)).toFixed(
         2,
       ),
     );
@@ -42,7 +42,7 @@ export function formatPriceWhole(amount: number, locale: Locale): string {
   return locale === "ar" ? `${formatted} جنيه مصري` : `${formatted} EGP`;
 }
 
-/** Like formatPrice, but drops “.00” when the amount is a whole number. */
+/** Like formatPrice, but drops ".00" when the amount is a whole number. */
 export function formatCommission(amount: number, locale: Locale): string {
   const value = Number(amount);
   const isWhole = Math.abs(value - Math.round(value)) < 0.001;
@@ -67,8 +67,8 @@ export function isVideoMedia(mime: string): boolean {
   return mime.startsWith("video/");
 }
 
-export function getFirstProductImage(
-  media: StrapiProduct["media"],
+export function getFirstShopItemImage(
+  media: StrapiShopItem["media"],
 ): StrapiMedia | null {
   if (!media?.length) {
     return null;
@@ -77,4 +77,4 @@ export function getFirstProductImage(
   return media.find((item) => !isVideoMedia(item.mime)) ?? null;
 }
 
-export type { StrapiProduct };
+export type { StrapiShopItem };

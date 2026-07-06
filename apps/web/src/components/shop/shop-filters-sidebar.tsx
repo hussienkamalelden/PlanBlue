@@ -5,28 +5,29 @@ import { useTranslations } from '@/lib/i18n/use-translations';
 import {
   AGE_FILTER_OPTIONS,
   type AgeFilter,
-  type ProductSort,
-} from '@/lib/product/filters';
+  type ShopSort,
+} from '@/lib/shop/filters';
 import type { StrapiCategory } from '@/lib/types/strapi';
 import { useLocaleStore } from '@/stores/locale-store';
-type ProductFiltersSidebarProps = {
+
+type ShopFiltersSidebarProps = {
   categories: StrapiCategory[];
   selectedCategoryId: string | null;
-  selectedSort: ProductSort;
+  selectedSort: ShopSort;
   selectedAgeFilter: AgeFilter;
   priceMin: number;
   priceMax: number;
   priceBounds: { min: number; max: number };
   onSelectCategory: (categoryId: string | null) => void;
-  onSelectSort: (sort: ProductSort) => void;
+  onSelectSort: (sort: ShopSort) => void;
   onSelectAgeFilter: (filter: AgeFilter) => void;
   onPriceMinChange: (value: number) => void;
   onPriceMaxChange: (value: number) => void;
 };
 
-const SORT_OPTIONS: Exclude<ProductSort, null>[] = ['top_sellers', 'most_viewed'];
+const SORT_OPTIONS: Exclude<ShopSort, null>[] = ['top_sellers', 'most_viewed'];
 
-export function ProductFiltersSidebar({
+export function ShopFiltersSidebar({
   categories,
   selectedCategoryId,
   selectedSort,
@@ -39,22 +40,22 @@ export function ProductFiltersSidebar({
   onSelectAgeFilter,
   onPriceMinChange,
   onPriceMaxChange,
-}: ProductFiltersSidebarProps) {
+}: ShopFiltersSidebarProps) {
   const t = useTranslations();
   const locale = useLocaleStore((state) => state.locale);
 
-  function getSortLabel(sort: Exclude<ProductSort, null>): string {
-    return sort === 'top_sellers' ? t.products.topSellers : t.products.mostViewed;
+  function getSortLabel(sort: Exclude<ShopSort, null>): string {
+    return sort === 'top_sellers' ? t.shop.topSellers : t.shop.mostViewed;
   }
 
   function getAgeLabel(filter: Exclude<AgeFilter, null>): string {
     const labels: Record<Exclude<AgeFilter, null>, string> = {
-      '0-1': t.products.age0to1,
-      '1-2': t.products.age1to2,
-      '2-3': t.products.age2to3,
-      '3-4': t.products.age3to4,
-      '4-6': t.products.age4to6,
-      '6+': t.products.ageAbove6,
+      '0-1': t.shop.age0to1,
+      '1-2': t.shop.age1to2,
+      '2-3': t.shop.age2to3,
+      '3-4': t.shop.age3to4,
+      '4-6': t.shop.age4to6,
+      '6+': t.shop.ageAbove6,
     };
 
     return labels[filter];
@@ -62,17 +63,17 @@ export function ProductFiltersSidebar({
 
   return (
     <aside
-      aria-label={t.products.filtersTitle}
+      aria-label={t.shop.filtersTitle}
       className="rounded-xl border border-neutral-200 bg-white shadow-sm lg:sticky lg:top-6 lg:self-start"
     >
       <div className="border-b border-neutral-100 px-4 py-3">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-neutral-700">
-          {t.products.filtersTitle}
+          {t.shop.filtersTitle}
         </h2>
       </div>
 
       <div className="max-h-[min(70vh,560px)] overflow-y-auto px-3 py-3">
-        <FilterSection title={t.products.sortTitle}>
+        <FilterSection title={t.shop.sortTitle}>
           <ul className="space-y-1">
             {SORT_OPTIONS.map((sort) => (
               <li key={sort}>
@@ -89,15 +90,15 @@ export function ProductFiltersSidebar({
         </FilterSection>
 
         {priceBounds.max > 0 && (
-          <FilterSection title={t.products.priceTitle}>
+          <FilterSection title={t.shop.priceTitle}>
             <PriceRangeSlider
               bounds={priceBounds}
               min={priceMin}
               max={priceMax}
               locale={locale}
-              fromLabel={t.products.priceFrom}
-              toLabel={t.products.priceTo}
-              resetLabel={t.products.priceReset}
+              fromLabel={t.shop.priceFrom}
+              toLabel={t.shop.priceTo}
+              resetLabel={t.shop.priceReset}
               onMinChange={onPriceMinChange}
               onMaxChange={onPriceMaxChange}
               onReset={() => {
@@ -107,7 +108,7 @@ export function ProductFiltersSidebar({
             />
           </FilterSection>
         )}
-        <FilterSection title={t.products.ageTitle}>
+        <FilterSection title={t.shop.ageTitle}>
           <ul className="space-y-1">
             {AGE_FILTER_OPTIONS.map((filter) => (
               <li key={filter}>

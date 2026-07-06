@@ -1,9 +1,11 @@
-import { KiddexHero } from '@/components/kiddex/kiddex-hero';
+import { HomeHero } from '@/components/home/home-hero';
+import { PopularShopSection } from '@/components/home/popular-shop-section';
 
 export default function HomePage() {
   return (
     <main>
-      <KiddexHero />
+      <HomeHero />
+      <PopularShopSection />
     </main>
   );
 }
