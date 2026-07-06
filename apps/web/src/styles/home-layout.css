@@ -377,7 +377,7 @@
   background: #fff;
   color: var(--pb-theme);
   text-decoration: none;
-  transition: color 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .pb-theme-btn::before,
@@ -389,7 +389,7 @@
   height: 100%;
   background: var(--pb-theme);
   z-index: -1;
-  transition: width 0.4s ease;
+  transition: all 0.4s ease;
 }
 
 .pb-theme-btn::before {
@@ -400,7 +400,8 @@
 }
 
 .pb-theme-btn:hover {
-  color: #fff;
+  color: #feb70e;
+  border-color: #feb70e;
 }
 
 .pb-theme-btn:hover::before,
