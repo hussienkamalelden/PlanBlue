@@ -1,6 +1,7 @@
 "use client";
 
 import { LOCALES, type Locale } from "@/lib/i18n/config";
+import { showPageLoader } from "@/lib/ui/page-loader";
 import { useLocaleStore } from "@/stores/locale-store";
 
 const LABELS: Record<Locale, string> = {
@@ -8,56 +9,36 @@ const LABELS: Record<Locale, string> = {
   ar: "AR",
 };
 
-const FULL_LABELS: Record<Locale, string> = {
-  en: "English",
-  ar: "العربية",
+const SWITCH_LABELS: Record<Locale, string> = {
+  en: "Switch to Arabic",
+  ar: "Switch to English",
 };
 
 type LocaleSwitcherProps = {
-  variant?: "default" | "light";
+  variant?: "default" | "compact";
 };
 
 export function LocaleSwitcher({ variant = "default" }: LocaleSwitcherProps) {
   const locale = useLocaleStore((state) => state.locale);
   const setLocale = useLocaleStore((state) => state.setLocale);
-  const isLight = variant === "light";
-  const labels = isLight ? LABELS : FULL_LABELS;
 
-  function handleChange(nextLocale: Locale) {
-    if (nextLocale === locale) return;
+  const nextLocale = LOCALES.find((code) => code !== locale) ?? LOCALES[0];
 
+  function handleToggle() {
+    showPageLoader();
     setLocale(nextLocale);
   }
 
   return (
-    <div
-      className={`inline-flex rounded-lg border p-1 text-sm ${
-        isLight
-          ? "border-white/35 bg-white/10"
-          : "border-neutral-200 bg-white"
-      }`}
-      role="group"
-      aria-label="Language"
+    <button
+      type="button"
+      onClick={handleToggle}
+      className={
+        variant === "compact" ? "kiddex-locale-toggle" : "kiddex-locale-toggle kiddex-locale-toggle--nav"
+      }
+      aria-label={SWITCH_LABELS[locale]}
     >
-      {LOCALES.map((code) => (
-        <button
-          key={code}
-          type="button"
-          onClick={() => handleChange(code)}
-          className={`rounded-md px-3 py-1.5 transition-colors ${
-            locale === code
-              ? isLight
-                ? "bg-white text-[#f76188]"
-                : "bg-neutral-900 text-white"
-              : isLight
-                ? "text-white hover:bg-white/15"
-                : "text-neutral-600 hover:bg-neutral-100"
-          }`}
-          aria-pressed={locale === code}
-        >
-          {labels[code]}
-        </button>
-      ))}
-    </div>
+      {LABELS[locale]}
+    </button>
   );
 }
