@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Navigation } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
@@ -28,8 +28,6 @@ type PopularShopCarouselProps = {
 
 export function PopularShopCarousel({ items }: PopularShopCarouselProps) {
   const locale = useLocaleStore((state) => state.locale);
-  const t = useTranslations();
-  const addItem = useCartStore((state) => state.addItem);
   const direction = getLocaleDirection(locale);
 
   const breakpoints = useMemo(
@@ -55,83 +53,73 @@ export function PopularShopCarousel({ items }: PopularShopCarouselProps) {
       className="popular-shop-swiper !overflow-visible"
     >
       {items.map((item) => (
-        <SwiperSlide key={item.documentId}>
-          <CarouselCard
-            item={item}
-            locale={locale}
-            onAddToCart={() => handleAddToCart(item, addItem)}
-            t={t}
-          />
+        <SwiperSlide key={item.documentId} className="!h-auto">
+          <CarouselCard item={item} locale={locale} />
         </SwiperSlide>
       ))}
     </Swiper>
   );
 }
 
-function handleAddToCart(
-  item: StrapiShopItem,
-  addItem: ReturnType<typeof useCartStore.getState>['addItem'],
-) {
-  if (isShopItemOutOfStock(item)) {
-    return;
-  }
-
-  const { basePrice, salePrice } = getShopItemPrices(item);
-
-  addItem({
-    documentId: item.documentId,
-    slug: item.slug,
-    title: item.title,
-    quantity: 1,
-    price: basePrice,
-    discountPrice: salePrice,
-    has_sale: item.has_sale,
-    stockQuantity: item.available_stock,
-  });
-}
-
 function CarouselCard({
   item,
   locale,
-  onAddToCart,
-  t,
 }: {
   item: StrapiShopItem;
   locale: Locale;
-  onAddToCart: () => void;
-  t: ReturnType<typeof useTranslations>;
 }) {
+  const t = useTranslations();
+  const addItem = useCartStore((state) => state.addItem);
+  const inCart = useCartStore((state) => state.isInCart(item.documentId));
+  const [added, setAdded] = useState(false);
+
   const title = locale === 'ar' ? item.title_ar : item.title;
-  const category = item.categories?.[0];
-  const categoryLabel = category
-    ? locale === 'ar'
-      ? category.title_ar
-      : category.title
-    : null;
   const { basePrice, salePrice } = getShopItemPrices(item);
   const firstImage = getFirstShopItemImage(item.media);
   const outOfStock = isShopItemOutOfStock(item);
+  const isAdded = added || inCart;
+
+  function handleAddToCart() {
+    if (outOfStock || isAdded) {
+      return;
+    }
+
+    addItem({
+      documentId: item.documentId,
+      slug: item.slug,
+      title: item.title,
+      quantity: 1,
+      price: basePrice,
+      discountPrice: salePrice,
+      has_sale: item.has_sale,
+      stockQuantity: item.available_stock,
+    });
+    setAdded(true);
+  }
 
   return (
     <article className="flex h-full flex-col rounded-[10px] border border-dashed border-neutral-300 bg-white px-6 pb-4 pt-8 text-center transition-shadow hover:shadow-md">
-      <div className="relative mx-auto mb-6 w-full max-w-[235px]">
+      <div className="relative mx-auto mb-6 h-[235px] w-full max-w-[235px] shrink-0">
         {item.has_sale && item.discount_percentage > 0 && (
-          <span className="absolute start-0 top-0 rounded-full bg-[#4389F7]/15 px-2.5 py-1 text-xs font-semibold text-[#4389F7]">
+          <span className="absolute start-0 top-0 z-10 rounded-full bg-[#4389F7]/15 px-2.5 py-1 text-xs font-semibold text-[#4389F7]">
             {item.discount_percentage}% {t.shopItem.sale}
           </span>
         )}
 
-        <Link href={`/shop/${item.slug}`} className="block overflow-hidden">
+        <Link
+          href={`/shop/${item.slug}`}
+          className="flex h-full w-full items-center justify-center overflow-hidden"
+        >
           {firstImage ? (
             <Image
               src={getMediaUrl(firstImage.url)}
               alt={firstImage.name || title}
               width={235}
               height={235}
-              className="mx-auto h-auto w-full transition-transform duration-500 hover:scale-105"
+              className="max-h-full max-w-full object-contain transition-transform duration-500 hover:scale-105"
             />
           ) : (
-            <div className="flex aspect-square items-center justify-center rounded-lg bg-neutral-100 text-4xl text-neutral-300">
+            <div className="flex h-full w-full items-center justify-center rounded-lg bg-neutral-100 text-4xl text-neutral-300">
               🧸
             </div>
           )}
@@ -139,11 +127,7 @@ function CarouselCard({
       </div>
 
       <div className="flex flex-1 flex-col">
-        {categoryLabel && (
-          <span className="mb-2 text-sm text-neutral-500">{categoryLabel}</span>
-        )}
-
-        <h3 className="mb-3 text-base font-bold leading-snug text-neutral-900">
+        <h3 className="mb-3 line-clamp-2 min-h-[2.75rem] text-base font-bold leading-snug text-neutral-900">
           <Link
             href={`/shop/${item.slug}`}
             className="transition-colors hover:text-[#4389F7]"
@@ -171,11 +155,19 @@ function CarouselCard({
 
         <button
           type="button"
-          onClick={onAddToCart}
-          disabled={outOfStock}
-          className="mt-auto rounded-full border-2 border-dashed border-[#4389F7] bg-white px-6 py-2.5 text-sm font-bold text-[#4389F7] transition-colors hover:bg-[#4389F7] hover:text-white disabled:cursor-not-allowed disabled:border-neutral-200 disabled:text-neutral-400"
+          onClick={handleAddToCart}
+          disabled={outOfStock || isAdded}
+          className={`mt-auto rounded-full border-2 px-6 py-2.5 text-sm font-bold transition-colors ${
+            isAdded
+              ? 'cursor-default border-neutral-200 bg-neutral-100 text-neutral-500'
+              : 'border-dashed border-[#4389F7] bg-white text-[#4389F7] hover:bg-[#4389F7] hover:text-white disabled:cursor-not-allowed disabled:border-neutral-200 disabled:text-neutral-400 disabled:hover:bg-white disabled:hover:text-neutral-400'
+          }`}
         >
-          {outOfStock ? t.shopItem.outOfStock : t.shopItemDetail.addToCart}
+          {outOfStock
+            ? t.shopItem.outOfStock
+            : isAdded
+              ? t.shopItemDetail.addedToCart
+              : t.shopItemDetail.addToCart}
         </button>
       </div>
     </article>

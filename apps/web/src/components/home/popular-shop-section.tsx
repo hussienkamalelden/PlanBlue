@@ -1,13 +1,10 @@
 import { PopularShopCarousel } from '@/components/home/popular-shop-carousel';
+import { PopularShopHeading } from '@/components/home/popular-shop-heading';
 import { HOME_ASSETS } from '@/lib/assets/home';
 import { fetchShopItems } from '@/lib/api/strapi.server';
-import { getDictionary } from '@/lib/i18n/dictionary';
-import { getLocale } from '@/lib/i18n/get-locale';
 import { sortShopItems } from '@/lib/shop/filters';
 
 export async function PopularShopSection() {
-  const locale = await getLocale();
-  const t = getDictionary(locale);
   const allItems = await fetchShopItems();
   const topItems = sortShopItems(allItems, 'top_sellers').slice(0, 12);
 
@@ -31,12 +28,7 @@ export async function PopularShopSection() {
       </div>
 
       <div className="pb-large-container relative z-10">
-        <div className="mb-10">
-          <h2 className="text-3xl font-extrabold text-neutral-900 md:text-4xl">
-            {t.home.popular.title}{' '}
-            <span className="text-[#4389F7]">{t.home.popular.highlight}</span>
-          </h2>
-        </div>
+        <PopularShopHeading />
 
         <PopularShopCarousel items={topItems} />
       </div>

@@ -1,14 +1,13 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
 
 import { HOME_ASSETS } from '@/lib/assets/home';
-import { formatPrice } from '@/lib/api/strapi';
-import { getDictionary } from '@/lib/i18n/dictionary';
-import { getLocale } from '@/lib/i18n/get-locale';
+import { useTranslations } from '@/lib/i18n/use-translations';
 
-export async function HomeHero() {
-  const locale = await getLocale();
-  const t = getDictionary(locale);
+export function HomeHero() {
+  const t = useTranslations();
   const shapes = HOME_ASSETS.shapes;
 
   return (
