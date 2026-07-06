@@ -35,10 +35,10 @@ export function PopularShopCarousel({ items }: PopularShopCarouselProps) {
 
   const breakpoints = useMemo(
     () => ({
-      0: { slidesPerView: 1, spaceBetween: 16 },
-      640: { slidesPerView: 2, spaceBetween: 20 },
-      1024: { slidesPerView: 3, spaceBetween: 24 },
-      1280: { slidesPerView: 4, spaceBetween: 24 },
+      0: { slidesPerView: 1, spaceBetween: 0 },
+      640: { slidesPerView: 2, spaceBetween: 0 },
+      1024: { slidesPerView: 3, spaceBetween: 0 },
+      1280: { slidesPerView: 4, spaceBetween: 0 },
     }),
     [],
   );
@@ -140,10 +140,10 @@ function CarouselCard({
   }
 
   return (
-    <article className="flex h-full flex-col rounded-[10px] border border-dashed border-neutral-300 hover:border-[#4389F7] bg-white px-6 pb-4 pt-8 text-center transition-shadow hover:shadow-md">
-      <div className="relative mx-auto mb-6 h-[235px] w-full max-w-[235px] shrink-0">
+    <article className="flex h-full flex-col  border border-dashed border-neutral-300 hover:border-[#4389F7] bg-white px-6 pb-4 pt-8 text-center transition-shadow hover:shadow-md">
+      <div className=" mx-auto mb-6 h-[235px] w-full max-w-[235px] shrink-0">
         {item.has_sale && item.discount_percentage > 0 && (
-          <span className="absolute start-0 top-0 z-10 rounded-full bg-[#4389F7]/15 px-2.5 py-1 text-xs font-semibold text-[#4389F7]">
+          <span className="absolute start-0 top-0 z-10  bg-[#27D82E]/15 px-2.5 py-1 text-md font-semibold text-[#27D82E]">
             {item.discount_percentage}% {t.shopItem.sale}
           </span>
         )}
@@ -169,7 +169,7 @@ function CarouselCard({
       </div>
 
       <div className="flex flex-1 flex-col">
-        <h3 className="mb-1 line-clamp-2 min-h-[2.75rem] text-base font-bold leading-snug text-neutral-900">
+        <h3 className="mb-1 line-clamp-2 min-h-[2.75rem] text-lg capitalize font-bold leading-snug text-neutral-900">
           <Link
             href={`/shop/${item.slug}`}
             className="transition-colors hover:text-[#4389F7]"
@@ -181,7 +181,7 @@ function CarouselCard({
         <div className="mb-4 flex items-center justify-center gap-2">
           {item.has_sale && salePrice !== null ? (
             <>
-              <span className="text-lg font-bold text-[#4389F7]">
+              <span className="text-lg font-bold text-[#27D82E]">
                 {formatPrice(salePrice, locale)}
               </span>
               <del className="text-sm text-neutral-400">
