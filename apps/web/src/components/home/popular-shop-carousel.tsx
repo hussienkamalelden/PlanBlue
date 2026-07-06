@@ -2,9 +2,10 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Navigation } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import type { Swiper as SwiperType } from 'swiper';
 
 import {
   formatPrice,
@@ -29,6 +30,8 @@ type PopularShopCarouselProps = {
 export function PopularShopCarousel({ items }: PopularShopCarouselProps) {
   const locale = useLocaleStore((state) => state.locale);
   const direction = getLocaleDirection(locale);
+  const prevRef = useRef<HTMLButtonElement>(null);
+  const nextRef = useRef<HTMLButtonElement>(null);
 
   const breakpoints = useMemo(
     () => ({
@@ -45,19 +48,58 @@ export function PopularShopCarousel({ items }: PopularShopCarouselProps) {
   }
 
   return (
-    <Swiper
-      dir={direction}
-      modules={[Navigation]}
-      navigation
-      breakpoints={breakpoints}
-      className="popular-shop-swiper !overflow-visible"
-    >
-      {items.map((item) => (
-        <SwiperSlide key={item.documentId} className="!h-auto">
-          <CarouselCard item={item} locale={locale} />
-        </SwiperSlide>
-      ))}
-    </Swiper>
+    <div className="popular-shop-nav-wrap relative">
+      <div className="popular-shop-owl-nav pointer-events-none absolute inset-x-0 top-1/2 z-10 hidden -translate-y-1/2 min-[1201px]:block">
+        <button
+          ref={prevRef}
+          type="button"
+          className="popular-shop-nav-btn popular-shop-nav-prev pointer-events-auto"
+          aria-label="Previous slide"
+        >
+          <span className="icon-21" aria-hidden="true" />
+        </button>
+        <button
+          ref={nextRef}
+          type="button"
+          className="popular-shop-nav-btn popular-shop-nav-next pointer-events-auto"
+          aria-label="Next slide"
+        >
+          <span className="icon-20" aria-hidden="true" />
+        </button>
+      </div>
+
+      <Swiper
+        dir={direction}
+        modules={[Navigation]}
+        navigation={{
+          prevEl: prevRef.current,
+          nextEl: nextRef.current,
+        }}
+        onBeforeInit={(swiper: SwiperType) => {
+          if (
+            !swiper.params.navigation ||
+            typeof swiper.params.navigation === 'boolean'
+          ) {
+            return;
+          }
+
+          swiper.params.navigation.prevEl = prevRef.current;
+          swiper.params.navigation.nextEl = nextRef.current;
+        }}
+        onInit={(swiper: SwiperType) => {
+          swiper.navigation.init();
+          swiper.navigation.update();
+        }}
+        breakpoints={breakpoints}
+        className="popular-shop-swiper !overflow-visible"
+      >
+        {items.map((item) => (
+          <SwiperSlide key={item.documentId} className="!h-auto">
+            <CarouselCard item={item} locale={locale} />
+          </SwiperSlide>
+        ))}
+      </Swiper>
+    </div>
   );
 }
 
@@ -98,7 +140,7 @@ function CarouselCard({
   }
 
   return (
-    <article className="flex h-full flex-col rounded-[10px] border border-dashed border-neutral-300 bg-white px-6 pb-4 pt-8 text-center transition-shadow hover:shadow-md">
+    <article className="flex h-full flex-col rounded-[10px] border border-dashed border-neutral-300 hover:border-[#4389F7] bg-white px-6 pb-4 pt-8 text-center transition-shadow hover:shadow-md">
       <div className="relative mx-auto mb-6 h-[235px] w-full max-w-[235px] shrink-0">
         {item.has_sale && item.discount_percentage > 0 && (
           <span className="absolute start-0 top-0 z-10 rounded-full bg-[#4389F7]/15 px-2.5 py-1 text-xs font-semibold text-[#4389F7]">
@@ -127,7 +169,7 @@ function CarouselCard({
       </div>
 
       <div className="flex flex-1 flex-col">
-        <h3 className="mb-3 line-clamp-2 min-h-[2.75rem] text-base font-bold leading-snug text-neutral-900">
+        <h3 className="mb-1 line-clamp-2 min-h-[2.75rem] text-base font-bold leading-snug text-neutral-900">
           <Link
             href={`/shop/${item.slug}`}
             className="transition-colors hover:text-[#4389F7]"

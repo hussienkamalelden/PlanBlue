@@ -30,7 +30,9 @@ export async function PopularShopSection() {
       <div className="pb-large-container relative z-10">
         <PopularShopHeading />
 
-        <PopularShopCarousel items={topItems} />
+        <div className="popular-shop-carousel-wrap relative xl:px-10">
+          <PopularShopCarousel items={topItems} />
+        </div>
       </div>
     </section>
   );

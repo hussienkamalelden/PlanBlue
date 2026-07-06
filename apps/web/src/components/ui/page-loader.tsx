@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 
 import { HOME_ASSETS } from "@/lib/assets/home";
 
+const LOADER_LETTERS = ["p", "l", "a", "n", "b", "l", "u", "e"] as const;
+
 type PageLoaderProps = {
   visible: boolean;
 };
@@ -38,14 +40,31 @@ export function PageLoader({ visible }: PageLoaderProps) {
       aria-hidden={!visible}
       aria-live="polite"
     >
-      <Image
-        src={HOME_ASSETS.logo}
-        alt="PlanBlue"
-        width={180}
-        height={180}
-        priority
-        className="h-28 w-auto animate-float-gentle sm:h-32 md:h-36"
-      />
+      <div className="relative z-10 text-center">
+        <Image
+          src={HOME_ASSETS.logo}
+          alt="PlanBlue"
+          width={180}
+          height={180}
+          priority
+          className="mx-auto mb-8 h-24 w-auto animate-float-gentle sm:h-28 md:mb-10 md:h-32"
+        />
+
+        <div
+          dir="ltr"
+          className="select-none uppercase tracking-[0.35em] sm:tracking-[0.5em] md:tracking-[0.9em]"
+        >
+          {LOADER_LETTERS.map((letter, index) => (
+            <span
+              key={`${letter}-${index}`}
+              className="inline-block animate-pb-letter text-[clamp(1.75rem,8vw,4.375rem)] font-medium leading-none text-white"
+              style={{ animationDelay: `${index * 0.2}s` }}
+            >
+              {letter}
+            </span>
+          ))}
+        </div>
+      </div>
     </div>,
     document.body,
   );

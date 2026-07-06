@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import Image from 'next/image';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
 
-import { LocaleSwitcher } from "@/components/locale/locale-switcher";
-import { HOME_ASSETS } from "@/lib/assets/home";
-import { formatPriceWhole } from "@/lib/api/strapi";
-import { useCartStore } from "@/lib/cart/cart-store";
-import { useTranslations } from "@/lib/i18n/use-translations";
-import { showPageLoader } from "@/lib/ui/page-loader";
-import { useLocaleStore } from "@/stores/locale-store";
+import { LocaleSwitcher } from '@/components/locale/locale-switcher';
+import { HOME_ASSETS } from '@/lib/assets/home';
+import { formatPriceWhole } from '@/lib/api/strapi';
+import { useCartStore } from '@/lib/cart/cart-store';
+import { useTranslations } from '@/lib/i18n/use-translations';
+import { showPageLoader } from '@/lib/ui/page-loader';
+import { useLocaleStore } from '@/stores/locale-store';
 
 function BagIcon() {
   return (
@@ -55,7 +55,7 @@ export function PlanBlueHeader() {
   const pathname = usePathname();
   const cartItems = useCartStore((state) => state.items);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
 
   const cartTotal = useMemo(
     () =>
@@ -72,8 +72,8 @@ export function PlanBlueHeader() {
   );
 
   const navItems = [
-    { href: "/", label: t.header.nav.home },
-    { href: "/shop", label: t.header.nav.shop },
+    { href: '/', label: t.header.nav.home },
+    { href: '/shop', label: t.header.nav.shop },
   ];
 
   useEffect(() => {
@@ -81,9 +81,9 @@ export function PlanBlueHeader() {
   }, [pathname]);
 
   useEffect(() => {
-    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    document.body.style.overflow = mobileOpen ? 'hidden' : '';
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow = '';
     };
   }, [mobileOpen]);
 
@@ -91,7 +91,7 @@ export function PlanBlueHeader() {
     showPageLoader();
 
     if (!query) {
-      router.push("/shop");
+      router.push('/shop');
       return;
     }
 
@@ -133,8 +133,8 @@ export function PlanBlueHeader() {
                 <div>
                   <span className="pb-hotline">{t.header.hotline}</span>
                   <h3>
-                    <a href={`tel:${t.header.phone.replace(/\s/g, "")}`}>
-                      {t.header.phone}
+                    <a href={`tel:${t.header.phone.replace(/\s/g, '')}`}>
+                      012-88-739-168
                     </a>
                   </h3>
                 </div>
@@ -147,7 +147,9 @@ export function PlanBlueHeader() {
                   {navItems.map((item) => (
                     <li
                       key={item.href}
-                      className={pathname === item.href ? "pb-current" : undefined}
+                      className={
+                        pathname === item.href ? 'pb-current' : undefined
+                      }
                     >
                       <Link href={item.href}>{item.label}</Link>
                     </li>
@@ -212,13 +214,13 @@ export function PlanBlueHeader() {
 
       <div
         className={`fixed inset-0 z-[70] lg:hidden ${
-          mobileOpen ? "pointer-events-auto" : "pointer-events-none"
+          mobileOpen ? 'pointer-events-auto' : 'pointer-events-none'
         }`}
       >
         <button
           type="button"
           className={`absolute inset-0 bg-black/45 transition-opacity duration-300 ${
-            mobileOpen ? "opacity-100" : "opacity-0"
+            mobileOpen ? 'opacity-100' : 'opacity-0'
           }`}
           aria-label={t.header.closeMenu}
           onClick={() => setMobileOpen(false)}
@@ -227,8 +229,8 @@ export function PlanBlueHeader() {
         <div
           className={`fixed top-0 flex h-full w-[min(320px,88vw)] flex-col overflow-y-auto bg-white p-5 shadow-xl transition-transform duration-300 ltr:right-0 rtl:left-0 ${
             mobileOpen
-              ? "translate-x-0"
-              : "ltr:translate-x-full rtl:-translate-x-full"
+              ? 'translate-x-0'
+              : 'ltr:translate-x-full rtl:-translate-x-full'
           }`}
         >
           <div className="mb-5 flex items-center justify-between gap-3">
@@ -278,7 +280,7 @@ export function PlanBlueHeader() {
                   onClick={() => setMobileOpen(false)}
                 >
                   {t.header.cart}
-                  {cartItemCount > 0 ? ` (${cartItemCount})` : ""} —{" "}
+                  {cartItemCount > 0 ? ` (${cartItemCount})` : ''} —{' '}
                   {formatPriceWhole(cartTotal, locale)}
                 </Link>
               </li>

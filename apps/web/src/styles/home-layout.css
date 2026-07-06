@@ -36,6 +36,12 @@
 .planblue-site .icon-4::before {
   content: '\e903';
 }
+.planblue-site .icon-20::before {
+  content: '\e913';
+}
+.planblue-site .icon-21::before {
+  content: '\e914';
+}
 
 .pb-large-container {
   max-width: 1680px;
@@ -79,7 +85,7 @@
 .pb-brand-block {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 60px;
   min-width: 0;
   flex-shrink: 0;
 }
@@ -153,9 +159,9 @@
 .pb-main-menu .pb-navigation > li > a {
   display: block;
   padding: 12px 14px;
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1.4;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--pb-title);
   text-decoration: none;
   transition: color 0.3s ease;
