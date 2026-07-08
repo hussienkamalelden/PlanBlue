@@ -50,15 +50,12 @@ export function PageLoader({ visible }: PageLoaderProps) {
           className="mx-auto mb-8 h-24 w-auto animate-float-gentle sm:h-28 md:mb-10 md:h-32"
         />
 
-        <div
-          dir="ltr"
-          className="select-none uppercase tracking-[0.35em] sm:tracking-[0.5em] md:tracking-[0.9em]"
-        >
+        <div dir="ltr" className="pb-txt-loading">
           {LOADER_LETTERS.map((letter, index) => (
             <span
               key={`${letter}-${index}`}
-              className="inline-block animate-pb-letter text-[clamp(1.75rem,8vw,4.375rem)] font-medium leading-none text-white"
-              style={{ animationDelay: `${index * 0.2}s` }}
+              data-text-preloader={letter}
+              className="pb-letters-loading"
             >
               {letter}
             </span>
