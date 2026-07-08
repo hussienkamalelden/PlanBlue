@@ -10,11 +10,11 @@ export function HomeOffersSection() {
 
   return (
     <section
-      className="pb-offers group relative py-12 md:py-16"
+      className="pb-offers group relative py-14 md:py-20"
       aria-label="Offers"
     >
       <div
-        className="pb-float-bob-y pointer-events-none absolute bottom-10 left-[110px] hidden h-[266px] w-[158px] bg-contain bg-no-repeat md:block"
+        className="pb-float-bob-y pointer-events-none absolute bottom-14 left-[110px] hidden h-[266px] w-[158px] bg-contain bg-no-repeat md:block"
         style={{ backgroundImage: `url(${HOME_ASSETS.shapes.offersShape})` }}
         dir="ltr"
         aria-hidden="true"
