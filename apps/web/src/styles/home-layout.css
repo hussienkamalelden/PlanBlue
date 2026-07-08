@@ -754,7 +754,7 @@ html[dir='rtl'] .planblue-site {
   margin: 0;
   padding: 0;
   list-style: none;
-  animation: pb-offers-scroll 120s linear infinite;
+  animation: pb-offers-scroll 70s linear infinite;
 }
 
 .pb-offers__item {
@@ -817,7 +817,7 @@ html[dir='rtl'] .planblue-site {
 
   .pb-offers__list {
     gap: 120px;
-    animation-duration: 90s;
+    animation-duration: 50s;
   }
 
   .pb-offers__item {
