@@ -133,7 +133,7 @@ html[dir='rtl'] .planblue-site {
 
 /* Popular categories — Kiddex category-style-five */
 .pb-popular-categories-swiper {
-  overflow: visible;
+  overflow: hidden;
 }
 
 .pb-category-block {

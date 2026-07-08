@@ -3,15 +3,19 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useMemo } from 'react';
+import { Autoplay } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
 import { HOME_CATEGORY_BORDER_CLASSES } from '@/lib/assets/home-categories';
 import { getMediaUrl } from '@/lib/api/strapi';
-import { getLocaleDirection, type Locale } from '@/lib/i18n/config';
+import { useSliderDirection } from '@/lib/hooks/use-slider-direction';
+import type { Locale } from '@/lib/i18n/config';
 import type { StrapiCategory } from '@/lib/types/strapi';
 import { useLocaleStore } from '@/stores/locale-store';
 
 import 'swiper/css';
+
+const MAX_SLIDES_PER_VIEW = 6;
 
 type PopularCategoriesCarouselProps = {
   categories: StrapiCategory[];
@@ -21,7 +25,7 @@ export function PopularCategoriesCarousel({
   categories,
 }: PopularCategoriesCarouselProps) {
   const locale = useLocaleStore((state) => state.locale);
-  const direction = getLocaleDirection(locale);
+  const direction = useSliderDirection();
 
   const breakpoints = useMemo(
     () => ({
@@ -29,10 +33,12 @@ export function PopularCategoriesCarousel({
       640: { slidesPerView: 3, spaceBetween: 20 },
       1024: { slidesPerView: 4, spaceBetween: 24 },
       1280: { slidesPerView: 5, spaceBetween: 28 },
-      1536: { slidesPerView: 6, spaceBetween: 32 },
+      1536: { slidesPerView: MAX_SLIDES_PER_VIEW, spaceBetween: 32 },
     }),
     [],
   );
+
+  const canLoop = categories.length > MAX_SLIDES_PER_VIEW * 2;
 
   if (categories.length === 0) {
     return null;
@@ -40,7 +46,17 @@ export function PopularCategoriesCarousel({
 
   return (
     <Swiper
+      key={`popular-categories-${direction}`}
       dir={direction}
+      modules={[Autoplay]}
+      autoplay={{
+        delay: 2500,
+        disableOnInteraction: false,
+        pauseOnMouseEnter: true,
+      }}
+      loop={canLoop}
+      loopAdditionalSlides={MAX_SLIDES_PER_VIEW}
+      watchSlidesProgress
       breakpoints={breakpoints}
       className="pb-popular-categories-swiper"
     >
