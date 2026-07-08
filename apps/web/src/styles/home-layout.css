@@ -216,7 +216,6 @@ html[dir='rtl'] .planblue-site {
   top: 0;
   z-index: 50;
   background: #fff;
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
 }
 
 .pb-header-promo {
@@ -240,6 +239,7 @@ html[dir='rtl'] .planblue-site {
 .pb-header-lower {
   position: relative;
   background: #fff;
+  box-shadow: 0 4px 18px rgba(17, 24, 39, 0.08);
 }
 
 .pb-header-lower .pb-header-shape {
