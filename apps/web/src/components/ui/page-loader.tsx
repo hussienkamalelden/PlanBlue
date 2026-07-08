@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import { useEffect, useState } from 'react';
 
 import { HOME_ASSETS } from '@/lib/assets/home';
+import { markPageLoaderHydrated } from '@/lib/ui/page-loader';
 
 const LOADER_LETTERS = ['p', 'l', 'a', 'n', 'b', 'l', 'u', 'e'] as const;
 
@@ -17,14 +18,8 @@ export function PageLoader({ visible }: PageLoaderProps) {
 
   useEffect(() => {
     setMounted(true);
+    markPageLoaderHydrated();
   }, []);
-
-  useEffect(() => {
-    document.body.style.overflow = visible ? 'hidden' : '';
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [visible]);
 
   if (!mounted) {
     return null;

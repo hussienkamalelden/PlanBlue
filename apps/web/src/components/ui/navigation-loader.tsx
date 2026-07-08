@@ -1,10 +1,13 @@
 "use client";
 
-import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import { PageLoader } from "@/components/ui/page-loader";
-import { PAGE_LOADER_START_EVENT } from "@/lib/ui/page-loader";
+import {
+  PAGE_LOADER_START_EVENT,
+  setPageLoaderActive,
+} from "@/lib/ui/page-loader";
+import { ROUTE_READY_EVENT } from "@/lib/ui/route-ready";
 import {
   isInsideSliderCarousel,
   isSliderNavigationBlocked,
@@ -12,9 +15,10 @@ import {
 import { useLocaleStore } from "@/stores/locale-store";
 
 const INITIAL_DELAY_MS = 900;
-const NAVIGATION_DELAY_MS = 500;
-const LOCALE_SWITCH_DELAY_MS = 450;
-const LOADER_SAFETY_TIMEOUT_MS = 2500;
+const POST_ROUTE_BUFFER_MS = 120;
+const MIN_LOADER_VISIBLE_MS = 400;
+const LOCALE_SWITCH_BUFFER_MS = 200;
+const LOADER_SAFETY_TIMEOUT_MS = 4000;
 
 function isInternalNavigationLink(anchor: HTMLAnchorElement) {
   const href = anchor.getAttribute("href");
@@ -54,16 +58,14 @@ function shouldShowLoaderForClick(target: Element) {
 }
 
 export function NavigationLoader() {
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const searchKey = searchParams.toString();
   const locale = useLocaleStore((state) => state.locale);
   const [visible, setVisible] = useState(true);
-  const isFirstLoad = useRef(true);
+  const hasCompletedInitialLoad = useRef(false);
   const prevLocaleRef = useRef(locale);
   const hideTimer = useRef<number | null>(null);
   const safetyTimer = useRef<number | null>(null);
   const pendingNavigationRef = useRef(false);
+  const loaderShownAtRef = useRef(0);
 
   function clearHideTimer() {
     if (hideTimer.current !== null) {
@@ -79,38 +81,66 @@ export function NavigationLoader() {
     }
   }
 
-  function scheduleHide(delay: number) {
-    clearHideTimer();
+  function hideLoader() {
+    setVisible(false);
+    setPageLoaderActive(false);
     pendingNavigationRef.current = false;
     clearSafetyTimer();
+  }
+
+  function hideAfterPaint(bufferMs: number) {
+    clearHideTimer();
+
+    const elapsed = Date.now() - loaderShownAtRef.current;
+    const waitMs = Math.max(bufferMs, MIN_LOADER_VISIBLE_MS - elapsed);
 
     hideTimer.current = window.setTimeout(() => {
-      setVisible(false);
-    }, delay);
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          hideLoader();
+        });
+      });
+    }, waitMs);
   }
 
   function showLoaderForNavigation() {
+    loaderShownAtRef.current = Date.now();
     setVisible(true);
+    setPageLoaderActive(true);
     pendingNavigationRef.current = true;
+    clearHideTimer();
     clearSafetyTimer();
 
     safetyTimer.current = window.setTimeout(() => {
       if (pendingNavigationRef.current) {
-        pendingNavigationRef.current = false;
-        setVisible(false);
+        hideLoader();
       }
     }, LOADER_SAFETY_TIMEOUT_MS);
   }
 
   useEffect(() => {
-    const delay = isFirstLoad.current ? INITIAL_DELAY_MS : NAVIGATION_DELAY_MS;
-    isFirstLoad.current = false;
-    scheduleHide(delay);
+    const timer = window.setTimeout(() => {
+      hasCompletedInitialLoad.current = true;
+      hideLoader();
+    }, INITIAL_DELAY_MS);
 
     return () => {
-      clearHideTimer();
+      window.clearTimeout(timer);
     };
-  }, [pathname, searchKey]);
+  }, []);
+
+  useEffect(() => {
+    function handleRouteReady() {
+      if (!hasCompletedInitialLoad.current || !pendingNavigationRef.current) {
+        return;
+      }
+
+      hideAfterPaint(POST_ROUTE_BUFFER_MS);
+    }
+
+    window.addEventListener(ROUTE_READY_EVENT, handleRouteReady);
+    return () => window.removeEventListener(ROUTE_READY_EVENT, handleRouteReady);
+  }, []);
 
   useEffect(() => {
     if (prevLocaleRef.current === locale) {
@@ -118,13 +148,18 @@ export function NavigationLoader() {
     }
 
     prevLocaleRef.current = locale;
-    showLoaderForNavigation();
-    scheduleHide(LOCALE_SWITCH_DELAY_MS);
 
-    return () => {
-      clearHideTimer();
-      clearSafetyTimer();
-    };
+    if (!hasCompletedInitialLoad.current) {
+      return;
+    }
+
+    showLoaderForNavigation();
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        hideAfterPaint(LOCALE_SWITCH_BUFFER_MS);
+      });
+    });
   }, [locale]);
 
   useEffect(() => {

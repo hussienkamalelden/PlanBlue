@@ -3,6 +3,22 @@
 @tailwind utilities;
 
 @layer base {
+  html.planblue-loading {
+    overflow: hidden;
+  }
+
+  html.planblue-loading .planblue-site-shell {
+    visibility: hidden;
+  }
+
+  html:not(.planblue-loading) #planblue-initial-loader {
+    display: none;
+  }
+
+  html.planblue-hydrated #planblue-initial-loader {
+    display: none;
+  }
+
   html[lang='ar'] body,
   html[dir='rtl'] body {
     font-family: var(--font-arabic, 'Cairo'), var(--font-nunito, 'Nunito'), sans-serif;
@@ -67,6 +83,18 @@
 
   .animate-float-gentle {
     animation: float-gentle 3s ease-in-out infinite;
+  }
+
+  .planblue-initial-loader {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: flex;
+    min-height: 100dvh;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    background: #4389f7;
   }
 
   .animate-fade-up {

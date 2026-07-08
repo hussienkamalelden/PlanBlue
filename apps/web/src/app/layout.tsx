@@ -6,14 +6,15 @@ import { LocaleProvider } from '@/components/locale/locale-provider';
 import { FloatingWhatsAppButton } from '@/components/layout/floating-whatsapp-button';
 import { PlanBlueHeader } from '@/components/layout/planblue-header';
 import { SiteFooter } from '@/components/layout/site-footer';
+import { InitialPageLoader } from '@/components/ui/initial-page-loader';
 import { NavigationLoader } from '@/components/ui/navigation-loader';
+import { RouteReadyNotifier } from '@/components/ui/route-ready-notifier';
 import { getLocaleDirection } from '@/lib/i18n/config';
 import { getLocale } from '@/lib/i18n/get-locale';
 
 import type { Metadata } from 'next';
 import './globals.css';
 import '@/styles/home-layout.css';
-
 const nunito = Nunito({
   subsets: ['latin'],
   variable: '--font-nunito',
@@ -43,21 +44,25 @@ export default async function RootLayout({
   const locale = await getLocale();
 
   return (
-    <html lang={locale} dir={getLocaleDirection(locale)}>
+    <html lang={locale} dir={getLocaleDirection(locale)} className="planblue-loading">
       <body
         suppressHydrationWarning
         className={`${nunito.variable} ${arabicFont.variable} planblue-site min-h-screen bg-white text-neutral-900 antialiased`}
       >
+        <InitialPageLoader />
         <LocaleProvider>
-          <Suspense fallback={null}>
-            <NavigationLoader />
-          </Suspense>
-          <div className="flex min-h-screen flex-col">
+          <NavigationLoader />
+          <div className="planblue-site-shell flex min-h-screen flex-col">
             <PlanBlueHeader />
-            <div className="flex-1">{children}</div>
+            <div className="flex-1">
+              <Suspense fallback={null}>
+                <RouteReadyNotifier />
+              </Suspense>
+              {children}
+            </div>
             <SiteFooter />
+            <FloatingWhatsAppButton />
           </div>
-          <FloatingWhatsAppButton />
         </LocaleProvider>
       </body>
     </html>
