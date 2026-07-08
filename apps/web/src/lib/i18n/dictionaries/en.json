@@ -8,6 +8,7 @@
   "header": {
     "products": "Shop",
     "cart": "Cart",
+    "cartTotal": "Cart Total",
     "affiliates": "Affiliates",
     "openHours": "Open Hours: Mon - Fri 8am - 6pm",
     "liveChat": "Live Chat",

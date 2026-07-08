@@ -80,7 +80,7 @@ export function HomeHero() {
           <div className="pb-content-box">
             <h2>{t.home.hero.title}</h2>
 
-            <div>
+            <div className="pb-hero-cta">
               <Link href="/shop" className="pb-theme-btn">
                 {t.home.hero.cta}
               </Link>

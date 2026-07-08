@@ -8,6 +8,7 @@
   "header": {
     "products": "المتجر",
     "cart": "السلة",
+    "cartTotal": "إجمالي السلة",
     "affiliates": "المسوقون",
     "openHours": "ساعات العمل: الإثنين - الجمعة 8 ص - 6 م",
     "liveChat": "دردشة مباشرة",

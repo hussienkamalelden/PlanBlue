@@ -7,6 +7,7 @@ import type { Swiper as SwiperType } from 'swiper';
 
 import { ShopProductCard } from '@/components/home/shop-product-card';
 import { useSliderDirection } from '@/lib/hooks/use-slider-direction';
+import { buildInfiniteSliderItems } from '@/lib/shop/slider-loop';
 import type { StrapiShopItem } from '@/lib/types/strapi';
 import { useLocaleStore } from '@/stores/locale-store';
 
@@ -14,6 +15,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 
 const MAX_SLIDES_PER_VIEW = 4;
+const MIN_LOOP_SLIDES = MAX_SLIDES_PER_VIEW * 3;
 
 type PopularShopCarouselProps = {
   items: StrapiShopItem[];
@@ -25,6 +27,11 @@ export function PopularShopCarousel({ items }: PopularShopCarouselProps) {
   const prevRef = useRef<HTMLButtonElement>(null);
   const nextRef = useRef<HTMLButtonElement>(null);
 
+  const loopSlides = useMemo(
+    () => buildInfiniteSliderItems(items, MIN_LOOP_SLIDES),
+    [items],
+  );
+
   const breakpoints = useMemo(
     () => ({
       0: { slidesPerView: 1, spaceBetween: 0 },
@@ -34,8 +41,6 @@ export function PopularShopCarousel({ items }: PopularShopCarouselProps) {
     }),
     [],
   );
-
-  const canLoop = items.length > MAX_SLIDES_PER_VIEW * 2;
 
   if (items.length === 0) {
     return null;
@@ -71,7 +76,7 @@ export function PopularShopCarousel({ items }: PopularShopCarouselProps) {
           disableOnInteraction: false,
           pauseOnMouseEnter: true,
         }}
-        loop={canLoop}
+        loop
         loopAdditionalSlides={MAX_SLIDES_PER_VIEW}
         watchSlidesProgress
         navigation={{
@@ -96,9 +101,9 @@ export function PopularShopCarousel({ items }: PopularShopCarouselProps) {
         breakpoints={breakpoints}
         className="popular-shop-swiper"
       >
-        {items.map((item) => (
-          <SwiperSlide key={item.documentId} className="!h-auto">
-            <ShopProductCard item={item} locale={locale} />
+        {loopSlides.map(({ data, slideKey }) => (
+          <SwiperSlide key={slideKey} className="!h-auto">
+            <ShopProductCard item={data} locale={locale} />
           </SwiperSlide>
         ))}
       </Swiper>

@@ -504,6 +504,10 @@ html[dir='rtl'] .planblue-site {
   color: #fff;
 }
 
+.pb-banner-section .pb-hero-cta {
+  margin-top: 28px;
+}
+
 .pb-banner-section .pb-content-box h3 {
   margin: 0 0 31px;
   font-size: clamp(24px, 3vw, 32px);
@@ -776,7 +780,7 @@ html[dir='rtl'] .planblue-site {
   width: 37px;
   height: 37px;
   top: 2px;
-  inset-inline-end: -145px;
+  right: -145px;
   font-size: 40px;
   color: var(--pb-theme);
   transition: color 0.25s ease;
@@ -802,14 +806,6 @@ html[dir='rtl'] .planblue-site {
   color: #4389f7;
 }
 
-[dir='rtl'] .pb-offers__list {
-  animation-direction: reverse;
-}
-
-[dir='rtl'] .pb-offers__inner {
-  transform: rotate(5deg);
-}
-
 @media (max-width: 767px) {
   .pb-offers__inner {
     padding: 36px 0;
@@ -826,7 +822,7 @@ html[dir='rtl'] .planblue-site {
   }
 
   .pb-offers__item::before {
-    inset-inline-end: -72px;
+    right: -72px;
     font-size: 28px;
     width: 28px;
     height: 28px;

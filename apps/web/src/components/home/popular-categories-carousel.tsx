@@ -10,12 +10,14 @@ import { HOME_CATEGORY_BORDER_CLASSES } from '@/lib/assets/home-categories';
 import { getMediaUrl } from '@/lib/api/strapi';
 import { useSliderDirection } from '@/lib/hooks/use-slider-direction';
 import type { Locale } from '@/lib/i18n/config';
+import { buildInfiniteSliderItems } from '@/lib/shop/slider-loop';
 import type { StrapiCategory } from '@/lib/types/strapi';
 import { useLocaleStore } from '@/stores/locale-store';
 
 import 'swiper/css';
 
 const MAX_SLIDES_PER_VIEW = 6;
+const MIN_LOOP_SLIDES = MAX_SLIDES_PER_VIEW * 3;
 
 type PopularCategoriesCarouselProps = {
   categories: StrapiCategory[];
@@ -27,6 +29,11 @@ export function PopularCategoriesCarousel({
   const locale = useLocaleStore((state) => state.locale);
   const direction = useSliderDirection();
 
+  const loopSlides = useMemo(
+    () => buildInfiniteSliderItems(categories, MIN_LOOP_SLIDES),
+    [categories],
+  );
+
   const breakpoints = useMemo(
     () => ({
       0: { slidesPerView: 2, spaceBetween: 16 },
@@ -37,8 +44,6 @@ export function PopularCategoriesCarousel({
     }),
     [],
   );
-
-  const canLoop = categories.length > MAX_SLIDES_PER_VIEW * 2;
 
   if (categories.length === 0) {
     return null;
@@ -54,15 +59,19 @@ export function PopularCategoriesCarousel({
         disableOnInteraction: false,
         pauseOnMouseEnter: true,
       }}
-      loop={canLoop}
+      loop
       loopAdditionalSlides={MAX_SLIDES_PER_VIEW}
       watchSlidesProgress
       breakpoints={breakpoints}
       className="pb-popular-categories-swiper"
     >
-      {categories.map((category, index) => (
-        <SwiperSlide key={category.documentId} className="!h-auto">
-          <CategoryCard category={category} index={index} locale={locale} />
+      {loopSlides.map(({ data, slideKey, sourceIndex }) => (
+        <SwiperSlide key={slideKey} className="!h-auto">
+          <CategoryCard
+            category={data}
+            index={sourceIndex}
+            locale={locale}
+          />
         </SwiperSlide>
       ))}
     </Swiper>

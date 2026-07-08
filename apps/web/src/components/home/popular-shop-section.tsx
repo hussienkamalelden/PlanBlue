@@ -16,13 +16,17 @@ export async function PopularShopSection() {
 
   return (
     <section className="relative overflow-hidden py-16 text-center md:py-24">
-      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+      <div
+        className="pointer-events-none absolute inset-0"
+        dir="ltr"
+        aria-hidden="true"
+      >
         <div
           className="absolute inset-x-0 top-0 h-32 bg-contain bg-top bg-no-repeat opacity-60"
           style={{ backgroundImage: `url(${shapes.carouselPattern1})` }}
         />
         <div
-          className="absolute end-0 top-10 h-24 w-24 bg-contain bg-no-repeat opacity-70"
+          className="absolute right-0 top-10 h-24 w-24 bg-contain bg-no-repeat opacity-70"
           style={{ backgroundImage: `url(${shapes.carouselPattern2})` }}
         />
       </div>

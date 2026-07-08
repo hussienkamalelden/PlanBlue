@@ -109,6 +109,7 @@ export function PlanBlueHeader() {
       <div className="pb-header-lower">
         <div
           className="pb-header-shape"
+          dir="ltr"
           style={{ backgroundImage: `url(${HOME_ASSETS.shapes.headerWave})` }}
         />
         <div className="pb-large-container">
@@ -180,10 +181,10 @@ export function PlanBlueHeader() {
 
               <Link
                 href="/cart"
-                className="inline-flex items-center gap-2 py-1.5 text-neutral-900 transition-colors hover:text-[#4389F7]"
+                className="inline-flex items-center gap-2.5 py-1.5 text-neutral-900 transition-colors hover:text-[#4389F7]"
                 aria-label={t.header.cart}
               >
-                <span className="relative inline-flex items-center justify-center">
+                <span className="relative inline-flex shrink-0 items-center justify-center">
                   <BagIcon />
                   {cartItemCount > 0 && (
                     <span className="absolute -right-2 -top-1.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#4389F7] px-1 text-[11px] font-bold leading-none text-white rtl:-left-2 rtl:right-auto">
@@ -191,8 +192,13 @@ export function PlanBlueHeader() {
                     </span>
                   )}
                 </span>
-                <span className="max-w-[88px] truncate text-sm font-bold sm:max-w-none">
-                  {formatPriceWhole(cartTotal, locale)}
+                <span className="min-w-0 text-start leading-tight">
+                  <span className="block text-xs font-medium text-neutral-500">
+                    {t.header.cartTotal}
+                  </span>
+                  <span className="block truncate text-sm font-bold sm:max-w-none">
+                    {formatPriceWhole(cartTotal, locale)}
+                  </span>
                 </span>
               </Link>
 
@@ -279,7 +285,7 @@ export function PlanBlueHeader() {
                   className="block py-3 text-base font-semibold text-neutral-900"
                   onClick={() => setMobileOpen(false)}
                 >
-                  {t.header.cart}
+                  {t.header.cartTotal}
                   {cartItemCount > 0 ? ` (${cartItemCount})` : ''} —{' '}
                   {formatPriceWhole(cartTotal, locale)}
                 </Link>

@@ -1,13 +1,9 @@
 'use client';
 
 import { HOME_ASSETS } from '@/lib/assets/home';
-import { getLocaleDirection } from '@/lib/i18n/config';
 import { useTranslations } from '@/lib/i18n/use-translations';
-import { useLocaleStore } from '@/stores/locale-store';
 
 export function HomeOffersSection() {
-  const locale = useLocaleStore((state) => state.locale);
-  const direction = getLocaleDirection(locale);
   const t = useTranslations();
   const labels = t.home.offers.labels;
   const trackItems = [...labels, ...labels];
@@ -16,11 +12,11 @@ export function HomeOffersSection() {
     <section
       className="pb-offers group relative py-12 md:py-16"
       aria-label="Offers"
-      dir={direction}
     >
       <div
-        className="pb-float-bob-y pointer-events-none absolute bottom-10 start-[110px] hidden h-[266px] w-[158px] bg-contain bg-no-repeat md:block"
+        className="pb-float-bob-y pointer-events-none absolute bottom-10 left-[110px] hidden h-[266px] w-[158px] bg-contain bg-no-repeat md:block"
         style={{ backgroundImage: `url(${HOME_ASSETS.shapes.offersShape})` }}
+        dir="ltr"
         aria-hidden="true"
       />
 
