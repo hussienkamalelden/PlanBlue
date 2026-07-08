@@ -636,13 +636,25 @@ html[dir='rtl'] .planblue-site {
   left: 46%;
   top: 255px;
 }
+[dir='rtl'] .pb-anim-icon .pb-anim-4 {
+  left: auto;
+  right: 46%;
+}
 .pb-anim-icon .pb-anim-5 {
   top: 87px;
   right: 555px;
 }
+[dir='rtl'] .pb-anim-icon .pb-anim-5 {
+  right: auto;
+  left: 555px;
+}
 .pb-anim-icon .pb-anim-6 {
   bottom: 170px;
   right: 520px;
+}
+[dir='rtl'] .pb-anim-icon .pb-anim-6 {
+  right: auto;
+  left: 520px;
 }
 
 .pb-anim-icon .pb-anim-7 {
@@ -650,6 +662,10 @@ html[dir='rtl'] .planblue-site {
   top: 102px;
   width: 128px;
   height: 95px;
+}
+[dir='rtl'] .pb-anim-icon .pb-anim-7 {
+  left: auto;
+  right: 40%;
 }
 
 .pb-anim-icon .pb-anim-8 {

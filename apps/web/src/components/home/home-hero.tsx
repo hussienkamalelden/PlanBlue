@@ -77,7 +77,7 @@ export function HomeHero() {
             />
           </div>
 
-          <div className="pb-content-box">
+          <div className="pb-content-box w-[90%]">
             <h2>{t.home.hero.title}</h2>
 
             <div className="pb-hero-cta">
