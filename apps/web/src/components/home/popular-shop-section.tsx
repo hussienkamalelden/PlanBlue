@@ -6,7 +6,7 @@ import { sortShopItems } from '@/lib/shop/filters';
 
 export async function PopularShopSection() {
   const allItems = await fetchShopItems();
-  const topItems = sortShopItems(allItems, 'top_sellers').slice(0, 12);
+  const topItems = sortShopItems(allItems, 'most_viewed').slice(0, 12);
 
   if (topItems.length === 0) {
     return null;

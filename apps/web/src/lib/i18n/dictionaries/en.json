@@ -40,6 +40,10 @@
     "popular": {
       "title": "Today's",
       "highlight": "popular picks"
+    },
+    "topSelling": {
+      "title": "Top Selling",
+      "highlight": "products"
     }
   },
   "shop": {

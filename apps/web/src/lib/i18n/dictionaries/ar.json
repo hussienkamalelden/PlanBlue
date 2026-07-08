@@ -40,6 +40,10 @@
     "popular": {
       "title": "أشهر",
       "highlight": "اختيارات اليوم"
+    },
+    "topSelling": {
+      "title": "منتجات",
+      "highlight": "الأكثر مبيعاً"
     }
   },
   "shop": {
