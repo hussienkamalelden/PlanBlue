@@ -146,3 +146,17 @@ export function sortShopItems(
 
   return sorted.sort((a, b) => Number(b.views ?? 0) - Number(a.views ?? 0));
 }
+
+export function getMostViewedShopItems(
+  items: StrapiShopItem[],
+  limit = 12,
+): StrapiShopItem[] {
+  return sortShopItems(items, 'most_viewed').slice(0, limit);
+}
+
+export function getTopSellingShopItems(
+  items: StrapiShopItem[],
+  limit = 12,
+): StrapiShopItem[] {
+  return sortShopItems(items, 'top_sellers').slice(0, limit);
+}
