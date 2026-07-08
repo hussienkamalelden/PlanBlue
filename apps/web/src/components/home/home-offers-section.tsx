@@ -1,7 +1,7 @@
 'use client';
 
-import { OFFER_ICON_CLASSES } from '@/lib/assets/offer-icons';
 import { HOME_ASSETS } from '@/lib/assets/home';
+import { OFFER_ICONS } from '@/lib/home/offer-icons';
 import { useTranslations } from '@/lib/i18n/use-translations';
 
 export function HomeOffersSection() {
@@ -9,7 +9,7 @@ export function HomeOffersSection() {
   const labels = t.home.offers.labels;
   const trackItems = labels.map((label, index) => ({
     label,
-    icon: OFFER_ICON_CLASSES[index % OFFER_ICON_CLASSES.length],
+    Icon: OFFER_ICONS[index % OFFER_ICONS.length],
   }));
   const duplicatedItems = [...trackItems, ...trackItems];
 
@@ -27,12 +27,17 @@ export function HomeOffersSection() {
 
       <div className="pb-offers__inner bg-white">
         <ul className="pb-offers__list">
-          {duplicatedItems.map(({ label, icon }, index) => (
+          {duplicatedItems.map(({ label, Icon }, index) => (
             <li
               key={`${label}-${index}`}
               className="pb-offers__item select-none"
             >
-              <span className={`${icon} pb-offers__icon`} aria-hidden="true" />
+              <Icon
+                className="pb-offers__icon"
+                size={34}
+                strokeWidth={2.25}
+                aria-hidden="true"
+              />
               <span>{label}</span>
             </li>
           ))}
