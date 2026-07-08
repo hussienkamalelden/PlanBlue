@@ -19,14 +19,19 @@ import { useLocaleStore } from "@/stores/locale-store";
 type ShopViewProps = {
   categories: StrapiCategory[];
   items: StrapiShopItem[];
+  initialCategoryId?: string | null;
 };
 
-export function ShopView({ categories, items }: ShopViewProps) {
+export function ShopView({
+  categories,
+  items,
+  initialCategoryId = null,
+}: ShopViewProps) {
   const t = useTranslations();
   const locale = useLocaleStore((state) => state.locale);
 
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
-    null,
+    initialCategoryId,
   );
   const [selectedSort, setSelectedSort] = useState<ShopSort>(null);
   const [selectedAgeFilter, setSelectedAgeFilter] = useState<AgeFilter>(null);
@@ -39,12 +44,18 @@ export function ShopView({ categories, items }: ShopViewProps) {
   const [priceMax, setPriceMax] = useState(priceBounds.max);
 
   useEffect(() => {
-    setSelectedCategoryId(null);
+    setSelectedCategoryId(initialCategoryId);
     setSelectedSort(null);
     setSelectedAgeFilter(null);
     setPriceMin(priceBounds.min);
     setPriceMax(priceBounds.max);
-  }, [categories, items, priceBounds.min, priceBounds.max]);
+  }, [
+    categories,
+    items,
+    initialCategoryId,
+    priceBounds.min,
+    priceBounds.max,
+  ]);
 
   const activeTags = useMemo(() => {
     const tags: ActiveFilterTag[] = [];

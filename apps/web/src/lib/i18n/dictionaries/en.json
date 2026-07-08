@@ -41,6 +41,10 @@
       "title": "Today's",
       "highlight": "popular picks"
     },
+    "popularCategories": {
+      "title": "Popular",
+      "highlight": "Categories"
+    },
     "topSelling": {
       "title": "Top Selling",
       "highlight": "products"
