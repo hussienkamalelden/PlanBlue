@@ -172,6 +172,7 @@ html[dir='rtl'] .planblue-site {
   margin: 0 auto 20px;
   border-radius: 50%;
   border: 2px dashed;
+  background-color: #fff;
   overflow: hidden;
 }
 

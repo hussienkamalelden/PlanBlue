@@ -117,7 +117,7 @@ function CategoryCard({
                 alt={category.image.name || title}
                 width={250}
                 height={250}
-                className="h-full w-full rounded-full object-cover transition-transform duration-500 group-hover:scale-105"
+                className="h-full w-full rounded-full object-contain transition-transform duration-500 group-hover:scale-105"
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center rounded-full bg-neutral-100 text-4xl text-neutral-300">

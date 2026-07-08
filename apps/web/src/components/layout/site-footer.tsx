@@ -70,7 +70,7 @@ export function SiteFooter() {
 
   return (
     <footer className="mt-10 border-t border-neutral-200 bg-white">
-      <div className="mx-auto max-w-6xl px-4 py-10">
+      <div className="mx-auto max-w-6xl px-4 pt-10 pb-5">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           <div>
             {/* <Link href="/" className="text-lg font-semibold text-neutral-900">
