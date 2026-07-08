@@ -1,4 +1,4 @@
-import { Nunito } from 'next/font/google';
+import { Cairo, Nunito } from 'next/font/google';
 
 import { LocaleProvider } from '@/components/locale/locale-provider';
 import { PlanBlueHeader } from '@/components/layout/planblue-header';
@@ -14,6 +14,13 @@ import '@/styles/home-layout.css';
 const nunito = Nunito({
   subsets: ['latin'],
   variable: '--font-nunito',
+  display: 'swap',
+});
+
+const arabicFont = Cairo({
+  subsets: ['arabic'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-arabic',
   display: 'swap',
 });
 
@@ -36,7 +43,7 @@ export default async function RootLayout({
     <html lang={locale} dir={getLocaleDirection(locale)}>
       <body
         suppressHydrationWarning
-        className={`${nunito.variable} planblue-site min-h-screen bg-white text-neutral-900 antialiased`}
+        className={`${nunito.variable} ${arabicFont.variable} planblue-site min-h-screen bg-white text-neutral-900 antialiased`}
       >
         <LocaleProvider>
           <NavigationLoader />

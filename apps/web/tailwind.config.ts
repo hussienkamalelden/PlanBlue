@@ -29,6 +29,10 @@ const config: Config = {
       animation: {
         "pb-spinner": "pb-spinner 1s linear infinite",
       },
+      fontFamily: {
+        sans: ['var(--font-nunito)', 'Nunito', 'sans-serif'],
+        arabic: ['var(--font-arabic)', 'Cairo', 'var(--font-nunito)', 'sans-serif'],
+      },
     },
   },
   plugins: [],
