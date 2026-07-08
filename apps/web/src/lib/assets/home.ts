@@ -1,6 +1,7 @@
 export const HOME_ASSETS = {
   logo: '/images/layout/logo_img.png',
   banner: '/images/home/banner-img-1.png',
+  logoSolid: '/images/layout/logo_solid.png',
   shapes: {
     headerWave: '/images/home/shapes/shape-1.png',
     pattern: '/images/home/shapes/shape-21.png',

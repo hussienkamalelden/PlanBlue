@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import { createPortal } from "react-dom";
-import { useEffect, useState } from "react";
+import Image from 'next/image';
+import { createPortal } from 'react-dom';
+import { useEffect, useState } from 'react';
 
-import { HOME_ASSETS } from "@/lib/assets/home";
+import { HOME_ASSETS } from '@/lib/assets/home';
 
-const LOADER_LETTERS = ["p", "l", "a", "n", "b", "l", "u", "e"] as const;
+const LOADER_LETTERS = ['p', 'l', 'a', 'n', 'b', 'l', 'u', 'e'] as const;
 
 type PageLoaderProps = {
   visible: boolean;
@@ -20,9 +20,9 @@ export function PageLoader({ visible }: PageLoaderProps) {
   }, []);
 
   useEffect(() => {
-    document.body.style.overflow = visible ? "hidden" : "";
+    document.body.style.overflow = visible ? 'hidden' : '';
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow = '';
     };
   }, [visible]);
 
@@ -34,15 +34,19 @@ export function PageLoader({ visible }: PageLoaderProps) {
     <div
       className={`fixed inset-0 z-[99999] flex min-h-dvh w-full items-center justify-center bg-[#4389F7] transition-opacity duration-300 ${
         visible
-          ? "visible opacity-100"
-          : "pointer-events-none invisible opacity-0"
+          ? 'visible opacity-100'
+          : 'pointer-events-none invisible opacity-0'
       }`}
       aria-hidden={!visible}
       aria-live="polite"
     >
       <div className="relative z-10 text-center">
+        <div
+          className="absolute inset-0 left-1/2 -top-10 z-0 h-[190px] w-[280px] -translate-x-1/2  bg-contain bg-no-repeat"
+          style={{ backgroundImage: `url(${HOME_ASSETS.shapes.anim7})` }}
+        />
         <Image
-          src={HOME_ASSETS.logo}
+          src={HOME_ASSETS.logoSolid}
           alt="PlanBlue"
           width={180}
           height={180}
