@@ -33,28 +33,29 @@ export function PageLoader({ visible }: PageLoaderProps) {
   return createPortal(
     <div
       className={`fixed inset-0 z-[99999] flex min-h-dvh w-full items-center justify-center bg-[#4389F7] transition-opacity duration-300 ${
-        visible
-          ? 'visible opacity-100'
-          : 'pointer-events-none invisible opacity-0'
+        visible ? 'visible opacity-100' : 'pointer-events-none invisible opacity-0'
       }`}
       aria-hidden={!visible}
       aria-live="polite"
     >
-      <div className="relative z-10 text-center">
-        <div
-          className="absolute inset-0 left-1/2 -top-10 z-0 h-[190px] w-[280px] -translate-x-1/2  bg-contain bg-no-repeat"
-          style={{ backgroundImage: `url(${HOME_ASSETS.shapes.anim7})` }}
-        />
-        <Image
-          src={HOME_ASSETS.logoSolid}
-          alt="PlanBlue"
-          width={180}
-          height={180}
-          priority
-          className="mx-auto mb-8 h-24 w-auto animate-float-gentle sm:h-28 md:mb-10 md:h-32"
-        />
+      <div className="relative z-10 text-center" dir="ltr">
+        <div className="relative mx-auto mb-8 w-fit md:mb-10">
+          <div
+            className="pointer-events-none absolute -top-10 left-1/2 z-0 h-[190px] w-[280px] -translate-x-1/2 bg-contain bg-no-repeat"
+            style={{ backgroundImage: `url(${HOME_ASSETS.shapes.anim7})` }}
+            aria-hidden="true"
+          />
+          <Image
+            src={HOME_ASSETS.logoSolid}
+            alt="PlanBlue"
+            width={180}
+            height={180}
+            priority
+            className="relative z-10 mx-auto h-24 w-auto animate-float-gentle sm:h-28 md:h-32"
+          />
+        </div>
 
-        <div dir="ltr" className="pb-txt-loading">
+        <div className="pb-txt-loading">
           {LOADER_LETTERS.map((letter, index) => (
             <span
               key={`${letter}-${index}`}
