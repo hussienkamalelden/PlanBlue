@@ -19,7 +19,8 @@
 
 html[lang='ar'] .planblue-site,
 html[dir='rtl'] .planblue-site {
-  font-family: var(--font-arabic, 'Cairo'), var(--font-nunito, 'Nunito'), sans-serif;
+  font-family: var(--font-arabic, 'Cairo'), var(--font-nunito, 'Nunito'),
+    sans-serif;
 }
 
 .planblue-site [class^='icon-'],
@@ -576,14 +577,14 @@ html[dir='rtl'] .planblue-site {
 
 .pb-anim-icon .pb-anim-1 {
   left: 20px;
-  bottom: 145px;
+  bottom: 15%;
   width: 127px;
   height: 80px;
 }
 
 .pb-anim-icon .pb-anim-2 {
   left: 8px;
-  bottom: 175px;
+  top: 10%;
   width: 192px;
   height: 144px;
   opacity: 0.5;
@@ -630,14 +631,14 @@ html[dir='rtl'] .planblue-site {
 
 .pb-anim-icon .pb-anim-9 {
   top: 190px;
-  right: 112px;
+  right: 5%;
   width: 93px;
   height: 93px;
 }
 
 .pb-anim-icon .pb-anim-10 {
   right: 233px;
-  bottom: 209px;
+  bottom: 20%;
   width: 68px;
   height: 79px;
 }

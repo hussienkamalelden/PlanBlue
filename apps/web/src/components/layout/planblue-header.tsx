@@ -159,24 +159,24 @@ export function PlanBlueHeader() {
               </nav>
             </div>
 
-            <div className="pb-menu-right">
+            <div className="me-6 pb-search-box pb-search-desktop hidden lg:block">
+              <form className="pb-search-form" onSubmit={handleSearchSubmit}>
+                <input
+                  type="search"
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  placeholder={t.header.searchPlaceholder}
+                  aria-label={t.header.searchPlaceholder}
+                />
+                <button type="submit" aria-label={t.header.searchPlaceholder}>
+                  <i className="icon-4" aria-hidden="true" />
+                </button>
+              </form>
+            </div>
+
+            <div className=" pb-menu-right">
               <div className="hidden lg:block">
                 <LocaleSwitcher />
-              </div>
-
-              <div className="pb-search-box pb-search-desktop hidden lg:block">
-                <form className="pb-search-form" onSubmit={handleSearchSubmit}>
-                  <input
-                    type="search"
-                    value={searchQuery}
-                    onChange={(event) => setSearchQuery(event.target.value)}
-                    placeholder={t.header.searchPlaceholder}
-                    aria-label={t.header.searchPlaceholder}
-                  />
-                  <button type="submit" aria-label={t.header.searchPlaceholder}>
-                    <i className="icon-4" aria-hidden="true" />
-                  </button>
-                </form>
               </div>
 
               <Link
@@ -192,10 +192,7 @@ export function PlanBlueHeader() {
                     </span>
                   )}
                 </span>
-                <span className="min-w-0 text-start leading-tight">
-                  <span className="block text-xs font-medium text-neutral-500">
-                    {t.header.cartTotal}
-                  </span>
+                <span className="ms-2 min-w-0 text-start leading-tight">
                   <span className="block truncate text-sm font-bold sm:max-w-none">
                     {formatPriceWhole(cartTotal, locale)}
                   </span>
