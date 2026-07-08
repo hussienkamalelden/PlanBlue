@@ -37,13 +37,13 @@ export function ShopProductCard({ item, locale }: ShopProductCardProps) {
       <article className="flex h-full flex-col overflow-hidden border border-dashed border-neutral-300 bg-white px-6 pb-4 pt-8 text-center transition-shadow hover:border-[#4389F7] hover:shadow-md">
         <div className="mx-auto mb-6 h-[235px] w-full max-w-[235px] shrink-0">
           {item.has_sale && item.discount_percentage > 0 && (
-            <span className="absolute start-0 top-0 z-10 bg-[#27D82E]/15 px-2.5 py-1 text-md font-semibold text-[#27D82E]">
+            <span className="absolute start-0 top-0 z-10 bg-[#1e9922] px-2.5 py-1 text-md font-semibold text-white">
               {item.discount_percentage}% {t.shopItem.sale}
             </span>
           )}
 
           {outOfStock && (
-            <span className="absolute end-0 top-0 z-10 bg-[#E42932]/15 px-2.5 py-1 text-md font-semibold text-[#E42932]">
+            <span className="absolute start-0 end-0 bottom-0 z-10 bg-[#992127]/15 px-2.5 py-1 text-md font-semibold text-[#992127]">
               {t.shopItem.outOfStock}
             </span>
           )}
@@ -73,7 +73,7 @@ export function ShopProductCard({ item, locale }: ShopProductCardProps) {
           <div className="mb-4 flex items-center justify-center gap-2">
             {item.has_sale && salePrice !== null ? (
               <>
-                <span className="text-lg font-bold text-[#27D82E]">
+                <span className="text-lg font-bold text-[#1e9922]/90">
                   {formatPrice(salePrice, locale)}
                 </span>
                 <del className="text-sm text-neutral-400">
