@@ -52,34 +52,33 @@ export function ShopProductCard({ item, locale }: ShopProductCardProps) {
               {t.shopItem.outOfStock}
             </span>
           )}
-
-          {firstImage ? (
-            <Image
-              src={getMediaUrl(firstImage.url)}
-              alt={firstImage.name || title}
-              fill
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center text-5xl text-neutral-300">
-              🧸
-            </div>
-          )}
+          <div className="flex flex-col h-full w-full items-center justify-center">
+            {firstImage ? (
+              <Image
+                src={getMediaUrl(firstImage.url)}
+                alt={firstImage.name || title}
+                className="object-contain transition-transform duration-500 group-hover:scale-105 w-[80%] h-[80%] rounded-lg"
+                width={100}
+                height={100}
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center text-5xl text-neutral-300">
+                🧸
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="flex flex-1 flex-col p-4 text-start">
           <h3
-            className="mb-2 line-clamp-1 text-base font-semibold leading-snug  capitalize text-brand-accent transition-colors group-hover:text-brand-primary md:text-lg"
+            className="mb-2 line-clamp-1 text-base font-bold leading-snug  capitalize text-brand-primary md:text-lg"
             title={title}
           >
             {title}
           </h3>
 
           <div className="mt-auto flex flex-wrap items-baseline gap-2">
-            <span
-              className={`text-lg font-bold ${item.has_sale && salePrice !== null ? 'text-[#1e9922]' : 'text-brand-primary'} md:text-xl`}
-            >
+            <span className="text-lg font-bold text-[#bd912c] md:text-xl">
               {formatPriceWhole(displayPrice, locale)}
             </span>
             {item.has_sale && salePrice !== null && (
