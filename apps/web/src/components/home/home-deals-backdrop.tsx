@@ -15,12 +15,12 @@ export function HomeDealsBackdrop() {
       />
 
       <div
-        className="pb-float-bob-y absolute bottom-36 left-0 hidden h-[163px] w-[135px] bg-contain bg-no-repeat lg:block"
+        className="pb-float-bob-y absolute bottom-16 left-0 hidden h-[163px] w-[135px] bg-contain bg-no-repeat lg:block"
         style={{ backgroundImage: `url(${shapes.dealShapeLeft})` }}
       />
 
       <div
-        className="pb-float-bob-x absolute right-[360px] top-[100px] hidden h-[364px] w-[286px] bg-contain bg-no-repeat xl:block"
+        className="pb-float-bob-x absolute right-[18%] top-[100px] hidden h-[364px] w-[286px] bg-contain bg-no-repeat xl:block"
         style={{ backgroundImage: `url(${shapes.dealShapeRight})` }}
       />
 

@@ -40,7 +40,7 @@ export function PopularCategoriesCarousel({
       640: { slidesPerView: 3, spaceBetween: 20 },
       1024: { slidesPerView: 4, spaceBetween: 24 },
       1280: { slidesPerView: 5, spaceBetween: 28 },
-      1536: { slidesPerView: MAX_SLIDES_PER_VIEW, spaceBetween: 32 },
+      // 1536: { slidesPerView: MAX_SLIDES_PER_VIEW, spaceBetween: 32 },
     }),
     [],
   );
@@ -67,11 +67,7 @@ export function PopularCategoriesCarousel({
     >
       {loopSlides.map(({ data, slideKey, sourceIndex }) => (
         <SwiperSlide key={slideKey} className="!h-auto">
-          <CategoryCard
-            category={data}
-            index={sourceIndex}
-            locale={locale}
-          />
+          <CategoryCard category={data} index={sourceIndex} locale={locale} />
         </SwiperSlide>
       ))}
     </Swiper>
