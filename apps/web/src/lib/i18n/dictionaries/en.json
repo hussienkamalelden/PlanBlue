@@ -44,6 +44,16 @@
     "topSelling": {
       "title": "Top Selling",
       "highlight": "products"
+    },
+    "offers": {
+      "labels": [
+        "Toy Car",
+        "Girls Doll",
+        "Balloons",
+        "Color Plate",
+        "Puzzles",
+        "Cubes"
+      ]
     }
   },
   "shop": {

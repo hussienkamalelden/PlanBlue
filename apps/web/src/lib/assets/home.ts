@@ -19,5 +19,7 @@ export const HOME_ASSETS = {
     dealShapeRight: '/images/home/shapes/shape-25.png',
     dealPatternTop: '/images/home/shapes/shape-22.png',
     dealPatternBottom: '/images/home/shapes/shape-21.png',
+    offersBorder: '/images/home/shapes/shape-32.png',
+    offersShape: '/images/home/shapes/shape-33.png',
   },
 } as const;
