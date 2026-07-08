@@ -14,8 +14,6 @@
     "liveChat": "Live Chat",
     "promoPrefix": "Supper Value Deals -",
     "promoCode": "Save more with coupons 2BD30X",
-    "promoBarBatteries": "Free Batteries 100%",
-    "promoBarPackaging": "Free Special Packaging",
     "phone": "91 2345 678",
     "hotline": "Call out Hotline 24/7",
     "searchPlaceholder": "Search Shop",
@@ -53,6 +51,7 @@
       "highlight": "products"
     },
     "offers": {
+      "ariaLabel": "Store offers",
       "labels": [
         "Competitive prices",
         "Free special packaging",

@@ -14,8 +14,6 @@
     "liveChat": "دردشة مباشرة",
     "promoPrefix": "عروض قيمة -",
     "promoCode": "وفّر أكثر مع كوبون 2BD30X",
-    "promoBarBatteries": "بطاريات مجانية 100%",
-    "promoBarPackaging": "تغليف مميز مجاني",
     "phone": "91 2345 678",
     "hotline": "خط ساخن على مدار 24/7",
     "searchPlaceholder": "ابحث في المتجر",
@@ -53,6 +51,7 @@
       "highlight": "الأكثر مبيعاً"
     },
     "offers": {
+      "ariaLabel": "عروض المتجر",
       "labels": [
         "أسعار منافسة",
         "تغليف مميز مجاني",

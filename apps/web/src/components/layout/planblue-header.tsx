@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
+import { HeaderPromoBar } from '@/components/layout/header-promo-bar';
 import { LocaleSwitcher } from '@/components/locale/locale-switcher';
 import { HOME_ASSETS } from '@/lib/assets/home';
 import { formatPriceWhole } from '@/lib/api/strapi';
@@ -106,13 +107,7 @@ export function PlanBlueHeader() {
 
   return (
     <header className="pb-main-header">
-      <div
-        className="pb-header-promo flex items-center justify-center gap-6"
-        role="note"
-      >
-        <span>{t.header.promoBarBatteries}</span>
-        <span>{t.header.promoBarPackaging}</span>
-      </div>
+      <HeaderPromoBar />
 
       <div className="pb-header-lower">
         <div
