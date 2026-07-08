@@ -51,6 +51,18 @@ html[dir='rtl'] .planblue-site {
 .planblue-site .icon-13::before {
   content: '\e90c';
 }
+.planblue-site .icon-10::before {
+  content: '\e909';
+}
+.planblue-site .icon-11::before {
+  content: '\e90a';
+}
+.planblue-site .icon-18::before {
+  content: '\e911';
+}
+.planblue-site .icon-35::before {
+  content: '\e922';
+}
 
 .pb-large-container {
   max-width: 1680px;
@@ -768,7 +780,9 @@ html[dir='rtl'] .planblue-site {
 
 .pb-offers__item {
   position: relative;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
   font-size: 32px;
   line-height: 40px;
   font-weight: 700;
@@ -776,6 +790,13 @@ html[dir='rtl'] .planblue-site {
   white-space: nowrap;
   transition: color 0.25s ease;
   cursor: default;
+}
+
+.pb-offers__icon {
+  font-size: 34px;
+  line-height: 1;
+  color: var(--pb-theme);
+  transition: color 0.25s ease;
 }
 
 .pb-offers__item::before {
@@ -791,10 +812,6 @@ html[dir='rtl'] .planblue-site {
   transition: color 0.25s ease;
 }
 
-.pb-offers:hover .pb-offers__list {
-  animation-play-state: paused;
-}
-
 .pb-offers:hover .pb-offers__item {
   color: var(--pb-theme);
 }
@@ -803,11 +820,19 @@ html[dir='rtl'] .planblue-site {
   color: #f7b90c;
 }
 
+.pb-offers:hover .pb-offers__icon {
+  color: #f7b90c;
+}
+
 .pb-offers__item:hover {
   color: #0362c1;
 }
 
 .pb-offers__item:hover::before {
+  color: #4389f7;
+}
+
+.pb-offers__item:hover .pb-offers__icon {
   color: #4389f7;
 }
 
@@ -824,6 +849,11 @@ html[dir='rtl'] .planblue-site {
   .pb-offers__item {
     font-size: 22px;
     line-height: 30px;
+    gap: 10px;
+  }
+
+  .pb-offers__icon {
+    font-size: 24px;
   }
 
   .pb-offers__item::before {

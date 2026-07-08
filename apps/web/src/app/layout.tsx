@@ -3,6 +3,7 @@ import { Cairo, Nunito } from 'next/font/google';
 import { Suspense } from 'react';
 
 import { LocaleProvider } from '@/components/locale/locale-provider';
+import { FloatingWhatsAppButton } from '@/components/layout/floating-whatsapp-button';
 import { PlanBlueHeader } from '@/components/layout/planblue-header';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { NavigationLoader } from '@/components/ui/navigation-loader';
@@ -56,6 +57,7 @@ export default async function RootLayout({
             <div className="flex-1">{children}</div>
             <SiteFooter />
           </div>
+          <FloatingWhatsAppButton />
         </LocaleProvider>
       </body>
     </html>
