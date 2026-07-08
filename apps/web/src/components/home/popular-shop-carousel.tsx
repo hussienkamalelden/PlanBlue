@@ -38,10 +38,10 @@ function PopularShopCarouselInner({ items }: PopularShopCarouselProps) {
 
   const breakpoints = useMemo(
     () => ({
-      0: { slidesPerView: 1, spaceBetween: 0 },
-      640: { slidesPerView: 2, spaceBetween: 0 },
-      1024: { slidesPerView: 3, spaceBetween: 0 },
-      1280: { slidesPerView: MAX_SLIDES_PER_VIEW, spaceBetween: 0 },
+      0: { slidesPerView: 1.1, spaceBetween: 16 },
+      640: { slidesPerView: 2, spaceBetween: 20 },
+      1024: { slidesPerView: 3, spaceBetween: 24 },
+      1280: { slidesPerView: MAX_SLIDES_PER_VIEW, spaceBetween: 24 },
     }),
     [],
   );
