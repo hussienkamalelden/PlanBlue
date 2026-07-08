@@ -69,7 +69,7 @@ export function SiteFooter() {
   });
 
   return (
-    <footer className="mt-auto border-t border-neutral-200 bg-white">
+    <footer className="mt-10 border-t border-neutral-200 bg-white">
       <div className="mx-auto max-w-6xl px-4 py-10">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           <div>
@@ -83,13 +83,13 @@ export function SiteFooter() {
               width={150}
               className="w-auto h-[40px]"
             />
-            <p className="mt-3 text-sm leading-relaxed text-neutral-600">
+            <p className="mt-3 w-3/4 text-sm leading-relaxed text-neutral-600">
               {t.footer.about}
             </p>
           </div>
 
           <div>
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-neutral-700">
+            <h2 className="text-sm font-bold uppercase tracking-wide text-neutral-700">
               {t.footer.linksTitle}
             </h2>
             <ul className="mt-3 space-y-2">
@@ -121,7 +121,7 @@ export function SiteFooter() {
           </div>
 
           <div>
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-neutral-700">
+            <h2 className="text-sm font-bold uppercase tracking-wide text-neutral-700">
               {t.footer.socialTitle}
             </h2>
             {socialLinks.length > 0 ? (

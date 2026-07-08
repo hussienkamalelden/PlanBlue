@@ -106,6 +106,10 @@ export function PlanBlueHeader() {
 
   return (
     <header className="pb-main-header">
+      <div className="pb-header-promo" role="note">
+        {t.header.promoBar}
+      </div>
+
       <div className="pb-header-lower">
         <div
           className="pb-header-shape"

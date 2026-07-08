@@ -219,6 +219,24 @@ html[dir='rtl'] .planblue-site {
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
 }
 
+.pb-header-promo {
+  background: var(--pb-theme);
+  color: #fff;
+  padding: 8px 15px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+}
+
+@media (min-width: 640px) {
+  .pb-header-promo {
+    font-size: 13px;
+    padding: 9px 15px;
+  }
+}
+
 .pb-header-lower {
   position: relative;
   background: #fff;
