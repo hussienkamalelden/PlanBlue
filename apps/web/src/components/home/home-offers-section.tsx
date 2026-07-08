@@ -20,7 +20,7 @@ export function HomeOffersSection() {
         aria-hidden="true"
       />
 
-      <div className="pb-offers__inner">
+      <div className="pb-offers__inner bg-white">
         <ul className="pb-offers__list">
           {trackItems.map((label, index) => (
             <li key={`${label}-${index}`} className="pb-offers__item">

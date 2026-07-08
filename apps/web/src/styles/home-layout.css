@@ -759,7 +759,11 @@ html[dir='rtl'] .planblue-site {
   margin: 0;
   padding: 0;
   list-style: none;
-  animation: pb-offers-scroll 70s linear infinite;
+  animation: pb-offers-scroll 30s linear infinite;
+}
+
+[dir='rtl'] .pb-offers__list {
+  animation-direction: reverse;
 }
 
 .pb-offers__item {
