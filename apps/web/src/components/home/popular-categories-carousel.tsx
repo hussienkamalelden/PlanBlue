@@ -5,10 +5,8 @@ import Link from 'next/link';
 import { useMemo } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
-import {
-  HOME_CATEGORY_BORDER_CLASSES,
-  HOME_CATEGORY_IMAGES,
-} from '@/lib/assets/home-categories';
+import { HOME_CATEGORY_BORDER_CLASSES } from '@/lib/assets/home-categories';
+import { getMediaUrl } from '@/lib/api/strapi';
 import { getLocaleDirection, type Locale } from '@/lib/i18n/config';
 import type { StrapiCategory } from '@/lib/types/strapi';
 import { useLocaleStore } from '@/stores/locale-store';
@@ -65,7 +63,6 @@ function CategoryCard({
   locale: Locale;
 }) {
   const title = locale === 'ar' ? category.title_ar : category.title;
-  const imageSrc = HOME_CATEGORY_IMAGES[index % HOME_CATEGORY_IMAGES.length];
   const borderClass =
     HOME_CATEGORY_BORDER_CLASSES[index % HOME_CATEGORY_BORDER_CLASSES.length];
 
@@ -78,13 +75,19 @@ function CategoryCard({
           aria-label={title}
         >
           <figure className="pb-category-block__image-box">
-            <Image
-              src={imageSrc}
-              alt={title}
-              width={250}
-              height={250}
-              className="h-full w-full rounded-full object-cover transition-transform duration-500 group-hover:scale-105"
-            />
+            {category.image ? (
+              <Image
+                src={getMediaUrl(category.image.url)}
+                alt={category.image.name || title}
+                width={250}
+                height={250}
+                className="h-full w-full rounded-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center rounded-full bg-neutral-100 text-4xl text-neutral-300">
+                🧸
+              </div>
+            )}
           </figure>
           <h4 className="text-lg font-bold leading-6 text-neutral-900 transition-colors group-hover:text-[#4389F7] md:text-xl md:leading-6">
             {title}

@@ -91,6 +91,9 @@ export async function fetchCategories(): Promise<StrapiCategory[]> {
       'fields[0]': 'title',
       'fields[1]': 'title_ar',
       'fields[2]': 'documentId',
+      'populate[image][fields][0]': 'url',
+      'populate[image][fields][1]': 'name',
+      'populate[image][fields][2]': 'mime',
       sort: 'title:asc',
     },
   );

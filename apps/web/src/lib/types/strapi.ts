@@ -32,6 +32,7 @@ export type StrapiCategory = {
   documentId: string;
   title: string;
   title_ar: string;
+  image?: StrapiMedia | null;
 };
 
 export type StrapiShopItem = {
