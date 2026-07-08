@@ -1,16 +1,19 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 import { useMemo } from 'react';
 import { Autoplay } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
+import { SliderCarouselFrame } from '@/components/ui/slider-carousel-frame';
+import { SliderLink } from '@/components/ui/slider-link';
 import { HOME_CATEGORY_BORDER_CLASSES } from '@/lib/assets/home-categories';
 import { getMediaUrl } from '@/lib/api/strapi';
 import { useSliderDirection } from '@/lib/hooks/use-slider-direction';
 import type { Locale } from '@/lib/i18n/config';
+import { useSliderSwiperProps } from '@/lib/shop/slider-drag-guard';
 import { buildInfiniteSliderItems } from '@/lib/shop/slider-loop';
+import { SLIDER_TOUCH_OPTIONS } from '@/lib/shop/slider-touch';
 import type { StrapiCategory } from '@/lib/types/strapi';
 import { useLocaleStore } from '@/stores/locale-store';
 
@@ -23,11 +26,12 @@ type PopularCategoriesCarouselProps = {
   categories: StrapiCategory[];
 };
 
-export function PopularCategoriesCarousel({
+function PopularCategoriesCarouselInner({
   categories,
 }: PopularCategoriesCarouselProps) {
   const locale = useLocaleStore((state) => state.locale);
   const direction = useSliderDirection();
+  const sliderDragProps = useSliderSwiperProps();
 
   const loopSlides = useMemo(
     () => buildInfiniteSliderItems(categories, MIN_LOOP_SLIDES),
@@ -40,20 +44,17 @@ export function PopularCategoriesCarousel({
       640: { slidesPerView: 3, spaceBetween: 20 },
       1024: { slidesPerView: 4, spaceBetween: 24 },
       1280: { slidesPerView: 5, spaceBetween: 28 },
-      // 1536: { slidesPerView: MAX_SLIDES_PER_VIEW, spaceBetween: 32 },
     }),
     [],
   );
-
-  if (categories.length === 0) {
-    return null;
-  }
 
   return (
     <Swiper
       key={`popular-categories-${direction}`}
       dir={direction}
       modules={[Autoplay]}
+      {...SLIDER_TOUCH_OPTIONS}
+      {...sliderDragProps}
       autoplay={{
         delay: 2500,
         disableOnInteraction: false,
@@ -74,6 +75,20 @@ export function PopularCategoriesCarousel({
   );
 }
 
+export function PopularCategoriesCarousel({
+  categories,
+}: PopularCategoriesCarouselProps) {
+  if (categories.length === 0) {
+    return null;
+  }
+
+  return (
+    <SliderCarouselFrame>
+      <PopularCategoriesCarouselInner categories={categories} />
+    </SliderCarouselFrame>
+  );
+}
+
 function CategoryCard({
   category,
   index,
@@ -90,7 +105,7 @@ function CategoryCard({
   return (
     <article className={`pb-category-block ${borderClass}`}>
       <div className="pb-category-block__inner">
-        <Link
+        <SliderLink
           href={`/shop?category=${category.documentId}`}
           className="group block text-center"
           aria-label={title}
@@ -113,7 +128,7 @@ function CategoryCard({
           <h4 className="text-lg font-bold leading-6 text-neutral-900 transition-colors group-hover:text-[#4389F7] md:text-xl md:leading-6">
             {title}
           </h4>
-        </Link>
+        </SliderLink>
       </div>
     </article>
   );

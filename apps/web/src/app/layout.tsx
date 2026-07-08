@@ -1,5 +1,7 @@
 import { Cairo, Nunito } from 'next/font/google';
 
+import { Suspense } from 'react';
+
 import { LocaleProvider } from '@/components/locale/locale-provider';
 import { PlanBlueHeader } from '@/components/layout/planblue-header';
 import { SiteFooter } from '@/components/layout/site-footer';
@@ -46,7 +48,9 @@ export default async function RootLayout({
         className={`${nunito.variable} ${arabicFont.variable} planblue-site min-h-screen bg-white text-neutral-900 antialiased`}
       >
         <LocaleProvider>
-          <NavigationLoader />
+          <Suspense fallback={null}>
+            <NavigationLoader />
+          </Suspense>
           <div className="flex min-h-screen flex-col">
             <PlanBlueHeader />
             <div className="flex-1">{children}</div>

@@ -5,9 +5,12 @@ import { Autoplay, Navigation } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperType } from 'swiper';
 
+import { SliderCarouselFrame } from '@/components/ui/slider-carousel-frame';
 import { ShopProductCard } from '@/components/home/shop-product-card';
 import { useSliderDirection } from '@/lib/hooks/use-slider-direction';
+import { useSliderSwiperProps } from '@/lib/shop/slider-drag-guard';
 import { buildInfiniteSliderItems } from '@/lib/shop/slider-loop';
+import { SLIDER_TOUCH_OPTIONS } from '@/lib/shop/slider-touch';
 import type { StrapiShopItem } from '@/lib/types/strapi';
 import { useLocaleStore } from '@/stores/locale-store';
 
@@ -21,11 +24,12 @@ type PopularShopCarouselProps = {
   items: StrapiShopItem[];
 };
 
-export function PopularShopCarousel({ items }: PopularShopCarouselProps) {
+function PopularShopCarouselInner({ items }: PopularShopCarouselProps) {
   const locale = useLocaleStore((state) => state.locale);
   const direction = useSliderDirection();
   const prevRef = useRef<HTMLButtonElement>(null);
   const nextRef = useRef<HTMLButtonElement>(null);
+  const sliderDragProps = useSliderSwiperProps();
 
   const loopSlides = useMemo(
     () => buildInfiniteSliderItems(items, MIN_LOOP_SLIDES),
@@ -47,7 +51,7 @@ export function PopularShopCarousel({ items }: PopularShopCarouselProps) {
   }
 
   return (
-    <div className="popular-shop-nav-wrap relative">
+    <>
       <div className="popular-shop-owl-nav pointer-events-none absolute inset-x-0 top-1/2 z-10 hidden -translate-y-1/2 min-[1201px]:block">
         <button
           ref={prevRef}
@@ -71,6 +75,8 @@ export function PopularShopCarousel({ items }: PopularShopCarouselProps) {
         key={`popular-shop-${direction}`}
         dir={direction}
         modules={[Navigation, Autoplay]}
+        {...SLIDER_TOUCH_OPTIONS}
+        {...sliderDragProps}
         autoplay={{
           delay: 3000,
           disableOnInteraction: false,
@@ -107,6 +113,18 @@ export function PopularShopCarousel({ items }: PopularShopCarouselProps) {
           </SwiperSlide>
         ))}
       </Swiper>
-    </div>
+    </>
+  );
+}
+
+export function PopularShopCarousel({ items }: PopularShopCarouselProps) {
+  if (items.length === 0) {
+    return null;
+  }
+
+  return (
+    <SliderCarouselFrame className="popular-shop-nav-wrap relative">
+      <PopularShopCarouselInner items={items} />
+    </SliderCarouselFrame>
   );
 }

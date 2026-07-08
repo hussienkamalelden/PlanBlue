@@ -1,7 +1,8 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
+
+import { SliderLink } from '@/components/ui/slider-link';
 
 import {
   formatPrice,
@@ -28,7 +29,7 @@ export function ShopProductCard({ item, locale }: ShopProductCardProps) {
   const outOfStock = isShopItemOutOfStock(item);
 
   return (
-    <Link
+    <SliderLink
       href={`/shop/${item.slug}`}
       className="group block h-full transition-opacity hover:opacity-95"
       aria-label={title}
@@ -87,6 +88,6 @@ export function ShopProductCard({ item, locale }: ShopProductCardProps) {
           </div>
         </div>
       </article>
-    </Link>
+    </SliderLink>
   );
 }

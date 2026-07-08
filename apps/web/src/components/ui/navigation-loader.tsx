@@ -1,17 +1,22 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import { PageLoader } from "@/components/ui/page-loader";
 import { PAGE_LOADER_START_EVENT } from "@/lib/ui/page-loader";
+import {
+  isInsideSliderCarousel,
+  isSliderNavigationBlocked,
+} from "@/lib/shop/slider-drag-state";
 import { useLocaleStore } from "@/stores/locale-store";
 
 const INITIAL_DELAY_MS = 900;
 const NAVIGATION_DELAY_MS = 500;
 const LOCALE_SWITCH_DELAY_MS = 450;
+const LOADER_SAFETY_TIMEOUT_MS = 2500;
 
-function isInternalNavigationLink(anchor: HTMLAnchorElement, pathname: string) {
+function isInternalNavigationLink(anchor: HTMLAnchorElement) {
   const href = anchor.getAttribute("href");
   if (!href || href.startsWith("#") || href.startsWith("mailto:") || href.startsWith("tel:")) {
     return false;
@@ -21,30 +26,80 @@ function isInternalNavigationLink(anchor: HTMLAnchorElement, pathname: string) {
     return false;
   }
 
-  const url = new URL(href, window.location.origin);
-  if (url.origin !== window.location.origin) {
+  const targetUrl = new URL(href, window.location.href);
+  const currentUrl = new URL(window.location.href);
+
+  if (targetUrl.origin !== currentUrl.origin) {
     return false;
   }
 
-  return url.pathname !== pathname || url.search !== window.location.search;
+  return (
+    targetUrl.pathname !== currentUrl.pathname ||
+    targetUrl.search !== currentUrl.search ||
+    targetUrl.hash !== currentUrl.hash
+  );
+}
+
+function shouldShowLoaderForClick(target: Element) {
+  const anchor = target.closest("a");
+  if (!anchor || !isInternalNavigationLink(anchor)) {
+    return false;
+  }
+
+  if (isInsideSliderCarousel(anchor) && isSliderNavigationBlocked()) {
+    return false;
+  }
+
+  return true;
 }
 
 export function NavigationLoader() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const searchKey = searchParams.toString();
   const locale = useLocaleStore((state) => state.locale);
   const [visible, setVisible] = useState(true);
   const isFirstLoad = useRef(true);
   const prevLocaleRef = useRef(locale);
   const hideTimer = useRef<number | null>(null);
+  const safetyTimer = useRef<number | null>(null);
+  const pendingNavigationRef = useRef(false);
+
+  function clearHideTimer() {
+    if (hideTimer.current !== null) {
+      window.clearTimeout(hideTimer.current);
+      hideTimer.current = null;
+    }
+  }
+
+  function clearSafetyTimer() {
+    if (safetyTimer.current !== null) {
+      window.clearTimeout(safetyTimer.current);
+      safetyTimer.current = null;
+    }
+  }
 
   function scheduleHide(delay: number) {
-    if (hideTimer.current) {
-      window.clearTimeout(hideTimer.current);
-    }
+    clearHideTimer();
+    pendingNavigationRef.current = false;
+    clearSafetyTimer();
 
     hideTimer.current = window.setTimeout(() => {
       setVisible(false);
     }, delay);
+  }
+
+  function showLoaderForNavigation() {
+    setVisible(true);
+    pendingNavigationRef.current = true;
+    clearSafetyTimer();
+
+    safetyTimer.current = window.setTimeout(() => {
+      if (pendingNavigationRef.current) {
+        pendingNavigationRef.current = false;
+        setVisible(false);
+      }
+    }, LOADER_SAFETY_TIMEOUT_MS);
   }
 
   useEffect(() => {
@@ -53,11 +108,9 @@ export function NavigationLoader() {
     scheduleHide(delay);
 
     return () => {
-      if (hideTimer.current) {
-        window.clearTimeout(hideTimer.current);
-      }
+      clearHideTimer();
     };
-  }, [pathname]);
+  }, [pathname, searchKey]);
 
   useEffect(() => {
     if (prevLocaleRef.current === locale) {
@@ -65,19 +118,18 @@ export function NavigationLoader() {
     }
 
     prevLocaleRef.current = locale;
-    setVisible(true);
+    showLoaderForNavigation();
     scheduleHide(LOCALE_SWITCH_DELAY_MS);
 
     return () => {
-      if (hideTimer.current) {
-        window.clearTimeout(hideTimer.current);
-      }
+      clearHideTimer();
+      clearSafetyTimer();
     };
   }, [locale]);
 
   useEffect(() => {
     function handleNavigationStart() {
-      setVisible(true);
+      showLoaderForNavigation();
     }
 
     window.addEventListener(PAGE_LOADER_START_EVENT, handleNavigationStart);
@@ -92,17 +144,16 @@ export function NavigationLoader() {
         return;
       }
 
-      const anchor = target.closest("a");
-      if (!anchor || !isInternalNavigationLink(anchor, pathname)) {
+      if (!shouldShowLoaderForClick(target)) {
         return;
       }
 
-      setVisible(true);
+      showLoaderForNavigation();
     }
 
     document.addEventListener("click", handleDocumentClick, true);
     return () => document.removeEventListener("click", handleDocumentClick, true);
-  }, [pathname]);
+  }, []);
 
   return <PageLoader visible={visible} />;
 }
