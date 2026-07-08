@@ -1,5 +1,6 @@
 import { PopularCategoriesCarousel } from '@/components/home/popular-categories-carousel';
 import { PopularCategoriesHeading } from '@/components/home/popular-categories-heading';
+import { HOME_ASSETS } from '@/lib/assets/home';
 import { fetchCategories } from '@/lib/api/strapi.server';
 
 export async function PopularCategoriesSection() {

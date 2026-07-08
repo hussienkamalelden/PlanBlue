@@ -9,9 +9,9 @@ export default function HomePage() {
     <main>
       <HomeHero />
       <PopularCategoriesSection />
-      <HomeOffersSection />
-      <PopularShopSection />
+      {/* <HomeOffersSection /> */}
       <TopSellingShopSection />
+      <PopularShopSection />
     </main>
   );
 }
