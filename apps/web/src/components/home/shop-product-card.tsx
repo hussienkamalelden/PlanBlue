@@ -1,8 +1,6 @@
 'use client';
 
-import { Heart } from 'lucide-react';
 import Image from 'next/image';
-
 import { SliderLink } from '@/components/ui/slider-link';
 
 import {
@@ -37,18 +35,6 @@ export function ShopProductCard({ item, locale }: ShopProductCardProps) {
         outOfStock ? 'opacity-80' : ''
       }`}
     >
-      <button
-        type="button"
-        className="absolute end-3 top-3 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-white text-brand-red shadow-md transition-transform hover:scale-105"
-        aria-label={t.header.nav.wishlist}
-        onClick={(event) => {
-          event.preventDefault();
-          event.stopPropagation();
-        }}
-      >
-        <Heart size={18} strokeWidth={2} aria-hidden="true" />
-      </button>
-
       <SliderLink
         href={`/shop/${item.slug}`}
         className="flex h-full flex-col"
@@ -83,12 +69,17 @@ export function ShopProductCard({ item, locale }: ShopProductCardProps) {
         </div>
 
         <div className="flex flex-1 flex-col p-4 text-start">
-          <h3 className="mb-2 line-clamp-2 min-h-[2.75rem] text-base font-semibold leading-snug text-brand-accent transition-colors group-hover:text-brand-primary md:text-lg">
+          <h3
+            className="mb-2 line-clamp-1 text-base font-semibold leading-snug  capitalize text-brand-accent transition-colors group-hover:text-brand-primary md:text-lg"
+            title={title}
+          >
             {title}
           </h3>
 
           <div className="mt-auto flex flex-wrap items-baseline gap-2">
-            <span className="text-lg font-bold text-brand-accent md:text-xl">
+            <span
+              className={`text-lg font-bold ${item.has_sale && salePrice !== null ? 'text-[#1e9922]' : 'text-brand-primary'} md:text-xl`}
+            >
               {formatPriceWhole(displayPrice, locale)}
             </span>
             {item.has_sale && salePrice !== null && (

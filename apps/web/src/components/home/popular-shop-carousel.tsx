@@ -17,7 +17,7 @@ import { useLocaleStore } from '@/stores/locale-store';
 import 'swiper/css';
 import 'swiper/css/navigation';
 
-const MAX_SLIDES_PER_VIEW = 4;
+const MAX_SLIDES_PER_VIEW = 5;
 const MIN_LOOP_SLIDES = MAX_SLIDES_PER_VIEW * 3;
 
 type PopularShopCarouselProps = {
@@ -41,7 +41,7 @@ function PopularShopCarouselInner({ items }: PopularShopCarouselProps) {
       0: { slidesPerView: 1.1, spaceBetween: 16 },
       640: { slidesPerView: 2, spaceBetween: 20 },
       1024: { slidesPerView: 3, spaceBetween: 24 },
-      1280: { slidesPerView: MAX_SLIDES_PER_VIEW, spaceBetween: 24 },
+      1440: { slidesPerView: MAX_SLIDES_PER_VIEW, spaceBetween: 24 },
     }),
     [],
   );
