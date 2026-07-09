@@ -1072,15 +1072,13 @@ html[dir='rtl'] .planblue-site {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  background: rgba(67, 137, 247, 0.08);
   border-radius: 10px;
-  padding: 15px 30px;
+  padding: 15px 0;
 }
 
 .pb-shop-short-box {
   display: flex;
   align-items: center;
-  margin-inline-end: 30px;
 }
 
 .pb-shop-short-box__label {
@@ -1101,7 +1099,6 @@ html[dir='rtl'] .planblue-site {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  width: 100%;
   min-height: 30px;
   border: none;
   background: transparent;
@@ -1197,14 +1194,4 @@ html[dir='rtl'] .planblue-site {
 .pb-shop-sort-dropdown__option.is-selected {
   font-weight: 700;
   color: var(--pb-theme);
-}
-
-@media (max-width: 991px) {
-  .pb-shop-item-shorting {
-    padding-inline: 20px;
-  }
-
-  .pb-shop-short-box {
-    margin-inline-end: 15px;
-  }
 }

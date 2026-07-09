@@ -226,7 +226,7 @@ export function ShopView({
   );
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[260px_minmax(0,1fr)]">
+    <div className="mt-10 grid gap-8 lg:grid-cols-[260px_minmax(0,1fr)]">
       <ShopFiltersSidebar
         categories={categories}
         selectedCategoryId={selectedCategoryId}
