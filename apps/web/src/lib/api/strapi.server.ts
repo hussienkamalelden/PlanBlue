@@ -109,8 +109,9 @@ export async function fetchShopItems(options?: {
   ageFilter?: string;
   priceMin?: number;
   priceMax?: number;
+  search?: string;
 }): Promise<{ data: StrapiShopItem[]; total: number; pageCount: number }> {
-  const { page = 1, pageSize = 12, sort = 'createdAt:desc', categoryId, ageFilter, priceMin, priceMax } = options ?? {};
+  const { page = 1, pageSize = 12, sort = 'createdAt:desc', categoryId, ageFilter, priceMin, priceMax, search } = options ?? {};
 
   const params: Record<string, string> = {
     'fields[0]': 'title',
@@ -144,12 +145,15 @@ export async function fetchShopItems(options?: {
     params['filters[categories][documentId][$in][0]'] = categoryId;
   }
 
+  let andIndex = 0;
+
   if (ageFilter) {
     const ageBounds = getAgeBoundsForFilter(ageFilter);
     if (ageBounds) {
-      params['filters[$or][0][age][$gte]'] = String(ageBounds.min);
-      params['filters[$or][0][age][$lte]'] = String(ageBounds.max);
-      params['filters[$or][1][all_ages][$eq]'] = 'true';
+      params[`filters[$and][${andIndex}][$or][0][age][$gte]`] = String(ageBounds.min);
+      params[`filters[$and][${andIndex}][$or][0][age][$lte]`] = String(ageBounds.max);
+      params[`filters[$and][${andIndex}][$or][1][all_ages][$eq]`] = 'true';
+      andIndex++;
     }
   }
 
@@ -159,6 +163,14 @@ export async function fetchShopItems(options?: {
 
   if (priceMax !== undefined && priceMax > 0) {
     params['filters[price][$lte]'] = String(priceMax);
+  }
+
+  const trimmedSearch = search?.trim();
+  if (trimmedSearch) {
+    params[`filters[$and][${andIndex}][$or][0][title][$containsi]`] = trimmedSearch;
+    params[`filters[$and][${andIndex}][$or][1][title_ar][$containsi]`] = trimmedSearch;
+    params[`filters[$and][${andIndex}][$or][2][description][$containsi]`] = trimmedSearch;
+    params[`filters[$and][${andIndex}][$or][3][description_ar][$containsi]`] = trimmedSearch;
   }
 
   const json = await strapiFetch<StrapiListResponse<StrapiShopItem>>(

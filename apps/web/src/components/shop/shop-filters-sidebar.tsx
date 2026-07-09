@@ -1,7 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useState, type FormEvent } from 'react';
+import { type FormEvent } from 'react';
 
 import { PriceRangeSlider } from '@/components/shop/price-range-slider';
 import { useTranslations } from '@/lib/i18n/use-translations';
@@ -19,6 +18,9 @@ type ShopFiltersSidebarProps = {
   priceBounds: { min: number; max: number };
   priceMin: number;
   priceMax: number;
+  searchQuery: string;
+  onSearchQueryChange: (value: string) => void;
+  onSearchSubmit: () => void;
   onSelectCategory: (categoryId: string | null) => void;
   onSelectAgeFilter: (filter: AgeFilter) => void;
   onPriceMinChange: (value: number) => void;
@@ -33,6 +35,9 @@ export function ShopFiltersSidebar({
   priceBounds,
   priceMin,
   priceMax,
+  searchQuery,
+  onSearchQueryChange,
+  onSearchSubmit,
   onSelectCategory,
   onSelectAgeFilter,
   onPriceMinChange,
@@ -41,8 +46,6 @@ export function ShopFiltersSidebar({
 }: ShopFiltersSidebarProps) {
   const t = useTranslations();
   const locale = useLocaleStore((state) => state.locale);
-  const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState('');
 
   function getAgeLabel(filter: Exclude<AgeFilter, null>): string {
     const labels: Record<Exclude<AgeFilter, null>, string> = {
@@ -59,10 +62,7 @@ export function ShopFiltersSidebar({
 
   function handleSearchSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const query = searchQuery.trim();
-    if (!query) return;
-
-    router.push(`/shop?search=${encodeURIComponent(query)}`);
+    onSearchSubmit();
   }
 
   return (
@@ -77,7 +77,7 @@ export function ShopFiltersSidebar({
               <input
                 type="search"
                 value={searchQuery}
-                onChange={(event) => setSearchQuery(event.target.value)}
+                onChange={(event) => onSearchQueryChange(event.target.value)}
                 placeholder={t.header.searchPlaceholder}
                 aria-label={t.header.searchPlaceholder}
               />

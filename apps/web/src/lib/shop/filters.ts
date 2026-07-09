@@ -37,6 +37,12 @@ export type ActiveFilterTag =
       min: number;
       max: number;
       label: string;
+    }
+  | {
+      key: string;
+      type: 'search';
+      query: string;
+      label: string;
     };
 
 export const AGE_FILTER_OPTIONS: Exclude<AgeFilter, null>[] = [

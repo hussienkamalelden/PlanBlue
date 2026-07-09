@@ -14,6 +14,7 @@ export async function GET(request: NextRequest) {
   const priceMax = searchParams.has('priceMax')
     ? Number(searchParams.get('priceMax'))
     : undefined;
+  const search = searchParams.get('search') ?? undefined;
 
   try {
     const result = await fetchShopItems({
@@ -24,6 +25,7 @@ export async function GET(request: NextRequest) {
       ageFilter,
       priceMin,
       priceMax,
+      search,
     });
     return NextResponse.json(result);
   } catch {

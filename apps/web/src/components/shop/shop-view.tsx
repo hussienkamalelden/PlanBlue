@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import { ActiveFilterTags } from '@/components/shop/active-filter-tags';
 import { ShopEmptyState } from '@/components/shop/shop-empty-state';
 import { ShopFiltersSidebar } from '@/components/shop/shop-filters-sidebar';
 import { ShopProductCard } from '@/components/home/shop-product-card';
@@ -10,6 +11,7 @@ import { useTranslations } from '@/lib/i18n/use-translations';
 import {
   getShopItemPriceBounds,
   isPriceFilterActive,
+  type ActiveFilterTag,
   type AgeFilter,
   type ShopSort,
 } from '@/lib/shop/filters';
@@ -20,6 +22,7 @@ type ShopViewProps = {
   categories: StrapiCategory[];
   items: StrapiShopItem[];
   initialCategoryId?: string | null;
+  initialSearch?: string;
 };
 
 const SORT_OPTIONS: { value: ShopSort; labelKey: string }[] = [
@@ -49,6 +52,7 @@ export function ShopView({
   categories,
   items: initialItems,
   initialCategoryId = null,
+  initialSearch = '',
 }: ShopViewProps) {
   const t = useTranslations();
   const locale = useLocaleStore((state) => state.locale);
@@ -65,6 +69,8 @@ export function ShopView({
   );
   const [selectedSort, setSelectedSort] = useState<ShopSort>(null);
   const [selectedAgeFilter, setSelectedAgeFilter] = useState<AgeFilter>(null);
+  const [searchQuery, setSearchQuery] = useState(initialSearch);
+  const [activeSearch, setActiveSearch] = useState(initialSearch);
 
   const priceBounds = useMemo(
     () => getShopItemPriceBounds(initialItems),
@@ -81,6 +87,7 @@ export function ShopView({
     selectedAgeFilter,
     priceMin,
     priceMax,
+    activeSearch,
   });
   filtersRef.current = {
     selectedSort,
@@ -88,6 +95,7 @@ export function ShopView({
     selectedAgeFilter,
     priceMin,
     priceMax,
+    activeSearch,
   };
 
   function buildQueryString(pageNum: number): string {
@@ -97,6 +105,7 @@ export function ShopView({
       selectedAgeFilter: age,
       priceMin: pMin,
       priceMax: pMax,
+      activeSearch: search,
     } = filtersRef.current;
     const params = new URLSearchParams();
     params.set('page', String(pageNum));
@@ -110,6 +119,7 @@ export function ShopView({
       if (pMax < priceBounds.max)
         params.set('priceMax', String(Math.round(pMax)));
     }
+    if (search.trim()) params.set('search', search.trim());
     return params.toString();
   }
 
@@ -129,14 +139,14 @@ export function ShopView({
     }
   }, []);
 
-  // Re-fetch when sort/category/age changes (not price — that's debounced)
+  // Re-fetch when sort/category/age/search changes (not price — that's debounced)
   useEffect(() => {
     if (isFirstLoad.current) {
       isFirstLoad.current = false;
       return;
     }
     fetchFirstPage();
-  }, [selectedSort, selectedCategoryId, selectedAgeFilter]);
+  }, [selectedSort, selectedCategoryId, selectedAgeFilter, activeSearch]);
 
   function handlePriceMinChange(value: number) {
     setPriceMin(value);
@@ -155,6 +165,16 @@ export function ShopView({
     setPriceMax(priceBounds.max);
     if (priceDebounceRef.current) window.clearTimeout(priceDebounceRef.current);
     priceDebounceRef.current = window.setTimeout(() => fetchFirstPage(), 100);
+  }
+
+  function handleSearchSubmit() {
+    const query = searchQuery.trim();
+    setActiveSearch(query);
+  }
+
+  function handleClearSearch() {
+    setSearchQuery('');
+    setActiveSearch('');
   }
 
   const loadMore = useCallback(async () => {
@@ -226,10 +246,78 @@ export function ShopView({
     [sortLabels],
   );
 
-  const hasActiveFilters =
-    Boolean(selectedCategoryId) ||
-    Boolean(selectedAgeFilter) ||
-    isPriceFilterActive(priceMin, priceMax, priceBounds);
+  const activeFilterTags = useMemo(() => {
+    const tags: ActiveFilterTag[] = [];
+
+    if (activeSearch.trim()) {
+      tags.push({
+        key: 'search',
+        type: 'search',
+        query: activeSearch.trim(),
+        label: `${t.shop.searchLabel}: ${activeSearch.trim()}`,
+      });
+    }
+
+    if (selectedCategoryId) {
+      const cat = categories.find((c) => c.documentId === selectedCategoryId);
+      if (cat) {
+        tags.push({
+          key: `cat-${selectedCategoryId}`,
+          type: 'category',
+          categoryId: selectedCategoryId,
+          label: locale === 'ar' ? cat.title_ar : cat.title,
+        });
+      }
+    }
+
+    if (selectedAgeFilter) {
+      const ageLabels: Record<Exclude<AgeFilter, null>, string> = {
+        '0-1': t.shop.age0to1,
+        '1-2': t.shop.age1to2,
+        '2-3': t.shop.age2to3,
+        '3-4': t.shop.age3to4,
+        '4-6': t.shop.age4to6,
+        '6+': t.shop.ageAbove6,
+      };
+      tags.push({
+        key: `age-${selectedAgeFilter}`,
+        type: 'age',
+        ageFilter: selectedAgeFilter,
+        label: ageLabels[selectedAgeFilter],
+      });
+    }
+
+    if (isPriceFilterActive(priceMin, priceMax, priceBounds)) {
+      tags.push({
+        key: `price-${priceMin}-${priceMax}`,
+        type: 'price',
+        min: priceMin,
+        max: priceMax,
+        label: `${Math.round(priceMin)} - ${Math.round(priceMax)}`,
+      });
+    }
+
+    return tags;
+  }, [activeSearch, selectedCategoryId, selectedAgeFilter, priceMin, priceMax, priceBounds, categories, locale, t]);
+
+  function handleRemoveFilterTag(tag: ActiveFilterTag) {
+    switch (tag.type) {
+      case 'search':
+        handleClearSearch();
+        break;
+      case 'category':
+        setSelectedCategoryId(null);
+        break;
+      case 'age':
+        setSelectedAgeFilter(null);
+        break;
+      case 'price':
+        handlePriceReset();
+        break;
+    }
+  }
+
+  const hasActiveFilters = activeFilterTags.length > 0;
 
   const emptyMessage = hasActiveFilters
     ? t.shop.filteredEmpty
@@ -244,6 +332,9 @@ export function ShopView({
         priceBounds={priceBounds}
         priceMin={priceMin}
         priceMax={priceMax}
+        searchQuery={searchQuery}
+        onSearchQueryChange={setSearchQuery}
+        onSearchSubmit={handleSearchSubmit}
         onSelectCategory={setSelectedCategoryId}
         onSelectAgeFilter={setSelectedAgeFilter}
         onPriceMinChange={handlePriceMinChange}
@@ -258,6 +349,8 @@ export function ShopView({
           options={sortOptions}
           onChange={setSelectedSort}
         />
+
+        <ActiveFilterTags tags={activeFilterTags} onRemove={handleRemoveFilterTag} />
 
         {loading ? (
           <div className="flex justify-center py-16">

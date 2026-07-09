@@ -9,12 +9,12 @@ export const metadata: Metadata = {
 export default async function ShopPage({
   searchParams,
 }: {
-  searchParams: Promise<{ category?: string }>;
+  searchParams: Promise<{ category?: string; search?: string }>;
 }) {
-  const { category } = await searchParams;
+  const { category, search } = await searchParams;
   const [categories, shopResult] = await Promise.all([
     fetchCategories(),
-    fetchShopItems({ pageSize: 12 }),
+    fetchShopItems({ pageSize: 12, search: search?.trim() || undefined }),
   ]);
 
   const initialCategoryId =
@@ -34,12 +34,13 @@ export default async function ShopPage({
           backgroundRepeat: 'no-repeat',
         }}
       />
-      <main className="relative  pb-large-container py-10">
-        <div className="pb-shop-page"></div>
+      <main className="relative pb-large-container py-10">
+        <div className="pb-shop-page" />
         <ShopView
           categories={categories}
           items={shopResult.data}
           initialCategoryId={initialCategoryId}
+          initialSearch={search?.trim() ?? ''}
         />
       </main>
     </>
