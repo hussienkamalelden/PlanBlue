@@ -70,6 +70,8 @@
     "sortTitle": "Sort by",
     "topSellers": "Top Sellers",
     "mostViewed": "Most Viewed",
+    "priceHigh": "Highest Price",
+    "priceLow": "Lowest Price",
     "ageTitle": "Age",
     "allAges": "All ages",
     "age0to1": "0–1 years",
@@ -81,7 +83,8 @@
     "priceTitle": "Price",
     "priceFrom": "From",
     "priceTo": "To",
-    "priceReset": "Reset"
+    "priceReset": "Reset",
+    "newest": "Newest"
   },
   "category": {
     "title": "Categories",

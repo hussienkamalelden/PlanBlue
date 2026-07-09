@@ -105,38 +105,65 @@ export async function fetchShopItems(options?: {
   page?: number;
   pageSize?: number;
   sort?: string;
+  categoryId?: string;
+  ageFilter?: string;
+  priceMin?: number;
+  priceMax?: number;
 }): Promise<{ data: StrapiShopItem[]; total: number; pageCount: number }> {
-  const { page = 1, pageSize = 12, sort = 'createdAt:desc' } = options ?? {};
+  const { page = 1, pageSize = 12, sort = 'createdAt:desc', categoryId, ageFilter, priceMin, priceMax } = options ?? {};
+
+  const params: Record<string, string> = {
+    'fields[0]': 'title',
+    'fields[1]': 'title_ar',
+    'fields[2]': 'slug',
+    'fields[3]': 'description',
+    'fields[4]': 'description_ar',
+    'fields[5]': 'price',
+    'fields[6]': 'has_sale',
+    'fields[7]': 'discount_percentage',
+    'fields[8]': 'available',
+    'fields[9]': 'available_stock',
+    'fields[10]': 'views',
+    'fields[11]': 'total_sold',
+    'fields[12]': 'all_ages',
+    'fields[13]': 'age',
+    'fields[14]': 'documentId',
+    'fields[15]': 'need_batteries',
+    'populate[categories][fields][0]': 'title',
+    'populate[categories][fields][1]': 'title_ar',
+    'populate[categories][fields][2]': 'documentId',
+    'populate[media][fields][0]': 'url',
+    'populate[media][fields][1]': 'name',
+    'populate[media][fields][2]': 'mime',
+    sort,
+    'pagination[page]': String(page),
+    'pagination[pageSize]': String(pageSize),
+  };
+
+  if (categoryId) {
+    params['filters[categories][documentId][$in][0]'] = categoryId;
+  }
+
+  if (ageFilter) {
+    const ageBounds = getAgeBoundsForFilter(ageFilter);
+    if (ageBounds) {
+      params['filters[$or][0][age][$gte]'] = String(ageBounds.min);
+      params['filters[$or][0][age][$lte]'] = String(ageBounds.max);
+      params['filters[$or][1][all_ages][$eq]'] = 'true';
+    }
+  }
+
+  if (priceMin !== undefined && priceMin > 0) {
+    params['filters[price][$gte]'] = String(priceMin);
+  }
+
+  if (priceMax !== undefined && priceMax > 0) {
+    params['filters[price][$lte]'] = String(priceMax);
+  }
 
   const json = await strapiFetch<StrapiListResponse<StrapiShopItem>>(
     '/products',
-    {
-      'fields[0]': 'title',
-      'fields[1]': 'title_ar',
-      'fields[2]': 'slug',
-      'fields[3]': 'description',
-      'fields[4]': 'description_ar',
-      'fields[5]': 'price',
-      'fields[6]': 'has_sale',
-      'fields[7]': 'discount_percentage',
-      'fields[8]': 'available',
-      'fields[9]': 'available_stock',
-      'fields[10]': 'views',
-      'fields[11]': 'total_sold',
-      'fields[12]': 'all_ages',
-      'fields[13]': 'age',
-      'fields[14]': 'documentId',
-      'fields[15]': 'need_batteries',
-      'populate[categories][fields][0]': 'title',
-      'populate[categories][fields][1]': 'title_ar',
-      'populate[categories][fields][2]': 'documentId',
-      'populate[media][fields][0]': 'url',
-      'populate[media][fields][1]': 'name',
-      'populate[media][fields][2]': 'mime',
-      sort,
-      'pagination[page]': String(page),
-      'pagination[pageSize]': String(pageSize),
-    },
+    params,
   );
 
   return {
@@ -144,6 +171,18 @@ export async function fetchShopItems(options?: {
     total: json.meta.pagination.total,
     pageCount: json.meta.pagination.pageCount,
   };
+}
+
+function getAgeBoundsForFilter(ageFilter: string): { min: number; max: number } | null {
+  switch (ageFilter) {
+    case '0-1': return { min: 0, max: 1 };
+    case '1-2': return { min: 1, max: 2 };
+    case '2-3': return { min: 2, max: 3 };
+    case '3-4': return { min: 3, max: 4 };
+    case '4-6': return { min: 4, max: 6 };
+    case '6+': return { min: 6, max: 99 };
+    default: return null;
+  }
 }
 
 export async function fetchAffiliates(): Promise<StrapiAffiliate[]> {

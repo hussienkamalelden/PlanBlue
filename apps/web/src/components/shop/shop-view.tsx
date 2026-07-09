@@ -3,16 +3,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { ShopFiltersSidebar } from "@/components/shop/shop-filters-sidebar";
-import { ShopGrid } from "@/components/shop/shop-grid";
-import { formatPrice } from "@/lib/api/strapi";
-import {
-  type ActiveFilterTag,
-  type AgeFilter,
-  getShopItemPriceBounds,
-  isPriceFilterActive,
-  type ShopSort,
-} from "@/lib/shop/filters";
+import { ShopItemCard } from "@/components/shop/shop-item-card";
 import { useTranslations } from "@/lib/i18n/use-translations";
+import type { AgeFilter, ShopSort } from "@/lib/shop/filters";
 import type { StrapiCategory, StrapiShopItem } from "@/lib/types/strapi";
 import { useLocaleStore } from "@/stores/locale-store";
 
@@ -21,6 +14,24 @@ type ShopViewProps = {
   items: StrapiShopItem[];
   initialCategoryId?: string | null;
 };
+
+const SORT_OPTIONS: { value: ShopSort; labelKey: string }[] = [
+  { value: null, labelKey: 'newest' },
+  { value: 'price_high', labelKey: 'priceHigh' },
+  { value: 'price_low', labelKey: 'priceLow' },
+  { value: 'most_viewed', labelKey: 'mostViewed' },
+  { value: 'top_sellers', labelKey: 'topSellers' },
+];
+
+function getSortParam(sort: ShopSort): string {
+  switch (sort) {
+    case 'price_high': return 'price:desc';
+    case 'price_low': return 'price:asc';
+    case 'most_viewed': return 'views:desc';
+    case 'top_sellers': return 'total_sold:desc';
+    default: return 'createdAt:desc';
+  }
+}
 
 export function ShopView({
   categories,
@@ -32,38 +43,56 @@ export function ShopView({
 
   const [items, setItems] = useState<StrapiShopItem[]>(initialItems);
   const [page, setPage] = useState(1);
+  const [pageCount, setPageCount] = useState(1);
   const [hasMore, setHasMore] = useState(initialItems.length >= 12);
+  const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
-    initialCategoryId,
-  );
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(initialCategoryId);
   const [selectedSort, setSelectedSort] = useState<ShopSort>(null);
   const [selectedAgeFilter, setSelectedAgeFilter] = useState<AgeFilter>(null);
+  const [priceMin, setPriceMin] = useState<number | undefined>(undefined);
+  const [priceMax, setPriceMax] = useState<number | undefined>(undefined);
 
-  const priceBounds = useMemo(
-    () => getShopItemPriceBounds(items),
-    [items],
-  );
-  const [priceMin, setPriceMin] = useState(priceBounds.min);
-  const [priceMax, setPriceMax] = useState(priceBounds.max);
+  const isFirstLoad = useRef(true);
+
+  function buildQueryParams(pageNum: number): string {
+    const params = new URLSearchParams();
+    params.set('page', String(pageNum));
+    params.set('pageSize', '12');
+    params.set('sort', getSortParam(selectedSort));
+    if (selectedCategoryId) params.set('category', selectedCategoryId);
+    if (selectedAgeFilter) params.set('age', selectedAgeFilter);
+    if (priceMin !== undefined && priceMin > 0) params.set('priceMin', String(priceMin));
+    if (priceMax !== undefined && priceMax > 0) params.set('priceMax', String(priceMax));
+    return params.toString();
+  }
+
+  const fetchItems = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/shop/items?${buildQueryParams(1)}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      setItems(data.data ?? []);
+      setPage(1);
+      setPageCount(data.pageCount ?? 1);
+      setHasMore((data.data?.length ?? 0) >= 12 && 1 < (data.pageCount ?? 1));
+    } catch {
+      // silently fail
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedSort, selectedCategoryId, selectedAgeFilter, priceMin, priceMax]);
 
   useEffect(() => {
-    setItems(initialItems);
-    setPage(1);
-    setHasMore(initialItems.length >= 12);
-    setSelectedCategoryId(initialCategoryId);
-    setSelectedSort(null);
-    setSelectedAgeFilter(null);
-    setPriceMin(priceBounds.min);
-    setPriceMax(priceBounds.max);
-  }, [
-    initialItems,
-    initialCategoryId,
-    priceBounds.min,
-    priceBounds.max,
-  ]);
+    if (isFirstLoad.current) {
+      isFirstLoad.current = false;
+      return;
+    }
+    fetchItems();
+  }, [fetchItems]);
 
   const loadMore = useCallback(async () => {
     if (loadingMore || !hasMore) return;
@@ -71,7 +100,7 @@ export function ShopView({
     setLoadingMore(true);
     try {
       const nextPage = page + 1;
-      const res = await fetch(`/api/shop/items?page=${nextPage}&pageSize=12`);
+      const res = await fetch(`/api/shop/items?${buildQueryParams(nextPage)}`);
       if (!res.ok) throw new Error('Failed');
 
       const data = await res.json();
@@ -86,7 +115,7 @@ export function ShopView({
           return [...prev, ...unique];
         });
         setPage(nextPage);
-        if (nextPage >= data.pageCount) {
+        if (nextPage >= (data.pageCount ?? 1)) {
           setHasMore(false);
         }
       }
@@ -95,7 +124,7 @@ export function ShopView({
     } finally {
       setLoadingMore(false);
     }
-  }, [loadingMore, hasMore, page]);
+  }, [loadingMore, hasMore, page, selectedSort, selectedCategoryId, selectedAgeFilter, priceMin, priceMax]);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
@@ -114,127 +143,73 @@ export function ShopView({
     return () => observer.disconnect();
   }, [loadMore]);
 
-  const activeTags = useMemo(() => {
-    const tags: ActiveFilterTag[] = [];
-
-    if (selectedSort) {
-      tags.push({
-        key: `sort-${selectedSort}`,
-        type: 'sort',
-        sort: selectedSort,
-        label:
-          selectedSort === 'top_sellers'
-            ? t.shop.topSellers
-            : t.shop.mostViewed,
-      });
-    }
-
-    if (selectedAgeFilter) {
-      const ageLabels: Record<Exclude<AgeFilter, null>, string> = {
-        '0-1': t.shop.age0to1,
-        '1-2': t.shop.age1to2,
-        '2-3': t.shop.age2to3,
-        '3-4': t.shop.age3to4,
-        '4-6': t.shop.age4to6,
-        '6+': t.shop.ageAbove6,
-      };
-
-      tags.push({
-        key: `age-${selectedAgeFilter}`,
-        type: 'age',
-        ageFilter: selectedAgeFilter,
-        label: ageLabels[selectedAgeFilter],
-      });
-    }
-
-    if (isPriceFilterActive(priceMin, priceMax, priceBounds)) {
-      tags.push({
-        key: 'price-range',
-        type: 'price',
-        min: priceMin,
-        max: priceMax,
-        label: `${formatPrice(priceMin, locale)} – ${formatPrice(priceMax, locale)}`,
-      });
-    }
-
-    if (selectedCategoryId) {
-      const category = categories.find(
-        (entry) => entry.documentId === selectedCategoryId,
-      );
-
-      if (category) {
-        tags.push({
-          key: `category-${selectedCategoryId}`,
-          type: 'category',
-          categoryId: selectedCategoryId,
-          label: locale === 'ar' ? category.title_ar : category.title,
-        });
-      }
-    }
-
-    return tags;
-  }, [
-    categories,
-    locale,
-    priceBounds,
-    priceMax,
-    priceMin,
-    selectedAgeFilter,
-    selectedCategoryId,
-    selectedSort,
-    t,
-  ]);
-
-  function handleRemoveTag(tag: ActiveFilterTag) {
-    if (tag.type === 'category') {
-      setSelectedCategoryId(null);
-      return;
-    }
-
-    if (tag.type === 'age') {
-      setSelectedAgeFilter(null);
-      return;
-    }
-
-    if (tag.type === 'price') {
-      setPriceMin(priceBounds.min);
-      setPriceMax(priceBounds.max);
-      return;
-    }
-
-    setSelectedSort(null);
-  }
+  const sortLabels: Record<string, string> = useMemo(() => ({
+    newest: t.shop.newest,
+    priceHigh: t.shop.priceHigh,
+    priceLow: t.shop.priceLow,
+    mostViewed: t.shop.mostViewed,
+    topSellers: t.shop.topSellers,
+  }), [t]);
 
   return (
     <div className="grid gap-8 lg:grid-cols-[260px_minmax(0,1fr)]">
       <ShopFiltersSidebar
         categories={categories}
         selectedCategoryId={selectedCategoryId}
-        selectedSort={selectedSort}
         selectedAgeFilter={selectedAgeFilter}
+        onSelectCategory={setSelectedCategoryId}
+        onSelectAgeFilter={setSelectedAgeFilter}
         priceMin={priceMin}
         priceMax={priceMax}
-        priceBounds={priceBounds}
-        onSelectCategory={setSelectedCategoryId}
-        onSelectSort={setSelectedSort}
-        onSelectAgeFilter={setSelectedAgeFilter}
         onPriceMinChange={setPriceMin}
         onPriceMaxChange={setPriceMax}
       />
 
       <div>
-        <ShopGrid
-          items={items}
-          selectedCategoryId={selectedCategoryId}
-          selectedAgeFilter={selectedAgeFilter}
-          selectedSort={selectedSort}
-          priceMin={priceMin}
-          priceMax={priceMax}
-          activeTags={activeTags}
-          onRemoveTag={handleRemoveTag}
-        />
+        <div className="mb-6 flex items-center justify-between gap-4">
+          <h2 className="text-2xl font-bold text-neutral-900">
+            {t.shop.title}
+          </h2>
 
-        {hasMore && (
+          <div className="relative">
+            <select
+              value={selectedSort ?? ''}
+              onChange={(e) => setSelectedSort((e.target.value || null) as ShopSort)}
+              className="appearance-none rounded-lg border border-neutral-200 bg-white px-4 py-2 pe-9 text-sm font-medium text-neutral-700 shadow-sm transition-colors hover:border-neutral-300 focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/20"
+            >
+              {SORT_OPTIONS.map(({ value, labelKey }) => (
+                <option key={labelKey} value={value ?? ''}>
+                  {sortLabels[labelKey]}
+                </option>
+              ))}
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 end-0 flex items-center pe-3">
+              <svg className="h-4 w-4 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        {loading ? (
+          <div className="flex justify-center py-16">
+            <div className="h-10 w-10 animate-spin rounded-full border-4 border-neutral-200 border-t-brand-primary" />
+          </div>
+        ) : items.length === 0 ? (
+          <p className="rounded-xl border border-dashed border-neutral-300 bg-neutral-50 px-4 py-10 text-center text-sm text-neutral-600">
+            {t.shop.filteredEmpty}
+          </p>
+        ) : (
+          <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {items.map((item) => (
+              <li key={item.documentId}>
+                <ShopItemCard item={item} />
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {hasMore && !loading && (
           <div ref={sentinelRef} className="flex justify-center py-8">
             {loadingMore && (
               <div className="h-8 w-8 animate-spin rounded-full border-4 border-neutral-200 border-t-brand-primary" />

@@ -1,11 +1,9 @@
 'use client';
 
-import { PriceRangeSlider } from '@/components/shop/price-range-slider';
 import { useTranslations } from '@/lib/i18n/use-translations';
 import {
   AGE_FILTER_OPTIONS,
   type AgeFilter,
-  type ShopSort,
 } from '@/lib/shop/filters';
 import type { StrapiCategory } from '@/lib/types/strapi';
 import { useLocaleStore } from '@/stores/locale-store';
@@ -13,40 +11,28 @@ import { useLocaleStore } from '@/stores/locale-store';
 type ShopFiltersSidebarProps = {
   categories: StrapiCategory[];
   selectedCategoryId: string | null;
-  selectedSort: ShopSort;
   selectedAgeFilter: AgeFilter;
-  priceMin: number;
-  priceMax: number;
-  priceBounds: { min: number; max: number };
+  priceMin?: number;
+  priceMax?: number;
   onSelectCategory: (categoryId: string | null) => void;
-  onSelectSort: (sort: ShopSort) => void;
   onSelectAgeFilter: (filter: AgeFilter) => void;
-  onPriceMinChange: (value: number) => void;
-  onPriceMaxChange: (value: number) => void;
+  onPriceMinChange: (value: number | undefined) => void;
+  onPriceMaxChange: (value: number | undefined) => void;
 };
-
-const SORT_OPTIONS: Exclude<ShopSort, null>[] = ['top_sellers', 'most_viewed'];
 
 export function ShopFiltersSidebar({
   categories,
   selectedCategoryId,
-  selectedSort,
   selectedAgeFilter,
   priceMin,
   priceMax,
-  priceBounds,
   onSelectCategory,
-  onSelectSort,
   onSelectAgeFilter,
   onPriceMinChange,
   onPriceMaxChange,
 }: ShopFiltersSidebarProps) {
   const t = useTranslations();
   const locale = useLocaleStore((state) => state.locale);
-
-  function getSortLabel(sort: Exclude<ShopSort, null>): string {
-    return sort === 'top_sellers' ? t.shop.topSellers : t.shop.mostViewed;
-  }
 
   function getAgeLabel(filter: Exclude<AgeFilter, null>): string {
     const labels: Record<Exclude<AgeFilter, null>, string> = {
@@ -73,41 +59,29 @@ export function ShopFiltersSidebar({
       </div>
 
       <div className="max-h-[min(70vh,560px)] overflow-y-auto px-3 py-3">
-        <FilterSection title={t.shop.sortTitle}>
+        <FilterSection title={t.category.title}>
           <ul className="space-y-1">
-            {SORT_OPTIONS.map((sort) => (
-              <li key={sort}>
-                <FilterOption
-                  label={getSortLabel(sort)}
-                  selected={selectedSort === sort}
-                  onClick={() =>
-                    onSelectSort(selectedSort === sort ? null : sort)
-                  }
-                />
-              </li>
-            ))}
+            {categories.map((category) => {
+              const label = locale === 'ar' ? category.title_ar : category.title;
+              return (
+                <li key={category.documentId}>
+                  <FilterOption
+                    label={label}
+                    selected={selectedCategoryId === category.documentId}
+                    onClick={() =>
+                      onSelectCategory(
+                        selectedCategoryId === category.documentId
+                          ? null
+                          : category.documentId,
+                      )
+                    }
+                  />
+                </li>
+              );
+            })}
           </ul>
         </FilterSection>
 
-        {priceBounds.max > 0 && (
-          <FilterSection title={t.shop.priceTitle}>
-            <PriceRangeSlider
-              bounds={priceBounds}
-              min={priceMin}
-              max={priceMax}
-              locale={locale}
-              fromLabel={t.shop.priceFrom}
-              toLabel={t.shop.priceTo}
-              resetLabel={t.shop.priceReset}
-              onMinChange={onPriceMinChange}
-              onMaxChange={onPriceMaxChange}
-              onReset={() => {
-                onPriceMinChange(priceBounds.min);
-                onPriceMaxChange(priceBounds.max);
-              }}
-            />
-          </FilterSection>
-        )}
         <FilterSection title={t.shop.ageTitle}>
           <ul className="space-y-1">
             {AGE_FILTER_OPTIONS.map((filter) => (
@@ -126,29 +100,40 @@ export function ShopFiltersSidebar({
           </ul>
         </FilterSection>
 
-        <FilterSection title={t.category.title}>
-          <ul className="space-y-1">
-            {categories.map((category) => {
-              const label =
-                locale === 'ar' ? category.title_ar : category.title;
-
-              return (
-                <li key={category.documentId}>
-                  <FilterOption
-                    label={label}
-                    selected={selectedCategoryId === category.documentId}
-                    onClick={() =>
-                      onSelectCategory(
-                        selectedCategoryId === category.documentId
-                          ? null
-                          : category.documentId,
-                      )
-                    }
-                  />
-                </li>
-              );
-            })}
-          </ul>
+        <FilterSection title={t.shop.priceTitle}>
+          <div className="space-y-3 px-1">
+            <div className="flex items-center gap-2">
+              <label className="text-xs text-neutral-500">{t.shop.priceFrom}</label>
+              <input
+                type="number"
+                min={0}
+                value={priceMin ?? ''}
+                onChange={(e) => onPriceMinChange(e.target.value ? Number(e.target.value) : undefined)}
+                className="w-full rounded-md border border-neutral-200 px-2 py-1.5 text-sm text-neutral-700 focus:border-brand-primary focus:outline-none"
+                placeholder="0"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="text-xs text-neutral-500">{t.shop.priceTo}</label>
+              <input
+                type="number"
+                min={0}
+                value={priceMax ?? ''}
+                onChange={(e) => onPriceMaxChange(e.target.value ? Number(e.target.value) : undefined)}
+                className="w-full rounded-md border border-neutral-200 px-2 py-1.5 text-sm text-neutral-700 focus:border-brand-primary focus:outline-none"
+                placeholder="∞"
+              />
+            </div>
+            {(priceMin !== undefined || priceMax !== undefined) && (
+              <button
+                type="button"
+                onClick={() => { onPriceMinChange(undefined); onPriceMaxChange(undefined); }}
+                className="text-xs font-medium text-brand-primary hover:underline"
+              >
+                {t.shop.priceReset}
+              </button>
+            )}
+          </div>
         </FilterSection>
       </div>
     </aside>

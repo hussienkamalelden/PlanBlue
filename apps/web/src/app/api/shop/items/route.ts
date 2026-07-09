@@ -6,9 +6,25 @@ export async function GET(request: NextRequest) {
   const page = Number(searchParams.get('page') ?? '1');
   const pageSize = Number(searchParams.get('pageSize') ?? '12');
   const sort = searchParams.get('sort') ?? 'createdAt:desc';
+  const categoryId = searchParams.get('category') ?? undefined;
+  const ageFilter = searchParams.get('age') ?? undefined;
+  const priceMin = searchParams.has('priceMin')
+    ? Number(searchParams.get('priceMin'))
+    : undefined;
+  const priceMax = searchParams.has('priceMax')
+    ? Number(searchParams.get('priceMax'))
+    : undefined;
 
   try {
-    const result = await fetchShopItems({ page, pageSize, sort });
+    const result = await fetchShopItems({
+      page,
+      pageSize,
+      sort,
+      categoryId,
+      ageFilter,
+      priceMin,
+      priceMax,
+    });
     return NextResponse.json(result);
   } catch {
     return NextResponse.json(

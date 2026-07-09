@@ -1,7 +1,7 @@
 import { getShopItemPrices } from '@/lib/api/strapi';
 import type { StrapiShopItem } from '@/lib/types/strapi';
 
-export type ShopSort = 'top_sellers' | 'most_viewed' | null;
+export type ShopSort = 'top_sellers' | 'most_viewed' | 'price_high' | 'price_low' | null;
 /** Age bucket filter — null means no age filter (show all items). */
 export type AgeFilter =
   | '0-1'

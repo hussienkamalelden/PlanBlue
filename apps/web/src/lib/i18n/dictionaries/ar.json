@@ -70,6 +70,8 @@
     "sortTitle": "ترتيب حسب",
     "topSellers": "الأكثر مبيعاً",
     "mostViewed": "الأكثر مشاهدة",
+    "priceHigh": "الأعلى سعراً",
+    "priceLow": "الأقل سعراً",
     "ageTitle": "العمر",
     "allAges": "جميع الأعمار",
     "age0to1": "0–1 سنة",
@@ -81,7 +83,8 @@
     "priceTitle": "السعر",
     "priceFrom": "من",
     "priceTo": "إلى",
-    "priceReset": "إعادة ضبط"
+    "priceReset": "إعادة ضبط",
+    "newest": "الأحدث"
   },
   "category": {
     "title": "الفئات",
