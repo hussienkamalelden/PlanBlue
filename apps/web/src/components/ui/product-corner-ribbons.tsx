@@ -1,5 +1,5 @@
 const RIBBON_ROTATE_CLASS =
-  'absolute flex h-[25px] items-center justify-center -rotate-45 font-semibold text-white whitespace-nowrap';
+  'absolute flex h-[25px] items-center justify-center -rotate-45 font-bold text-white whitespace-nowrap';
 
 type ProductCornerRibbonsProps = {
   salePercentage?: number;
