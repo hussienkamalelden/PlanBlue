@@ -23,12 +23,18 @@ export default async function ShopPage({
       : null;
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-10">
-      <ShopView
-        categories={categories}
-        items={shopResult.data}
-        initialCategoryId={initialCategoryId}
+    <>
+      <div
+        className="h-8 w-full bg-brand-primary sm:h-9"
+        aria-hidden="true"
       />
-    </main>
+      <main className="mx-auto max-w-6xl px-4 py-10">
+        <ShopView
+          categories={categories}
+          items={shopResult.data}
+          initialCategoryId={initialCategoryId}
+        />
+      </main>
+    </>
   );
 }
