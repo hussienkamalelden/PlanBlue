@@ -105,13 +105,13 @@ export async function fetchShopItems(options?: {
   page?: number;
   pageSize?: number;
   sort?: string;
-  categoryId?: string;
-  ageFilter?: string;
+  categoryIds?: string[];
+  ageFilters?: string[];
   priceMin?: number;
   priceMax?: number;
   search?: string;
 }): Promise<{ data: StrapiShopItem[]; total: number; pageCount: number }> {
-  const { page = 1, pageSize = 12, sort = 'createdAt:desc', categoryId, ageFilter, priceMin, priceMax, search } = options ?? {};
+  const { page = 1, pageSize = 12, sort = 'createdAt:desc', categoryIds, ageFilters, priceMin, priceMax, search } = options ?? {};
 
   const params: Record<string, string> = {
     'fields[0]': 'title',
@@ -141,20 +141,26 @@ export async function fetchShopItems(options?: {
     'pagination[pageSize]': String(pageSize),
   };
 
-  if (categoryId) {
-    params['filters[categories][documentId][$in][0]'] = categoryId;
+  if (categoryIds && categoryIds.length > 0) {
+    categoryIds.forEach((id, i) => {
+      params[`filters[categories][documentId][$in][${i}]`] = id;
+    });
   }
 
   let andIndex = 0;
 
-  if (ageFilter) {
-    const ageBounds = getAgeBoundsForFilter(ageFilter);
-    if (ageBounds) {
-      params[`filters[$and][${andIndex}][$or][0][age][$gte]`] = String(ageBounds.min);
-      params[`filters[$and][${andIndex}][$or][0][age][$lte]`] = String(ageBounds.max);
-      params[`filters[$and][${andIndex}][$or][1][all_ages][$eq]`] = 'true';
-      andIndex++;
+  if (ageFilters && ageFilters.length > 0) {
+    let orIndex = 0;
+    for (const af of ageFilters) {
+      const ageBounds = getAgeBoundsForFilter(af);
+      if (ageBounds) {
+        params[`filters[$and][${andIndex}][$or][${orIndex}][age][$gte]`] = String(ageBounds.min);
+        params[`filters[$and][${andIndex}][$or][${orIndex}][age][$lte]`] = String(ageBounds.max);
+        orIndex++;
+      }
     }
+    params[`filters[$and][${andIndex}][$or][${orIndex}][all_ages][$eq]`] = 'true';
+    andIndex++;
   }
 
   if (priceMin !== undefined && priceMin > 0) {

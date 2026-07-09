@@ -13,16 +13,16 @@ import { useLocaleStore } from '@/stores/locale-store';
 
 type ShopFiltersSidebarProps = {
   categories: StrapiCategory[];
-  selectedCategoryId: string | null;
-  selectedAgeFilter: AgeFilter;
+  selectedCategoryIds: string[];
+  selectedAgeFilters: Exclude<AgeFilter, null>[];
   priceBounds: { min: number; max: number };
   priceMin: number;
   priceMax: number;
   searchQuery: string;
   onSearchQueryChange: (value: string) => void;
   onSearchSubmit: () => void;
-  onSelectCategory: (categoryId: string | null) => void;
-  onSelectAgeFilter: (filter: AgeFilter) => void;
+  onToggleCategory: (categoryId: string) => void;
+  onToggleAgeFilter: (filter: Exclude<AgeFilter, null>) => void;
   onPriceMinChange: (value: number) => void;
   onPriceMaxChange: (value: number) => void;
   onPriceReset: () => void;
@@ -30,16 +30,16 @@ type ShopFiltersSidebarProps = {
 
 export function ShopFiltersSidebar({
   categories,
-  selectedCategoryId,
-  selectedAgeFilter,
+  selectedCategoryIds,
+  selectedAgeFilters,
   priceBounds,
   priceMin,
   priceMax,
   searchQuery,
   onSearchQueryChange,
   onSearchSubmit,
-  onSelectCategory,
-  onSelectAgeFilter,
+  onToggleCategory,
+  onToggleAgeFilter,
   onPriceMinChange,
   onPriceMaxChange,
   onPriceReset,
@@ -122,12 +122,8 @@ export function ShopFiltersSidebar({
               <li key={filter}>
                 <FilterOption
                   label={getAgeLabel(filter)}
-                  selected={selectedAgeFilter === filter}
-                  onClick={() =>
-                    onSelectAgeFilter(
-                      selectedAgeFilter === filter ? null : filter,
-                    )
-                  }
+                  selected={selectedAgeFilters.includes(filter)}
+                  onClick={() => onToggleAgeFilter(filter)}
                 />
               </li>
             ))}
@@ -150,14 +146,8 @@ export function ShopFiltersSidebar({
                   <li key={category.documentId}>
                     <FilterOption
                       label={label}
-                      selected={selectedCategoryId === category.documentId}
-                      onClick={() =>
-                        onSelectCategory(
-                          selectedCategoryId === category.documentId
-                            ? null
-                            : category.documentId,
-                        )
-                      }
+                      selected={selectedCategoryIds.includes(category.documentId)}
+                      onClick={() => onToggleCategory(category.documentId)}
                     />
                   </li>
                 );

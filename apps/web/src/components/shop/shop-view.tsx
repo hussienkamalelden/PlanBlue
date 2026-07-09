@@ -21,7 +21,7 @@ import { useLocaleStore } from '@/stores/locale-store';
 type ShopViewProps = {
   categories: StrapiCategory[];
   items: StrapiShopItem[];
-  initialCategoryId?: string | null;
+  initialCategoryIds?: string[];
   initialSearch?: string;
 };
 
@@ -51,7 +51,7 @@ function getSortParam(sort: ShopSort): string {
 export function ShopView({
   categories,
   items: initialItems,
-  initialCategoryId = null,
+  initialCategoryIds = [],
   initialSearch = '',
 }: ShopViewProps) {
   const t = useTranslations();
@@ -64,11 +64,9 @@ export function ShopView({
   const [loadingMore, setLoadingMore] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
-    initialCategoryId,
-  );
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>(initialCategoryIds);
   const [selectedSort, setSelectedSort] = useState<ShopSort>(null);
-  const [selectedAgeFilter, setSelectedAgeFilter] = useState<AgeFilter>(null);
+  const [selectedAgeFilters, setSelectedAgeFilters] = useState<Exclude<AgeFilter, null>[]>([]);
   const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [activeSearch, setActiveSearch] = useState(initialSearch);
 
@@ -83,16 +81,16 @@ export function ShopView({
   const isFirstLoad = useRef(true);
   const filtersRef = useRef({
     selectedSort,
-    selectedCategoryId,
-    selectedAgeFilter,
+    selectedCategoryIds,
+    selectedAgeFilters,
     priceMin,
     priceMax,
     activeSearch,
   });
   filtersRef.current = {
     selectedSort,
-    selectedCategoryId,
-    selectedAgeFilter,
+    selectedCategoryIds,
+    selectedAgeFilters,
     priceMin,
     priceMax,
     activeSearch,
@@ -101,8 +99,8 @@ export function ShopView({
   function buildQueryString(pageNum: number): string {
     const {
       selectedSort: sort,
-      selectedCategoryId: cat,
-      selectedAgeFilter: age,
+      selectedCategoryIds: cats,
+      selectedAgeFilters: ages,
       priceMin: pMin,
       priceMax: pMax,
       activeSearch: search,
@@ -111,8 +109,8 @@ export function ShopView({
     params.set('page', String(pageNum));
     params.set('pageSize', '12');
     params.set('sort', getSortParam(sort));
-    if (cat) params.set('category', cat);
-    if (age) params.set('age', age);
+    cats.forEach((id) => params.append('category', id));
+    ages.forEach((age) => params.append('age', age));
     if (isPriceFilterActive(pMin, pMax, priceBounds)) {
       if (pMin > priceBounds.min)
         params.set('priceMin', String(Math.round(pMin)));
@@ -146,7 +144,7 @@ export function ShopView({
       return;
     }
     fetchFirstPage();
-  }, [selectedSort, selectedCategoryId, selectedAgeFilter, activeSearch]);
+  }, [selectedSort, selectedCategoryIds, selectedAgeFilters, activeSearch]);
 
   function handlePriceMinChange(value: number) {
     setPriceMin(value);
@@ -258,32 +256,32 @@ export function ShopView({
       });
     }
 
-    if (selectedCategoryId) {
-      const cat = categories.find((c) => c.documentId === selectedCategoryId);
+    for (const catId of selectedCategoryIds) {
+      const cat = categories.find((c) => c.documentId === catId);
       if (cat) {
         tags.push({
-          key: `cat-${selectedCategoryId}`,
+          key: `cat-${catId}`,
           type: 'category',
-          categoryId: selectedCategoryId,
+          categoryId: catId,
           label: locale === 'ar' ? cat.title_ar : cat.title,
         });
       }
     }
 
-    if (selectedAgeFilter) {
-      const ageLabels: Record<Exclude<AgeFilter, null>, string> = {
-        '0-1': t.shop.age0to1,
-        '1-2': t.shop.age1to2,
-        '2-3': t.shop.age2to3,
-        '3-4': t.shop.age3to4,
-        '4-6': t.shop.age4to6,
-        '6+': t.shop.ageAbove6,
-      };
+    const ageLabels: Record<Exclude<AgeFilter, null>, string> = {
+      '0-1': t.shop.age0to1,
+      '1-2': t.shop.age1to2,
+      '2-3': t.shop.age2to3,
+      '3-4': t.shop.age3to4,
+      '4-6': t.shop.age4to6,
+      '6+': t.shop.ageAbove6,
+    };
+    for (const af of selectedAgeFilters) {
       tags.push({
-        key: `age-${selectedAgeFilter}`,
+        key: `age-${af}`,
         type: 'age',
-        ageFilter: selectedAgeFilter,
-        label: ageLabels[selectedAgeFilter],
+        ageFilter: af,
+        label: ageLabels[af],
       });
     }
 
@@ -298,7 +296,7 @@ export function ShopView({
     }
 
     return tags;
-  }, [activeSearch, selectedCategoryId, selectedAgeFilter, priceMin, priceMax, priceBounds, categories, locale, t]);
+  }, [activeSearch, selectedCategoryIds, selectedAgeFilters, priceMin, priceMax, priceBounds, categories, locale, t]);
 
   function handleRemoveFilterTag(tag: ActiveFilterTag) {
     switch (tag.type) {
@@ -306,10 +304,10 @@ export function ShopView({
         handleClearSearch();
         break;
       case 'category':
-        setSelectedCategoryId(null);
+        setSelectedCategoryIds((prev) => prev.filter((id) => id !== tag.categoryId));
         break;
       case 'age':
-        setSelectedAgeFilter(null);
+        setSelectedAgeFilters((prev) => prev.filter((a) => a !== tag.ageFilter));
         break;
       case 'price':
         handlePriceReset();
@@ -327,16 +325,24 @@ export function ShopView({
     <div className="pt-10 grid gap-8 lg:grid-cols-[300px_minmax(0,1fr)] xl:grid-cols-[320px_minmax(0,1fr)]">
       <ShopFiltersSidebar
         categories={categories}
-        selectedCategoryId={selectedCategoryId}
-        selectedAgeFilter={selectedAgeFilter}
+        selectedCategoryIds={selectedCategoryIds}
+        selectedAgeFilters={selectedAgeFilters}
         priceBounds={priceBounds}
         priceMin={priceMin}
         priceMax={priceMax}
         searchQuery={searchQuery}
         onSearchQueryChange={setSearchQuery}
         onSearchSubmit={handleSearchSubmit}
-        onSelectCategory={setSelectedCategoryId}
-        onSelectAgeFilter={setSelectedAgeFilter}
+        onToggleCategory={(id) =>
+          setSelectedCategoryIds((prev) =>
+            prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id],
+          )
+        }
+        onToggleAgeFilter={(filter) =>
+          setSelectedAgeFilters((prev) =>
+            prev.includes(filter) ? prev.filter((a) => a !== filter) : [...prev, filter],
+          )
+        }
         onPriceMinChange={handlePriceMinChange}
         onPriceMaxChange={handlePriceMaxChange}
         onPriceReset={handlePriceReset}

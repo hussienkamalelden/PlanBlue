@@ -14,13 +14,16 @@ export default async function ShopPage({
   const { category, search } = await searchParams;
   const [categories, shopResult] = await Promise.all([
     fetchCategories(),
-    fetchShopItems({ pageSize: 12, search: search?.trim() || undefined }),
+    fetchShopItems({
+      pageSize: 12,
+      search: search?.trim() || undefined,
+      categoryIds: category ? [category] : undefined,
+    }),
   ]);
 
-  const initialCategoryId =
-    category && categories.some((item) => item.documentId === category)
-      ? category
-      : null;
+  const initialCategoryIds = category && categories.some((item) => item.documentId === category)
+    ? [category]
+    : [];
 
   return (
     <>
@@ -39,7 +42,7 @@ export default async function ShopPage({
         <ShopView
           categories={categories}
           items={shopResult.data}
-          initialCategoryId={initialCategoryId}
+          initialCategoryIds={initialCategoryIds}
           initialSearch={search?.trim() ?? ''}
         />
       </main>
