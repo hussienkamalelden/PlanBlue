@@ -89,7 +89,7 @@ export function ShopProductCard({ item, locale }: ShopProductCardProps) {
                 {formatPriceWhole(displayPrice, locale)}
               </span>
               {item.has_sale && salePrice !== null && (
-                <del className="text-sm font-bold text-[#FF0000]">
+                <del className="text-sm font-semibold text-[#FF0000]">
                   {formatPriceWhole(basePrice, locale)}
                 </del>
               )}
