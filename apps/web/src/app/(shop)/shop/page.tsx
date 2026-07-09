@@ -12,9 +12,9 @@ export default async function ShopPage({
   searchParams: Promise<{ category?: string }>;
 }) {
   const { category } = await searchParams;
-  const [categories, items] = await Promise.all([
+  const [categories, shopResult] = await Promise.all([
     fetchCategories(),
-    fetchShopItems(),
+    fetchShopItems({ pageSize: 12 }),
   ]);
 
   const initialCategoryId =
@@ -26,7 +26,7 @@ export default async function ShopPage({
     <main className="mx-auto max-w-6xl px-4 py-10">
       <ShopView
         categories={categories}
-        items={items}
+        items={shopResult.data}
         initialCategoryId={initialCategoryId}
       />
     </main>

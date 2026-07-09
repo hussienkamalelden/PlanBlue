@@ -2,11 +2,10 @@ import { PopularShopCarousel } from '@/components/home/popular-shop-carousel';
 import { PopularShopHeading } from '@/components/home/popular-shop-heading';
 import { HOME_ASSETS } from '@/lib/assets/home';
 import { fetchShopItems } from '@/lib/api/strapi.server';
-import { getMostViewedShopItems } from '@/lib/shop/filters';
 
 export async function PopularShopSection() {
-  const allItems = await fetchShopItems();
-  const topItems = getMostViewedShopItems(allItems, 12);
+  const { data: allItems } = await fetchShopItems({ pageSize: 12, sort: 'views:desc' });
+  const topItems = allItems;
 
   if (topItems.length === 0) {
     return null;

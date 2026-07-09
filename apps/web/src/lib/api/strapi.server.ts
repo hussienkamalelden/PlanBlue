@@ -101,7 +101,13 @@ export async function fetchCategories(): Promise<StrapiCategory[]> {
   return json.data;
 }
 
-export async function fetchShopItems(): Promise<StrapiShopItem[]> {
+export async function fetchShopItems(options?: {
+  page?: number;
+  pageSize?: number;
+  sort?: string;
+}): Promise<{ data: StrapiShopItem[]; total: number; pageCount: number }> {
+  const { page = 1, pageSize = 12, sort = 'createdAt:desc' } = options ?? {};
+
   const json = await strapiFetch<StrapiListResponse<StrapiShopItem>>(
     '/products',
     {
@@ -127,11 +133,17 @@ export async function fetchShopItems(): Promise<StrapiShopItem[]> {
       'populate[media][fields][0]': 'url',
       'populate[media][fields][1]': 'name',
       'populate[media][fields][2]': 'mime',
-      sort: 'createdAt:desc',
+      sort,
+      'pagination[page]': String(page),
+      'pagination[pageSize]': String(pageSize),
     },
   );
 
-  return json.data;
+  return {
+    data: json.data,
+    total: json.meta.pagination.total,
+    pageCount: json.meta.pagination.pageCount,
+  };
 }
 
 export async function fetchAffiliates(): Promise<StrapiAffiliate[]> {
