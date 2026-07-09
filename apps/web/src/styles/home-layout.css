@@ -1098,13 +1098,15 @@ html[dir='rtl'] .planblue-site {
 
 .pb-shop-sort-dropdown__label {
   color: #64748b;
+  font-size: 14px;
   font-weight: 400;
 }
 
 .pb-shop-sort-dropdown__value {
   white-space: nowrap;
-  font-weight: 600;
-  color: var(--color-brand-primary, #027dda);
+  font-weight: bold;
+  font-size: 14px;
+  color: black;
 }
 
 .pb-shop-sort-dropdown__arrow {
@@ -1420,9 +1422,9 @@ html[dir='rtl'] .planblue-site {
 
 .pb-shop-sidebar-option.is-selected {
   font-weight: 600;
-  color: #1e293b;
-  border: 2px solid var(--pb-theme);
-  background: rgba(67, 137, 247, 0.08);
+  color: white;
+  /* border: 2px solid var(--pb-theme); */
+  background: var(--pb-theme);
   box-shadow: 0 0 0 1px rgba(67, 137, 247, 0.12);
 }
 
