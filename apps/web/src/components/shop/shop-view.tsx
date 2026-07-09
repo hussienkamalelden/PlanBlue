@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { ShopFiltersSidebar } from "@/components/shop/shop-filters-sidebar";
 import { ShopGrid } from "@/components/shop/shop-grid";
@@ -24,11 +24,17 @@ type ShopViewProps = {
 
 export function ShopView({
   categories,
-  items,
+  items: initialItems,
   initialCategoryId = null,
 }: ShopViewProps) {
   const t = useTranslations();
   const locale = useLocaleStore((state) => state.locale);
+
+  const [items, setItems] = useState<StrapiShopItem[]>(initialItems);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(initialItems.length >= 12);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
     initialCategoryId,
@@ -44,18 +50,69 @@ export function ShopView({
   const [priceMax, setPriceMax] = useState(priceBounds.max);
 
   useEffect(() => {
+    setItems(initialItems);
+    setPage(1);
+    setHasMore(initialItems.length >= 12);
     setSelectedCategoryId(initialCategoryId);
     setSelectedSort(null);
     setSelectedAgeFilter(null);
     setPriceMin(priceBounds.min);
     setPriceMax(priceBounds.max);
   }, [
-    categories,
-    items,
+    initialItems,
     initialCategoryId,
     priceBounds.min,
     priceBounds.max,
   ]);
+
+  const loadMore = useCallback(async () => {
+    if (loadingMore || !hasMore) return;
+
+    setLoadingMore(true);
+    try {
+      const nextPage = page + 1;
+      const res = await fetch(`/api/shop/items?page=${nextPage}&pageSize=12`);
+      if (!res.ok) throw new Error('Failed');
+
+      const data = await res.json();
+      const newItems: StrapiShopItem[] = data.data;
+
+      if (newItems.length === 0) {
+        setHasMore(false);
+      } else {
+        setItems((prev) => {
+          const existingIds = new Set(prev.map((i) => i.documentId));
+          const unique = newItems.filter((i) => !existingIds.has(i.documentId));
+          return [...prev, ...unique];
+        });
+        setPage(nextPage);
+        if (nextPage >= data.pageCount) {
+          setHasMore(false);
+        }
+      }
+    } catch {
+      // silently fail
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [loadingMore, hasMore, page]);
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          loadMore();
+        }
+      },
+      { rootMargin: '200px' },
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [loadMore]);
 
   const activeTags = useMemo(() => {
     const tags: ActiveFilterTag[] = [];
@@ -165,16 +222,26 @@ export function ShopView({
         onPriceMaxChange={setPriceMax}
       />
 
-      <ShopGrid
-        items={items}
-        selectedCategoryId={selectedCategoryId}
-        selectedAgeFilter={selectedAgeFilter}
-        selectedSort={selectedSort}
-        priceMin={priceMin}
-        priceMax={priceMax}
-        activeTags={activeTags}
-        onRemoveTag={handleRemoveTag}
-      />
+      <div>
+        <ShopGrid
+          items={items}
+          selectedCategoryId={selectedCategoryId}
+          selectedAgeFilter={selectedAgeFilter}
+          selectedSort={selectedSort}
+          priceMin={priceMin}
+          priceMax={priceMax}
+          activeTags={activeTags}
+          onRemoveTag={handleRemoveTag}
+        />
+
+        {hasMore && (
+          <div ref={sentinelRef} className="flex justify-center py-8">
+            {loadingMore && (
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-neutral-200 border-t-brand-primary" />
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

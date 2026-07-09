@@ -7,6 +7,7 @@ import {
   CartItemValidationMessages,
   CartValidationBanner,
 } from '@/components/shop/cart-validation-messages';
+import { CartTopSellers } from '@/components/shop/cart-top-sellers';
 import { useCartValidation } from '@/lib/cart/use-cart-validation';
 import { useCartStore } from '@/lib/cart/cart-store';
 import { getItemValidation } from '@/lib/cart/validate-cart';
@@ -224,6 +225,8 @@ export default function Cart() {
           </div>
         </div>
       )}
+
+      <CartTopSellers />
     </main>
   );
 }

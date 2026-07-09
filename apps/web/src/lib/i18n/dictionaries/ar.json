@@ -135,7 +135,8 @@
       "unavailable": "هذا المنتج لم يعد متاحاً.",
       "insufficientStock": "يتبقى {stock} فقط في المخزون — لديك {quantity} في سلتك.",
       "priceChanged": "تغير السعر من {oldPrice} إلى {newPrice}. أزل هذا العنصر وأضفه مرة أخرى."
-    }
+    },
+    "topSellers": "قد يعجبك أيضاً"
   },
   "checkout": {
     "title": "الدفع",

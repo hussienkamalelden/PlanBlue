@@ -247,7 +247,7 @@ export async function fetchShopItemBySlug(
 
 export async function fetchRelatedShopItems(
   item: StrapiShopItem,
-  limit = 4,
+  limit = 12,
 ): Promise<StrapiShopItem[]> {
   const categoryIds =
     item.categories?.map((category) => category.documentId) ?? [];

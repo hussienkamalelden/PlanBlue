@@ -135,7 +135,8 @@
       "unavailable": "This product is no longer available.",
       "insufficientStock": "Only {stock} left in stock — you have {quantity} in your cart.",
       "priceChanged": "Price changed from {oldPrice} to {newPrice}. Remove this item and add it again."
-    }
+    },
+    "topSellers": "You May Also Like"
   },
   "checkout": {
     "title": "Checkout",
