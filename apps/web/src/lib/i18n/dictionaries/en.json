@@ -5,6 +5,11 @@
     "loading": "Loading...",
     "error": "Something went wrong. Please try again."
   },
+  "notFoundPage": {
+    "title": "Page not found",
+    "description": "The page you are looking for does not exist or has been moved.",
+    "backHome": "Back to Home"
+  },
   "header": {
     "products": "Shop",
     "cart": "Cart",
