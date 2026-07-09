@@ -14,11 +14,9 @@ import {
 } from "@/lib/shop/slider-drag-state";
 import { useLocaleStore } from "@/stores/locale-store";
 
-const INITIAL_DELAY_MS = 900;
-const POST_ROUTE_BUFFER_MS = 120;
 const MIN_LOADER_VISIBLE_MS = 400;
 const LOCALE_SWITCH_BUFFER_MS = 200;
-const LOADER_SAFETY_TIMEOUT_MS = 4000;
+const LOADER_SAFETY_TIMEOUT_MS = 6000;
 
 function isInternalNavigationLink(anchor: HTMLAnchorElement) {
   const href = anchor.getAttribute("href");
@@ -64,8 +62,8 @@ export function NavigationLoader() {
   const prevLocaleRef = useRef(locale);
   const hideTimer = useRef<number | null>(null);
   const safetyTimer = useRef<number | null>(null);
-  const pendingNavigationRef = useRef(false);
-  const loaderShownAtRef = useRef(0);
+  const pendingNavigationRef = useRef(true);
+  const loaderShownAtRef = useRef(Date.now());
 
   function clearHideTimer() {
     if (hideTimer.current !== null) {
@@ -85,20 +83,19 @@ export function NavigationLoader() {
     setVisible(false);
     setPageLoaderActive(false);
     pendingNavigationRef.current = false;
+    hasCompletedInitialLoad.current = true;
     clearSafetyTimer();
   }
 
-  function hideAfterPaint(bufferMs: number) {
+  function hideAfterMinTime() {
     clearHideTimer();
 
     const elapsed = Date.now() - loaderShownAtRef.current;
-    const waitMs = Math.max(bufferMs, MIN_LOADER_VISIBLE_MS - elapsed);
+    const waitMs = Math.max(0, MIN_LOADER_VISIBLE_MS - elapsed);
 
     hideTimer.current = window.setTimeout(() => {
       requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          hideLoader();
-        });
+        hideLoader();
       });
     }, waitMs);
   }
@@ -118,30 +115,32 @@ export function NavigationLoader() {
     }, LOADER_SAFETY_TIMEOUT_MS);
   }
 
+  // Initial load safety timeout
   useEffect(() => {
-    const timer = window.setTimeout(() => {
-      hasCompletedInitialLoad.current = true;
-      hideLoader();
-    }, INITIAL_DELAY_MS);
+    safetyTimer.current = window.setTimeout(() => {
+      if (pendingNavigationRef.current) {
+        hideLoader();
+      }
+    }, LOADER_SAFETY_TIMEOUT_MS);
 
-    return () => {
-      window.clearTimeout(timer);
-    };
+    return () => clearSafetyTimer();
   }, []);
 
+  // Listen for route ready (both initial load and navigations)
   useEffect(() => {
     function handleRouteReady() {
-      if (!hasCompletedInitialLoad.current || !pendingNavigationRef.current) {
+      if (!pendingNavigationRef.current) {
         return;
       }
 
-      hideAfterPaint(POST_ROUTE_BUFFER_MS);
+      hideAfterMinTime();
     }
 
     window.addEventListener(ROUTE_READY_EVENT, handleRouteReady);
     return () => window.removeEventListener(ROUTE_READY_EVENT, handleRouteReady);
   }, []);
 
+  // Locale switch
   useEffect(() => {
     if (prevLocaleRef.current === locale) {
       return;
@@ -157,11 +156,12 @@ export function NavigationLoader() {
 
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        hideAfterPaint(LOCALE_SWITCH_BUFFER_MS);
+        hideAfterMinTime();
       });
     });
   }, [locale]);
 
+  // Manual showPageLoader() calls
   useEffect(() => {
     function handleNavigationStart() {
       showLoaderForNavigation();
@@ -172,6 +172,7 @@ export function NavigationLoader() {
       window.removeEventListener(PAGE_LOADER_START_EVENT, handleNavigationStart);
   }, []);
 
+  // Intercept internal link clicks
   useEffect(() => {
     function handleDocumentClick(event: MouseEvent) {
       const target = event.target;
