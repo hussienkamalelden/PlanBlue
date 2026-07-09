@@ -110,7 +110,7 @@ function PopularShopCarouselInner({ items }: PopularShopCarouselProps) {
         className="popular-shop-swiper"
       >
         {loopSlides.map(({ data, slideKey }) => (
-          <SwiperSlide key={slideKey} className="!h-auto pb-3">
+          <SwiperSlide key={slideKey} className="!h-auto pb-9">
             <ShopProductCard item={data} locale={locale} />
           </SwiperSlide>
         ))}
