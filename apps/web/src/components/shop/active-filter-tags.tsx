@@ -22,7 +22,7 @@ export function ActiveFilterTags({ tags, onRemove }: ActiveFilterTagsProps) {
       {tags.map((tag) => (
         <span
           key={tag.key}
-          className="inline-flex items-center gap-1.5 rounded-full border border-brand-primary/20 bg-brand-primary/10 py-1 ps-3 pe-1.5 text-sm font-medium text-brand-primary"
+          className="inline-flex items-center gap-1.5 rounded-full border border-brand-primary/20 bg-brand-primary/10 py-1 ps-3 pe-1.5 text-sm font-bold text-brand-primary"
         >
           <span>{tag.label}</span>
           <button
@@ -31,7 +31,7 @@ export function ActiveFilterTags({ tags, onRemove }: ActiveFilterTagsProps) {
             aria-label={`${t.shop.removeFilter}: ${tag.label}`}
             className="flex h-5 w-5 items-center justify-center rounded-full text-brand-primary/70 transition-colors hover:bg-brand-primary/20 hover:text-brand-primary"
           >
-            <X className="size-3.5" strokeWidth={2.5} aria-hidden="true" />
+            <X className="size-3.5" strokeWidth={3} aria-hidden="true" />
           </button>
         </span>
       ))}
