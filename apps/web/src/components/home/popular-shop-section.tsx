@@ -4,7 +4,10 @@ import { HOME_ASSETS } from '@/lib/assets/home';
 import { fetchShopItems } from '@/lib/api/strapi.server';
 
 export async function PopularShopSection() {
-  const { data: allItems } = await fetchShopItems({ pageSize: 12, sort: 'views:desc' });
+  const { data: allItems } = await fetchShopItems({
+    pageSize: 12,
+    sort: 'views:desc',
+  });
   const topItems = allItems;
 
   if (topItems.length === 0) {

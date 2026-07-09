@@ -21,7 +21,7 @@ export function RelatedShopItems({ items }: RelatedShopItemsProps) {
         {t.shopItemDetail.relatedItems}
       </h2>
       <div className="popular-shop-carousel-wrap relative">
-        <PopularShopCarousel items={items} />
+        <PopularShopCarousel items={items} disableLoop />
       </div>
     </section>
   );
