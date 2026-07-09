@@ -1,13 +1,18 @@
-"use client";
+'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { ShopFiltersSidebar } from "@/components/shop/shop-filters-sidebar";
-import { ShopProductCard } from "@/components/home/shop-product-card";
-import { useTranslations } from "@/lib/i18n/use-translations";
-import { getShopItemPriceBounds, isPriceFilterActive, type AgeFilter, type ShopSort } from "@/lib/shop/filters";
-import type { StrapiCategory, StrapiShopItem } from "@/lib/types/strapi";
-import { useLocaleStore } from "@/stores/locale-store";
+import { ShopFiltersSidebar } from '@/components/shop/shop-filters-sidebar';
+import { ShopProductCard } from '@/components/home/shop-product-card';
+import { useTranslations } from '@/lib/i18n/use-translations';
+import {
+  getShopItemPriceBounds,
+  isPriceFilterActive,
+  type AgeFilter,
+  type ShopSort,
+} from '@/lib/shop/filters';
+import type { StrapiCategory, StrapiShopItem } from '@/lib/types/strapi';
+import { useLocaleStore } from '@/stores/locale-store';
 
 type ShopViewProps = {
   categories: StrapiCategory[];
@@ -25,11 +30,16 @@ const SORT_OPTIONS: { value: ShopSort; labelKey: string }[] = [
 
 function getSortParam(sort: ShopSort): string {
   switch (sort) {
-    case 'price_high': return 'price:desc';
-    case 'price_low': return 'price:asc';
-    case 'most_viewed': return 'views:desc';
-    case 'top_sellers': return 'total_sold:desc';
-    default: return 'createdAt:desc';
+    case 'price_high':
+      return 'price:desc';
+    case 'price_low':
+      return 'price:asc';
+    case 'most_viewed':
+      return 'views:desc';
+    case 'top_sellers':
+      return 'total_sold:desc';
+    default:
+      return 'createdAt:desc';
   }
 }
 
@@ -48,21 +58,44 @@ export function ShopView({
   const [loadingMore, setLoadingMore] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(initialCategoryId);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
+    initialCategoryId,
+  );
   const [selectedSort, setSelectedSort] = useState<ShopSort>(null);
   const [selectedAgeFilter, setSelectedAgeFilter] = useState<AgeFilter>(null);
 
-  const priceBounds = useMemo(() => getShopItemPriceBounds(initialItems), [initialItems]);
+  const priceBounds = useMemo(
+    () => getShopItemPriceBounds(initialItems),
+    [initialItems],
+  );
   const [priceMin, setPriceMin] = useState(priceBounds.min);
   const [priceMax, setPriceMax] = useState(priceBounds.max);
 
   const priceDebounceRef = useRef<number | null>(null);
   const isFirstLoad = useRef(true);
-  const filtersRef = useRef({ selectedSort, selectedCategoryId, selectedAgeFilter, priceMin, priceMax });
-  filtersRef.current = { selectedSort, selectedCategoryId, selectedAgeFilter, priceMin, priceMax };
+  const filtersRef = useRef({
+    selectedSort,
+    selectedCategoryId,
+    selectedAgeFilter,
+    priceMin,
+    priceMax,
+  });
+  filtersRef.current = {
+    selectedSort,
+    selectedCategoryId,
+    selectedAgeFilter,
+    priceMin,
+    priceMax,
+  };
 
   function buildQueryString(pageNum: number): string {
-    const { selectedSort: sort, selectedCategoryId: cat, selectedAgeFilter: age, priceMin: pMin, priceMax: pMax } = filtersRef.current;
+    const {
+      selectedSort: sort,
+      selectedCategoryId: cat,
+      selectedAgeFilter: age,
+      priceMin: pMin,
+      priceMax: pMax,
+    } = filtersRef.current;
     const params = new URLSearchParams();
     params.set('page', String(pageNum));
     params.set('pageSize', '12');
@@ -70,8 +103,10 @@ export function ShopView({
     if (cat) params.set('category', cat);
     if (age) params.set('age', age);
     if (isPriceFilterActive(pMin, pMax, priceBounds)) {
-      if (pMin > priceBounds.min) params.set('priceMin', String(Math.round(pMin)));
-      if (pMax < priceBounds.max) params.set('priceMax', String(Math.round(pMax)));
+      if (pMin > priceBounds.min)
+        params.set('priceMin', String(Math.round(pMin)));
+      if (pMax < priceBounds.max)
+        params.set('priceMax', String(Math.round(pMax)));
     }
     return params.toString();
   }
@@ -169,13 +204,16 @@ export function ShopView({
     return () => observer.disconnect();
   }, [loadMore]);
 
-  const sortLabels: Record<string, string> = useMemo(() => ({
-    newest: t.shop.newest,
-    priceHigh: t.shop.priceHigh,
-    priceLow: t.shop.priceLow,
-    mostViewed: t.shop.mostViewed,
-    topSellers: t.shop.topSellers,
-  }), [t]);
+  const sortLabels: Record<string, string> = useMemo(
+    () => ({
+      newest: t.shop.newest,
+      priceHigh: t.shop.priceHigh,
+      priceLow: t.shop.priceLow,
+      mostViewed: t.shop.mostViewed,
+      topSellers: t.shop.topSellers,
+    }),
+    [t],
+  );
 
   return (
     <div className="grid gap-8 lg:grid-cols-[260px_minmax(0,1fr)]">
@@ -194,15 +232,13 @@ export function ShopView({
       />
 
       <div>
-        <div className="mb-6 flex items-center justify-between gap-4">
-          <h2 className="text-2xl font-bold text-neutral-900">
-            {t.shop.title}
-          </h2>
-
-          <div className="relative">
+        <div className="mb-6">
+          <div className="relative flex justify-end">
             <select
               value={selectedSort ?? ''}
-              onChange={(e) => setSelectedSort((e.target.value || null) as ShopSort)}
+              onChange={(e) =>
+                setSelectedSort((e.target.value || null) as ShopSort)
+              }
               className="appearance-none rounded-lg border border-neutral-200 bg-white px-4 py-2 pe-9 text-sm font-medium text-neutral-700 shadow-sm transition-colors hover:border-neutral-300 focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/20"
             >
               {SORT_OPTIONS.map(({ value, labelKey }) => (
@@ -212,8 +248,18 @@ export function ShopView({
               ))}
             </select>
             <div className="pointer-events-none absolute inset-y-0 end-0 flex items-center pe-3">
-              <svg className="h-4 w-4 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              <svg
+                className="h-4 w-4 text-neutral-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </div>
           </div>
@@ -228,7 +274,7 @@ export function ShopView({
             {t.shop.filteredEmpty}
           </p>
         ) : (
-          <ul className="grid gap-x-3 gap-y-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+          <ul className="grid gap-x-3 gap-y-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5">
             {items.map((item) => (
               <li key={item.documentId} className="px-1 pb-2">
                 <ShopProductCard item={item} locale={locale} />
