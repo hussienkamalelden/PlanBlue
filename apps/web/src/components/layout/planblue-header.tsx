@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
+import { ShoppingCart } from 'lucide-react';
 
 import { HeaderPromoBar } from '@/components/layout/header-promo-bar';
 import { LocaleSwitcher } from '@/components/locale/locale-switcher';
@@ -13,31 +14,6 @@ import { useCartStore } from '@/lib/cart/cart-store';
 import { useTranslations } from '@/lib/i18n/use-translations';
 import { showPageLoader } from '@/lib/ui/page-loader';
 import { useLocaleStore } from '@/stores/locale-store';
-
-function BagIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      width="22"
-      height="22"
-      aria-hidden="true"
-    >
-      <path
-        d="M6 7h12l-1 13H7L6 7z"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M9 7V5a3 3 0 0 1 6 0v2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
 
 function getCartLineUnitPrice(item: {
   price: number;
@@ -188,14 +164,18 @@ export function PlanBlueHeader() {
                 aria-label={t.header.cart}
               >
                 <span className="relative inline-flex shrink-0 items-center justify-center">
-                  <BagIcon />
+                  <ShoppingCart
+                    className="size-[24px] text-[#4389F7]"
+                    strokeWidth={1.8}
+                    aria-hidden="true"
+                  />
                   {cartItemCount > 0 && (
-                    <span className="absolute -right-2 -top-1.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#4389F7] px-1 text-[11px] font-bold leading-none text-white rtl:-left-2 rtl:right-auto">
+                    <span className="absolute -right-2 -top-1.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#e0a31e] px-1 text-[11px] font-bold leading-none text-white rtl:-left-2 rtl:right-auto">
                       {cartItemCount}
                     </span>
                   )}
                 </span>
-                <span className="ms-2 min-w-0 text-start leading-tight">
+                <span className="ms-1.5 min-w-0 text-start leading-tight">
                   <span className="block truncate text-sm font-bold sm:max-w-none">
                     {formatPriceWhole(cartTotal, locale)}
                   </span>
