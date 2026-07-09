@@ -79,7 +79,7 @@ export function ShopProductCard({ item, locale }: ShopProductCardProps) {
             </div>
           </div>
 
-          <div className="flex flex-1 flex-col px-4 py-2 text-start">
+          <div className="flex flex-1 flex-col px-4 pt-2 pb-3 text-start">
             <h3 className="mb-2 line-clamp-1 text-base font-bold leading-snug  capitalize text-black md:text-lg">
               {title}
             </h3>
