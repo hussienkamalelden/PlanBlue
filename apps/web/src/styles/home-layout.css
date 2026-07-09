@@ -1068,77 +1068,54 @@ html[dir='rtl'] .planblue-site {
 }
 
 /* Shop sort bar — Kiddex short-box feel, PlanBlue colors */
-.pb-shop-item-shorting {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  border-radius: 10px;
-}
-
-.pb-shop-short-box {
-  display: flex;
-  align-items: center;
-  background: #fff;
-  border-radius: 10px;
-  padding: 10px;
-  border: 1px dashed #e0e0e0;
-  inset-inline-start: 10px;
-}
-
-.pb-shop-short-box__label {
-  margin: 0;
-  margin-inline-end: 10px;
-  font-size: 14px;
-  line-height: 30px;
-  color: #64748b;
-  font-weight: 500;
-}
-.pb-shop-sort-dropdown__value {
-  font-weight: bold;
-  color: #1e293b;
-}
-
+/* Sort Dropdown Button */
 .pb-shop-sort-dropdown {
   position: relative;
-  min-width: 160px;
 }
 
 .pb-shop-sort-dropdown__trigger {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  min-height: 30px;
-  border: none;
-  background: transparent;
-  padding: 0;
-  padding-inline-end: 2px;
-  font-size: 14px;
-  line-height: 30px;
+  gap: 6px;
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(2, 125, 218, 0.2);
+  background: rgba(2, 125, 218, 0.06);
+  font-size: 13px;
   font-weight: 500;
   color: #1e293b;
-  text-transform: capitalize;
   cursor: pointer;
   outline: none;
-  transition: color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .pb-shop-sort-dropdown__trigger:hover,
 .pb-shop-sort-dropdown.is-open .pb-shop-sort-dropdown__trigger {
-  color: var(--pb-theme);
+  border-color: var(--color-brand-primary, #027dda);
+  background: rgba(2, 125, 218, 0.1);
+}
+
+.pb-shop-sort-dropdown__label {
+  color: #64748b;
+  font-weight: 400;
 }
 
 .pb-shop-sort-dropdown__value {
   white-space: nowrap;
+  font-weight: 600;
+  color: var(--color-brand-primary, #027dda);
 }
 
 .pb-shop-sort-dropdown__arrow {
   flex-shrink: 0;
   width: 0;
   height: 0;
-  border-top: 5px solid currentColor;
-  border-inline-end: 4px solid transparent;
-  border-inline-start: 4px solid transparent;
+  margin-inline-start: 2px;
+  border-top: 4px solid currentColor;
+  border-inline-end: 3.5px solid transparent;
+  border-inline-start: 3.5px solid transparent;
+  color: var(--color-brand-primary, #027dda);
   transition: transform 0.25s ease;
 }
 
@@ -1155,14 +1132,14 @@ html[dir='rtl'] .planblue-site {
   margin: 0;
   padding: 6px 0;
   list-style: none;
-  border-radius: 8px;
+  border-radius: 10px;
   background: #fff;
   box-shadow:
-    0 0 0 1px rgba(67, 137, 247, 0.08),
-    0 10px 24px rgba(15, 23, 42, 0.1);
+    0 0 0 1px rgba(2, 125, 218, 0.08),
+    0 8px 20px rgba(15, 23, 42, 0.1);
   opacity: 0;
   pointer-events: none;
-  transform: scale(0.96) translateY(-6px);
+  transform: scale(0.96) translateY(-4px);
   transform-origin: top center;
   transition:
     opacity 0.2s ease,
@@ -1180,13 +1157,12 @@ html[dir='rtl'] .planblue-site {
   width: 100%;
   border: none;
   background: transparent;
-  padding: 10px 18px;
-  font-size: 14px;
+  padding: 9px 18px;
+  font-size: 13px;
   line-height: 1.4;
   font-weight: 400;
   color: #334155;
   text-align: start;
-  text-transform: capitalize;
   cursor: pointer;
   transition:
     background-color 0.2s ease,
@@ -1195,14 +1171,14 @@ html[dir='rtl'] .planblue-site {
 
 .pb-shop-sort-dropdown__option:hover,
 .pb-shop-sort-dropdown__option:focus-visible {
-  background: rgba(67, 137, 247, 0.08);
-  color: var(--pb-theme);
+  background: rgba(2, 125, 218, 0.06);
+  color: var(--color-brand-primary, #027dda);
   outline: none;
 }
 
 .pb-shop-sort-dropdown__option.is-selected {
-  font-weight: 700;
-  color: var(--pb-theme);
+  font-weight: 600;
+  color: var(--color-brand-primary, #027dda);
 }
 
 /* Shop sidebar — Kiddex shop-sidebar feel, PlanBlue colors */

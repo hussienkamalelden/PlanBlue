@@ -61,56 +61,51 @@ export function ShopSortDropdown({
   }
 
   return (
-    <div className="pb-shop-item-shorting">
-      <div className="pb-shop-short-box">
-        <p className="pb-shop-short-box__label">{label}:</p>
+    <div
+      ref={rootRef}
+      className={`pb-shop-sort-dropdown${open ? ' is-open' : ''}`}
+    >
+      <button
+        type="button"
+        className="pb-shop-sort-dropdown__trigger"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-controls={listId}
+        onClick={() => setOpen((current) => !current)}
+      >
+        <span className="pb-shop-sort-dropdown__label">{label}</span>
+        <span className="pb-shop-sort-dropdown__value">
+          {selectedLabel}
+        </span>
+        <span className="pb-shop-sort-dropdown__arrow" aria-hidden="true" />
+      </button>
 
-        <div
-          ref={rootRef}
-          className={`pb-shop-sort-dropdown${open ? ' is-open' : ''}`}
-        >
-          <button
-            type="button"
-            className="pb-shop-sort-dropdown__trigger"
-            aria-haspopup="listbox"
-            aria-expanded={open}
-            aria-controls={listId}
-            onClick={() => setOpen((current) => !current)}
-          >
-            <span className="pb-shop-sort-dropdown__value">
-              {selectedLabel}
-            </span>
-            <span className="pb-shop-sort-dropdown__arrow" aria-hidden="true" />
-          </button>
+      <ul
+        id={listId}
+        role="listbox"
+        aria-label={label}
+        className="pb-shop-sort-dropdown__list"
+      >
+        {options.map((option) => {
+          const isSelected = option.value === value;
 
-          <ul
-            id={listId}
-            role="listbox"
-            aria-label={label}
-            className="pb-shop-sort-dropdown__list"
-          >
-            {options.map((option) => {
-              const isSelected = option.value === value;
-
-              return (
-                <li key={option.label} role="presentation">
-                  <button
-                    type="button"
-                    role="option"
-                    aria-selected={isSelected}
-                    className={`pb-shop-sort-dropdown__option${
-                      isSelected ? ' is-selected' : ''
-                    }`}
-                    onClick={() => handleSelect(option.value)}
-                  >
-                    {option.label}
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      </div>
+          return (
+            <li key={option.label} role="presentation">
+              <button
+                type="button"
+                role="option"
+                aria-selected={isSelected}
+                className={`pb-shop-sort-dropdown__option${
+                  isSelected ? ' is-selected' : ''
+                }`}
+                onClick={() => handleSelect(option.value)}
+              >
+                {option.label}
+              </button>
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }
