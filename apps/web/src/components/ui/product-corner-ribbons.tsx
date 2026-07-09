@@ -29,7 +29,7 @@ export function ProductCornerRibbons({
     >
       {showSale && salePercentage != null && salePercentage > 0 && (
         <span
-          className={`${RIBBON_ROTATE_CLASS} left-[-40px] top-5 w-[150px] bg-[#FF0000] text-lg`}
+          className={`${RIBBON_ROTATE_CLASS} left-[-50px] top-3 w-[150px] bg-[#FF0000] text-base opacity-100`}
           aria-label={`-${salePercentage}%`}
         >
           -{salePercentage}%
@@ -38,7 +38,7 @@ export function ProductCornerRibbons({
 
       {hasBattery && (
         <span
-          className={`${RIBBON_ROTATE_CLASS} left-[-50px] top-[2.3rem] w-[210px] bg-brand-primary text-sm`}
+          className={`${RIBBON_ROTATE_CLASS} left-[-60px] top-[1.7rem] w-[210px] bg-[#2f74e1] text-sm opacity-100`}
           aria-label={batteryLabel}
         >
           {batteryLabel}
