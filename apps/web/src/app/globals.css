@@ -157,6 +157,7 @@
   .popular-shop-swiper {
     position: relative;
     overflow: hidden;
+    padding-bottom: 0.75rem;
   }
 
   .popular-shop-nav-wrap {

@@ -9,7 +9,7 @@ import {
   getMediaUrl,
   getShopItemPrices,
 } from '@/lib/api/strapi';
-import type { Locale } from '@/lib/i18n/config';
+import { getLocaleDirection, type Locale } from '@/lib/i18n/config';
 import { useTranslations } from '@/lib/i18n/use-translations';
 import { isShopItemOutOfStock } from '@/lib/shop/stock';
 import type { StrapiShopItem } from '@/lib/types/strapi';
@@ -29,13 +29,19 @@ export function ShopProductCard({ item, locale }: ShopProductCardProps) {
   const displayPrice =
     item.has_sale && salePrice !== null ? salePrice : basePrice;
 
+  const direction = getLocaleDirection(locale);
+
   return (
-    <article
-      className={`group relative flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-[0_8px_24px_rgba(15,23,42,0.08)] ring-1 ring-neutral-100 transition-shadow hover:shadow-[0_12px_28px_rgba(15,23,42,0.12)] ${
+    <div
+      className={`group h-full rounded-2xl shadow-[0_8px_24px_rgba(15,23,42,0.08)] transition-shadow hover:shadow-[0_12px_28px_rgba(15,23,42,0.12)] ${
         outOfStock ? 'opacity-80' : ''
       }`}
-      title={title}
     >
+      <article
+        className="relative flex h-full flex-col overflow-hidden rounded-2xl bg-white ring-1 ring-neutral-100"
+        dir={direction}
+        title={title}
+      >
       <SliderLink
         href={`/shop/${item.slug}`}
         className="flex h-full flex-col"
@@ -87,6 +93,7 @@ export function ShopProductCard({ item, locale }: ShopProductCardProps) {
           </div>
         </div>
       </SliderLink>
-    </article>
+      </article>
+    </div>
   );
 }
