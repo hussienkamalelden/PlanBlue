@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { ShopFiltersSidebar } from '@/components/shop/shop-filters-sidebar';
 import { ShopProductCard } from '@/components/home/shop-product-card';
+import { ShopSortDropdown } from '@/components/shop/shop-sort-dropdown';
 import { useTranslations } from '@/lib/i18n/use-translations';
 import {
   getShopItemPriceBounds,
@@ -215,6 +216,15 @@ export function ShopView({
     [t],
   );
 
+  const sortOptions = useMemo(
+    () =>
+      SORT_OPTIONS.map(({ value, labelKey }) => ({
+        value,
+        label: sortLabels[labelKey],
+      })),
+    [sortLabels],
+  );
+
   return (
     <div className="grid gap-8 lg:grid-cols-[260px_minmax(0,1fr)]">
       <ShopFiltersSidebar
@@ -232,38 +242,12 @@ export function ShopView({
       />
 
       <div>
-        <div className="mb-6">
-          <div className="relative flex justify-end">
-            <select
-              value={selectedSort ?? ''}
-              onChange={(e) =>
-                setSelectedSort((e.target.value || null) as ShopSort)
-              }
-              className="appearance-none rounded-lg border border-neutral-200 bg-white px-4 py-2 pe-9 text-sm font-medium text-neutral-700 shadow-sm transition-colors hover:border-neutral-300 focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/20"
-            >
-              {SORT_OPTIONS.map(({ value, labelKey }) => (
-                <option key={labelKey} value={value ?? ''}>
-                  {sortLabels[labelKey]}
-                </option>
-              ))}
-            </select>
-            <div className="pointer-events-none absolute inset-y-0 end-0 flex items-center pe-3">
-              <svg
-                className="h-4 w-4 text-neutral-400"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </div>
-          </div>
-        </div>
+        <ShopSortDropdown
+          label={t.shop.sortTitle}
+          value={selectedSort}
+          options={sortOptions}
+          onChange={setSelectedSort}
+        />
 
         {loading ? (
           <div className="flex justify-center py-16">
