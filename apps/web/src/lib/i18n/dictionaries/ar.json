@@ -90,6 +90,7 @@
   "shopItem": {
     "views": "مشاهدة",
     "sale": "تخفيض",
+    "freeBattery": "بطارية مجانية",
     "outOfStock": "غير متوفر"
   },
   "shopItemDetail": {

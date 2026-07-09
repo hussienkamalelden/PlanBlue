@@ -90,6 +90,7 @@
   "shopItem": {
     "views": "views",
     "sale": "Sale",
+    "freeBattery": "Free Battery",
     "outOfStock": "Out of stock"
   },
   "shopItemDetail": {

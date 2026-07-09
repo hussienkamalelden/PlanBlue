@@ -120,6 +120,7 @@ export async function fetchShopItems(): Promise<StrapiShopItem[]> {
       'fields[12]': 'all_ages',
       'fields[13]': 'age',
       'fields[14]': 'documentId',
+      'fields[15]': 'need_batteries',
       'populate[categories][fields][0]': 'title',
       'populate[categories][fields][1]': 'title_ar',
       'populate[categories][fields][2]': 'documentId',

@@ -79,11 +79,11 @@ function PopularShopCarouselInner({ items }: PopularShopCarouselProps) {
         modules={[Navigation, Autoplay]}
         {...SLIDER_TOUCH_OPTIONS}
         {...sliderDragProps}
-        autoplay={{
-          delay: 3000,
-          disableOnInteraction: false,
-          pauseOnMouseEnter: true,
-        }}
+        // autoplay={{
+        //   delay: 3000,
+        //   disableOnInteraction: false,
+        //   pauseOnMouseEnter: true,
+        // }}
         loop
         loopAdditionalSlides={MAX_SLIDES_PER_VIEW}
         watchSlidesProgress

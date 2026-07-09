@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { SliderLink } from '@/components/ui/slider-link';
-import { SaleRibbonBadge } from '@/components/ui/sale-ribbon-badge';
+import { ProductCornerRibbons } from '@/components/ui/product-corner-ribbons';
 
 import {
   formatPriceWhole,
@@ -31,6 +31,7 @@ export function ShopProductCard({ item, locale }: ShopProductCardProps) {
     item.has_sale && salePrice !== null ? salePrice : basePrice;
 
   const direction = getLocaleDirection(locale);
+  const hasSaleBadge = item.has_sale && item.discount_percentage > 0;
 
   return (
     <div
@@ -49,9 +50,12 @@ export function ShopProductCard({ item, locale }: ShopProductCardProps) {
           aria-label={title}
         >
           <div className="relative aspect-square overflow-hidden">
-            {item.has_sale && item.discount_percentage > 0 && (
-              <SaleRibbonBadge discountPercentage={item.discount_percentage} />
-            )}
+            <ProductCornerRibbons
+              showSale={hasSaleBadge}
+              salePercentage={item.discount_percentage}
+              showBattery={item.need_batteries}
+              batteryLabel={t.shopItem.freeBattery}
+            />
 
             {outOfStock && (
               <span className="absolute inset-x-0 bottom-0 z-10 bg-gray-800/90 px-3 py-2 text-center text-sm font-semibold text-white rounded-b-2xl">

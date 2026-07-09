@@ -55,6 +55,9 @@ export type StrapiShopItem = {
   total_sold: number;
   all_ages: boolean;
   age?: number;
+  need_batteries: boolean;
+  batteries_size?: 'Size AAA' | 'Size AA' | 'Size C' | 'Size D' | 'Others' | null;
+  batteries_quantity?: string | null;
   categories?: StrapiCategory[];
   media?: StrapiMedia[];
 };
