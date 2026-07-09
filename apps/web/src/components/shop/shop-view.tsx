@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { ShopFiltersSidebar } from "@/components/shop/shop-filters-sidebar";
-import { ShopItemCard } from "@/components/shop/shop-item-card";
+import { ShopProductCard } from "@/components/home/shop-product-card";
 import { useTranslations } from "@/lib/i18n/use-translations";
 import { getShopItemPriceBounds, isPriceFilterActive, type AgeFilter, type ShopSort } from "@/lib/shop/filters";
 import type { StrapiCategory, StrapiShopItem } from "@/lib/types/strapi";
@@ -228,10 +228,10 @@ export function ShopView({
             {t.shop.filteredEmpty}
           </p>
         ) : (
-          <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <ul className="grid gap-x-3 gap-y-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
             {items.map((item) => (
-              <li key={item.documentId}>
-                <ShopItemCard item={item} />
+              <li key={item.documentId} className="px-1 pb-2">
+                <ShopProductCard item={item} locale={locale} />
               </li>
             ))}
           </ul>

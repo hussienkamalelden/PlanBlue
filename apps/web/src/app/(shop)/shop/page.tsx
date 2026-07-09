@@ -25,10 +25,16 @@ export default async function ShopPage({
   return (
     <>
       <div
-        className="h-8 w-full bg-brand-primary sm:h-9"
+        className="h-20 w-full bg-brand-primary md:h-40 opacity-80"
         aria-hidden="true"
+        style={{
+          backgroundImage: `url(/images/shop/shop_banner.png)`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }}
       />
-      <main className="mx-auto max-w-6xl px-4 py-10">
+      <main className="pb-large-container py-10">
         <ShopView
           categories={categories}
           items={shopResult.data}
