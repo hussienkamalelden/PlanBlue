@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import { ShopEmptyState } from '@/components/shop/shop-empty-state';
 import { ShopFiltersSidebar } from '@/components/shop/shop-filters-sidebar';
 import { ShopProductCard } from '@/components/home/shop-product-card';
 import { ShopSortDropdown } from '@/components/shop/shop-sort-dropdown';
@@ -225,6 +226,15 @@ export function ShopView({
     [sortLabels],
   );
 
+  const hasActiveFilters =
+    Boolean(selectedCategoryId) ||
+    Boolean(selectedAgeFilter) ||
+    isPriceFilterActive(priceMin, priceMax, priceBounds);
+
+  const emptyMessage = hasActiveFilters
+    ? t.shop.filteredEmpty
+    : t.shop.empty;
+
   return (
     <div className="pt-10 grid gap-8 lg:grid-cols-[300px_minmax(0,1fr)] xl:grid-cols-[320px_minmax(0,1fr)]">
       <ShopFiltersSidebar
@@ -254,9 +264,7 @@ export function ShopView({
             <div className="h-10 w-10 animate-spin rounded-full border-4 border-neutral-200 border-t-brand-primary" />
           </div>
         ) : items.length === 0 ? (
-          <p className="rounded-xl border border-dashed border-neutral-300 bg-neutral-50 px-4 py-10 text-center text-sm text-neutral-600">
-            {t.shop.filteredEmpty}
-          </p>
+          <ShopEmptyState message={emptyMessage} />
         ) : (
           <ul className="bg-white rounded-lg p-4 border border-dashed border-neutral-300 grid gap-x-3 gap-y-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5">
             {items.map((item) => (
