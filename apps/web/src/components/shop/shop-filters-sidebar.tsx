@@ -95,20 +95,18 @@ export function ShopFiltersSidebar({
               <div className="pb-shop-sidebar-widget__title">
                 <h4>{t.shop.priceTitle}</h4>
               </div>
-              <div dir="ltr" className="pb-shop-price-filter">
-                <PriceRangeSlider
-                  bounds={priceBounds}
-                  min={priceMin}
-                  max={priceMax}
-                  locale={locale}
-                  fromLabel={t.shop.priceFrom}
-                  toLabel={t.shop.priceTo}
-                  resetLabel={t.shop.priceReset}
-                  onMinChange={onPriceMinChange}
-                  onMaxChange={onPriceMaxChange}
-                  onReset={onPriceReset}
-                />
-              </div>
+              <PriceRangeSlider
+                bounds={priceBounds}
+                min={priceMin}
+                max={priceMax}
+                locale={locale}
+                fromLabel={t.shop.priceFrom}
+                toLabel={t.shop.priceTo}
+                resetLabel={t.shop.priceReset}
+                onMinChange={onPriceMinChange}
+                onMaxChange={onPriceMaxChange}
+                onReset={onPriceReset}
+              />
             </section>
           </>
         )}

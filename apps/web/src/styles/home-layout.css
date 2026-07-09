@@ -1073,7 +1073,6 @@ html[dir='rtl'] .planblue-site {
   align-items: center;
   justify-content: flex-end;
   border-radius: 10px;
-  padding: 15px 0;
 }
 
 .pb-shop-short-box {
@@ -1245,6 +1244,103 @@ html[dir='rtl'] .planblue-site {
 .pb-shop-price-filter {
   direction: ltr;
   unicode-bidi: isolate;
+}
+
+/* Price Range Slider — Kiddex-inspired */
+.pb-price-range-slider {
+  position: relative;
+  width: 100%;
+  padding: 0 4px;
+}
+
+.pb-price-range-slider__track {
+  position: relative;
+  height: 32px;
+  margin-bottom: 16px;
+}
+
+.pb-price-range-slider__rail {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  border-radius: 30px;
+  background: rgba(2, 125, 218, 0.15);
+  transform: translateY(-50%);
+}
+
+.pb-price-range-slider__fill {
+  position: absolute;
+  top: 50%;
+  height: 2px;
+  border-radius: 30px;
+  background: var(--color-brand-primary, #027dda);
+  transform: translateY(-50%);
+}
+
+.pb-price-range-slider__values {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.pb-price-range-slider__value {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.pb-price-range-slider__label {
+  font-size: 11px;
+  line-height: 1;
+  color: #888;
+  font-weight: 500;
+}
+
+.pb-price-range-slider__amount {
+  font-size: 14px;
+  line-height: 24px;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.pb-price-range-slider__separator {
+  font-size: 14px;
+  color: #bbb;
+  margin-top: 12px;
+}
+
+.pb-price-range-slider__reset {
+  display: flex;
+  margin-top: 12px;
+}
+
+[dir='rtl'] .pb-price-range-slider__reset {
+  justify-content: flex-end;
+}
+
+.pb-price-range-slider__reset-btn {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-brand-primary, #027dda);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity 0.2s;
+}
+
+.pb-price-range-slider__reset-btn:hover {
+  text-decoration: underline;
+}
+
+.pb-price-range-slider__reset-btn:disabled {
+  color: #ccc;
+  cursor: not-allowed;
+  text-decoration: none;
 }
 
 .pb-shop-sidebar-search__group {

@@ -1,5 +1,7 @@
 'use client';
 
+import { X } from 'lucide-react';
+
 import { useTranslations } from '@/lib/i18n/use-translations';
 import type { ActiveFilterTag } from '@/lib/shop/filters';
 
@@ -16,20 +18,20 @@ export function ActiveFilterTags({ tags, onRemove }: ActiveFilterTagsProps) {
   }
 
   return (
-    <div className="mb-4 flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-2">
       {tags.map((tag) => (
         <span
           key={tag.key}
-          className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 bg-neutral-100 py-1 ps-3 pe-1.5 text-sm text-neutral-800"
+          className="inline-flex items-center gap-1.5 rounded-full border border-brand-primary/20 bg-brand-primary/10 py-1 ps-3 pe-1.5 text-sm font-medium text-brand-primary"
         >
           <span>{tag.label}</span>
           <button
             type="button"
             onClick={() => onRemove(tag)}
             aria-label={`${t.shop.removeFilter}: ${tag.label}`}
-            className="flex h-5 w-5 items-center justify-center rounded-full text-neutral-500 transition-colors hover:bg-neutral-200 hover:text-neutral-900"
+            className="flex h-5 w-5 items-center justify-center rounded-full text-brand-primary/70 transition-colors hover:bg-brand-primary/20 hover:text-brand-primary"
           >
-            ×
+            <X className="size-3.5" strokeWidth={2.5} aria-hidden="true" />
           </button>
         </span>
       ))}

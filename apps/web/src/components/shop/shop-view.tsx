@@ -343,14 +343,15 @@ export function ShopView({
       />
 
       <div>
-        <ShopSortDropdown
-          label={t.shop.sortTitle}
-          value={selectedSort}
-          options={sortOptions}
-          onChange={setSelectedSort}
-        />
-
-        <ActiveFilterTags tags={activeFilterTags} onRemove={handleRemoveFilterTag} />
+        <div className="flex flex-wrap items-center gap-3 mb-6">
+          <ShopSortDropdown
+            label={t.shop.sortTitle}
+            value={selectedSort}
+            options={sortOptions}
+            onChange={setSelectedSort}
+          />
+          <ActiveFilterTags tags={activeFilterTags} onRemove={handleRemoveFilterTag} />
+        </div>
 
         {loading ? (
           <div className="flex justify-center py-16">
