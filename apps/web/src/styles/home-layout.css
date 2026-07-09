@@ -1221,11 +1221,6 @@ html[dir='rtl'] .planblue-site {
   padding: 28px 24px 32px;
 }
 
-.pb-shop-sidebar-section + .pb-shop-sidebar-separator,
-.pb-shop-sidebar-separator + .pb-shop-sidebar-section {
-  margin-top: 0;
-}
-
 .pb-shop-sidebar-separator {
   margin: 24px 0;
   border: none;
