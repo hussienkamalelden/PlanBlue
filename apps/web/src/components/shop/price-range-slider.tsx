@@ -89,15 +89,14 @@ export function PriceRangeSlider({
 
   return (
     <div className="px-1">
-      {/* Keep slider + values LTR so thumbs match the fill bar in Arabic layout */}
-      <div dir="ltr" className="price-range-ltr">
-        <div className="mb-3 flex items-center justify-between gap-2 text-sm font-medium text-neutral-800">
-          <span>{formatPriceWhole(Math.round(min), locale)}</span>
-          <span className="text-neutral-300">–</span>
-          <span>{formatPriceWhole(Math.round(max), locale)}</span>
+      <div dir="ltr" className="price-range-ltr isolate">
+        <div className="mb-3 grid grid-cols-[1fr_auto_1fr] items-center gap-2 text-sm font-medium text-neutral-800">
+          <span className="text-left">{formatPriceWhole(Math.round(min), locale)}</span>
+          <span className="text-center text-neutral-300">–</span>
+          <span className="text-right">{formatPriceWhole(Math.round(max), locale)}</span>
         </div>
 
-        <div className="relative mx-1 h-6">
+        <div className="relative mx-1 h-6" dir="ltr">
           <div className="absolute top-1/2 h-2 w-full -translate-y-1/2 rounded-full bg-neutral-200" />
           <div
             className="absolute top-1/2 h-2 -translate-y-1/2 rounded-full bg-brand-primary"
@@ -109,6 +108,7 @@ export function PriceRangeSlider({
 
           <input
             type="range"
+            dir="ltr"
             min={boundMin}
             max={max}
             step={step}
@@ -123,6 +123,7 @@ export function PriceRangeSlider({
           />
           <input
             type="range"
+            dir="ltr"
             min={min}
             max={boundMax}
             step={step}
@@ -137,9 +138,9 @@ export function PriceRangeSlider({
           />
         </div>
 
-        <div className="mt-2 flex justify-between text-[11px] text-neutral-400">
-          <span>{fromLabel}</span>
-          <span>{toLabel}</span>
+        <div className="mt-2 grid grid-cols-2 gap-2 text-[11px] text-neutral-400">
+          <span className="text-left">{fromLabel}</span>
+          <span className="text-right">{toLabel}</span>
         </div>
 
         <div className="mt-2 flex justify-end">

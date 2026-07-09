@@ -95,18 +95,20 @@ export function ShopFiltersSidebar({
               <div className="pb-shop-sidebar-widget__title">
                 <h4>{t.shop.priceTitle}</h4>
               </div>
-              <PriceRangeSlider
-                bounds={priceBounds}
-                min={priceMin}
-                max={priceMax}
-                locale={locale}
-                fromLabel={t.shop.priceFrom}
-                toLabel={t.shop.priceTo}
-                resetLabel={t.shop.priceReset}
-                onMinChange={onPriceMinChange}
-                onMaxChange={onPriceMaxChange}
-                onReset={onPriceReset}
-              />
+              <div dir="ltr" className="pb-shop-price-filter">
+                <PriceRangeSlider
+                  bounds={priceBounds}
+                  min={priceMin}
+                  max={priceMax}
+                  locale={locale}
+                  fromLabel={t.shop.priceFrom}
+                  toLabel={t.shop.priceTo}
+                  resetLabel={t.shop.priceReset}
+                  onMinChange={onPriceMinChange}
+                  onMaxChange={onPriceMaxChange}
+                  onReset={onPriceReset}
+                />
+              </div>
             </section>
           </>
         )}
@@ -136,32 +138,34 @@ export function ShopFiltersSidebar({
 
         <hr className="pb-shop-sidebar-separator" />
 
-        <section className="pb-shop-sidebar-section pb-shop-sidebar-section--scroll">
+        <section className="pb-shop-sidebar-section">
           <div className="pb-shop-sidebar-widget__title">
             <h3>{t.category.title}</h3>
           </div>
-          <ul className="pb-shop-sidebar-list">
-            {categories.map((category) => {
-              const label =
-                locale === 'ar' ? category.title_ar : category.title;
+          <div className="pb-shop-sidebar-list-scroll">
+            <ul className="pb-shop-sidebar-list">
+              {categories.map((category) => {
+                const label =
+                  locale === 'ar' ? category.title_ar : category.title;
 
-              return (
-                <li key={category.documentId}>
-                  <FilterOption
-                    label={label}
-                    selected={selectedCategoryId === category.documentId}
-                    onClick={() =>
-                      onSelectCategory(
-                        selectedCategoryId === category.documentId
-                          ? null
-                          : category.documentId,
-                      )
-                    }
-                  />
-                </li>
-              );
-            })}
-          </ul>
+                return (
+                  <li key={category.documentId}>
+                    <FilterOption
+                      label={label}
+                      selected={selectedCategoryId === category.documentId}
+                      onClick={() =>
+                        onSelectCategory(
+                          selectedCategoryId === category.documentId
+                            ? null
+                            : category.documentId,
+                        )
+                      }
+                    />
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
         </section>
       </div>
     </aside>

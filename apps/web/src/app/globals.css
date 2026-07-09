@@ -110,12 +110,26 @@
     animation: shimmer 3s linear infinite;
   }
 
+  .price-range-ltr {
+    direction: ltr;
+    unicode-bidi: isolate;
+  }
+
   .price-range-thumb {
     pointer-events: none;
     direction: ltr;
   }
 
-  .price-range-ltr {
+  input.price-range-thumb {
+    direction: ltr;
+  }
+
+  [dir='rtl'] .price-range-ltr,
+  [dir='rtl'] .pb-shop-price-filter {
+    direction: ltr;
+  }
+
+  [dir='rtl'] input.price-range-thumb {
     direction: ltr;
   }
 
