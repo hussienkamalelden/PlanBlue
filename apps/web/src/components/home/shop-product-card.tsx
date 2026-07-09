@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { SliderLink } from '@/components/ui/slider-link';
+import { SaleRibbonBadge } from '@/components/ui/sale-ribbon-badge';
 
 import {
   formatPriceWhole,
@@ -47,11 +48,9 @@ export function ShopProductCard({ item, locale }: ShopProductCardProps) {
           className="flex h-full flex-col"
           aria-label={title}
         >
-          <div className="relative aspect-square overflow-hidden ">
+          <div className="relative aspect-square overflow-hidden">
             {item.has_sale && item.discount_percentage > 0 && (
-              <span className="absolute start-3 top-3 z-10 rounded-md bg-[#1e9922] px-2 py-1 text-xs font-semibold text-white">
-                -{item.discount_percentage}%
-              </span>
+              <SaleRibbonBadge discountPercentage={item.discount_percentage} />
             )}
 
             {outOfStock && (
@@ -86,7 +85,7 @@ export function ShopProductCard({ item, locale }: ShopProductCardProps) {
                 {formatPriceWhole(displayPrice, locale)}
               </span>
               {item.has_sale && salePrice !== null && (
-                <del className="text-sm text-neutral-400">
+                <del className="text-sm text-[#FF0000]">
                   {formatPriceWhole(basePrice, locale)}
                 </del>
               )}

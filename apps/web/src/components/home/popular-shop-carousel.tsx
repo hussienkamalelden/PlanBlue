@@ -38,12 +38,12 @@ function PopularShopCarouselInner({ items }: PopularShopCarouselProps) {
 
   const breakpoints = useMemo(
     () => ({
-      0: { slidesPerView: 1.1, spaceBetween: 16 },
-      640: { slidesPerView: 2, spaceBetween: 20 },
-      1024: { slidesPerView: 3, spaceBetween: 24 },
-      1280: { slidesPerView: 4, spaceBetween: 24 },
-      1440: { slidesPerView: 5, spaceBetween: 24 },
-      1920: { slidesPerView: MAX_SLIDES_PER_VIEW, spaceBetween: 24 },
+      0: { slidesPerView: 1.1, spaceBetween: 0 },
+      640: { slidesPerView: 2, spaceBetween: 0 },
+      1024: { slidesPerView: 3, spaceBetween: 0 },
+      1280: { slidesPerView: 4, spaceBetween: 0 },
+      1440: { slidesPerView: 5, spaceBetween: 0 },
+      1920: { slidesPerView: MAX_SLIDES_PER_VIEW, spaceBetween: 0 },
     }),
     [],
   );
@@ -79,11 +79,11 @@ function PopularShopCarouselInner({ items }: PopularShopCarouselProps) {
         modules={[Navigation, Autoplay]}
         {...SLIDER_TOUCH_OPTIONS}
         {...sliderDragProps}
-        autoplay={{
-          delay: 3000,
-          disableOnInteraction: false,
-          pauseOnMouseEnter: true,
-        }}
+        // autoplay={{
+        //   delay: 3000,
+        //   disableOnInteraction: false,
+        //   pauseOnMouseEnter: true,
+        // }}
         loop
         loopAdditionalSlides={MAX_SLIDES_PER_VIEW}
         watchSlidesProgress
@@ -110,7 +110,7 @@ function PopularShopCarouselInner({ items }: PopularShopCarouselProps) {
         className="popular-shop-swiper"
       >
         {loopSlides.map(({ data, slideKey }) => (
-          <SwiperSlide key={slideKey} className="!h-auto pb-9">
+          <SwiperSlide key={slideKey} className="!h-auto pb-9 px-2">
             <ShopProductCard item={data} locale={locale} />
           </SwiperSlide>
         ))}
