@@ -1,5 +1,6 @@
 'use client';
 
+import { PriceRangeSlider } from '@/components/shop/price-range-slider';
 import { useTranslations } from '@/lib/i18n/use-translations';
 import {
   AGE_FILTER_OPTIONS,
@@ -12,24 +13,28 @@ type ShopFiltersSidebarProps = {
   categories: StrapiCategory[];
   selectedCategoryId: string | null;
   selectedAgeFilter: AgeFilter;
-  priceMin?: number;
-  priceMax?: number;
+  priceBounds: { min: number; max: number };
+  priceMin: number;
+  priceMax: number;
   onSelectCategory: (categoryId: string | null) => void;
   onSelectAgeFilter: (filter: AgeFilter) => void;
-  onPriceMinChange: (value: number | undefined) => void;
-  onPriceMaxChange: (value: number | undefined) => void;
+  onPriceMinChange: (value: number) => void;
+  onPriceMaxChange: (value: number) => void;
+  onPriceReset: () => void;
 };
 
 export function ShopFiltersSidebar({
   categories,
   selectedCategoryId,
   selectedAgeFilter,
+  priceBounds,
   priceMin,
   priceMax,
   onSelectCategory,
   onSelectAgeFilter,
   onPriceMinChange,
   onPriceMaxChange,
+  onPriceReset,
 }: ShopFiltersSidebarProps) {
   const t = useTranslations();
   const locale = useLocaleStore((state) => state.locale);
@@ -59,6 +64,41 @@ export function ShopFiltersSidebar({
       </div>
 
       <div className="max-h-[min(70vh,560px)] overflow-y-auto px-3 py-3">
+        {priceBounds.max > 0 && (
+          <FilterSection title={t.shop.priceTitle}>
+            <PriceRangeSlider
+              bounds={priceBounds}
+              min={priceMin}
+              max={priceMax}
+              locale={locale}
+              fromLabel={t.shop.priceFrom}
+              toLabel={t.shop.priceTo}
+              resetLabel={t.shop.priceReset}
+              onMinChange={onPriceMinChange}
+              onMaxChange={onPriceMaxChange}
+              onReset={onPriceReset}
+            />
+          </FilterSection>
+        )}
+
+        <FilterSection title={t.shop.ageTitle}>
+          <ul className="space-y-1">
+            {AGE_FILTER_OPTIONS.map((filter) => (
+              <li key={filter}>
+                <FilterOption
+                  label={getAgeLabel(filter)}
+                  selected={selectedAgeFilter === filter}
+                  onClick={() =>
+                    onSelectAgeFilter(
+                      selectedAgeFilter === filter ? null : filter,
+                    )
+                  }
+                />
+              </li>
+            ))}
+          </ul>
+        </FilterSection>
+
         <FilterSection title={t.category.title}>
           <ul className="space-y-1">
             {categories.map((category) => {
@@ -80,60 +120,6 @@ export function ShopFiltersSidebar({
               );
             })}
           </ul>
-        </FilterSection>
-
-        <FilterSection title={t.shop.ageTitle}>
-          <ul className="space-y-1">
-            {AGE_FILTER_OPTIONS.map((filter) => (
-              <li key={filter}>
-                <FilterOption
-                  label={getAgeLabel(filter)}
-                  selected={selectedAgeFilter === filter}
-                  onClick={() =>
-                    onSelectAgeFilter(
-                      selectedAgeFilter === filter ? null : filter,
-                    )
-                  }
-                />
-              </li>
-            ))}
-          </ul>
-        </FilterSection>
-
-        <FilterSection title={t.shop.priceTitle}>
-          <div className="space-y-3 px-1">
-            <div className="flex items-center gap-2">
-              <label className="text-xs text-neutral-500">{t.shop.priceFrom}</label>
-              <input
-                type="number"
-                min={0}
-                value={priceMin ?? ''}
-                onChange={(e) => onPriceMinChange(e.target.value ? Number(e.target.value) : undefined)}
-                className="w-full rounded-md border border-neutral-200 px-2 py-1.5 text-sm text-neutral-700 focus:border-brand-primary focus:outline-none"
-                placeholder="0"
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <label className="text-xs text-neutral-500">{t.shop.priceTo}</label>
-              <input
-                type="number"
-                min={0}
-                value={priceMax ?? ''}
-                onChange={(e) => onPriceMaxChange(e.target.value ? Number(e.target.value) : undefined)}
-                className="w-full rounded-md border border-neutral-200 px-2 py-1.5 text-sm text-neutral-700 focus:border-brand-primary focus:outline-none"
-                placeholder="∞"
-              />
-            </div>
-            {(priceMin !== undefined || priceMax !== undefined) && (
-              <button
-                type="button"
-                onClick={() => { onPriceMinChange(undefined); onPriceMaxChange(undefined); }}
-                className="text-xs font-medium text-brand-primary hover:underline"
-              >
-                {t.shop.priceReset}
-              </button>
-            )}
-          </div>
         </FilterSection>
       </div>
     </aside>

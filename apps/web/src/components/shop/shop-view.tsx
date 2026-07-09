@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ShopFiltersSidebar } from "@/components/shop/shop-filters-sidebar";
 import { ShopItemCard } from "@/components/shop/shop-item-card";
 import { useTranslations } from "@/lib/i18n/use-translations";
-import type { AgeFilter, ShopSort } from "@/lib/shop/filters";
+import { getShopItemPriceBounds, isPriceFilterActive, type AgeFilter, type ShopSort } from "@/lib/shop/filters";
 import type { StrapiCategory, StrapiShopItem } from "@/lib/types/strapi";
 import { useLocaleStore } from "@/stores/locale-store";
 
@@ -43,7 +43,6 @@ export function ShopView({
 
   const [items, setItems] = useState<StrapiShopItem[]>(initialItems);
   const [page, setPage] = useState(1);
-  const [pageCount, setPageCount] = useState(1);
   const [hasMore, setHasMore] = useState(initialItems.length >= 12);
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -52,47 +51,74 @@ export function ShopView({
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(initialCategoryId);
   const [selectedSort, setSelectedSort] = useState<ShopSort>(null);
   const [selectedAgeFilter, setSelectedAgeFilter] = useState<AgeFilter>(null);
-  const [priceMin, setPriceMin] = useState<number | undefined>(undefined);
-  const [priceMax, setPriceMax] = useState<number | undefined>(undefined);
 
+  const priceBounds = useMemo(() => getShopItemPriceBounds(initialItems), [initialItems]);
+  const [priceMin, setPriceMin] = useState(priceBounds.min);
+  const [priceMax, setPriceMax] = useState(priceBounds.max);
+
+  const priceDebounceRef = useRef<number | null>(null);
   const isFirstLoad = useRef(true);
+  const filtersRef = useRef({ selectedSort, selectedCategoryId, selectedAgeFilter, priceMin, priceMax });
+  filtersRef.current = { selectedSort, selectedCategoryId, selectedAgeFilter, priceMin, priceMax };
 
-  function buildQueryParams(pageNum: number): string {
+  function buildQueryString(pageNum: number): string {
+    const { selectedSort: sort, selectedCategoryId: cat, selectedAgeFilter: age, priceMin: pMin, priceMax: pMax } = filtersRef.current;
     const params = new URLSearchParams();
     params.set('page', String(pageNum));
     params.set('pageSize', '12');
-    params.set('sort', getSortParam(selectedSort));
-    if (selectedCategoryId) params.set('category', selectedCategoryId);
-    if (selectedAgeFilter) params.set('age', selectedAgeFilter);
-    if (priceMin !== undefined && priceMin > 0) params.set('priceMin', String(priceMin));
-    if (priceMax !== undefined && priceMax > 0) params.set('priceMax', String(priceMax));
+    params.set('sort', getSortParam(sort));
+    if (cat) params.set('category', cat);
+    if (age) params.set('age', age);
+    if (isPriceFilterActive(pMin, pMax, priceBounds)) {
+      if (pMin > priceBounds.min) params.set('priceMin', String(Math.round(pMin)));
+      if (pMax < priceBounds.max) params.set('priceMax', String(Math.round(pMax)));
+    }
     return params.toString();
   }
 
-  const fetchItems = useCallback(async () => {
+  const fetchFirstPage = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/shop/items?${buildQueryParams(1)}`);
+      const res = await fetch(`/api/shop/items?${buildQueryString(1)}`);
       if (!res.ok) return;
       const data = await res.json();
       setItems(data.data ?? []);
       setPage(1);
-      setPageCount(data.pageCount ?? 1);
       setHasMore((data.data?.length ?? 0) >= 12 && 1 < (data.pageCount ?? 1));
     } catch {
       // silently fail
     } finally {
       setLoading(false);
     }
-  }, [selectedSort, selectedCategoryId, selectedAgeFilter, priceMin, priceMax]);
+  }, []);
 
+  // Re-fetch when sort/category/age changes (not price — that's debounced)
   useEffect(() => {
     if (isFirstLoad.current) {
       isFirstLoad.current = false;
       return;
     }
-    fetchItems();
-  }, [fetchItems]);
+    fetchFirstPage();
+  }, [selectedSort, selectedCategoryId, selectedAgeFilter]);
+
+  function handlePriceMinChange(value: number) {
+    setPriceMin(value);
+    if (priceDebounceRef.current) window.clearTimeout(priceDebounceRef.current);
+    priceDebounceRef.current = window.setTimeout(() => fetchFirstPage(), 500);
+  }
+
+  function handlePriceMaxChange(value: number) {
+    setPriceMax(value);
+    if (priceDebounceRef.current) window.clearTimeout(priceDebounceRef.current);
+    priceDebounceRef.current = window.setTimeout(() => fetchFirstPage(), 500);
+  }
+
+  function handlePriceReset() {
+    setPriceMin(priceBounds.min);
+    setPriceMax(priceBounds.max);
+    if (priceDebounceRef.current) window.clearTimeout(priceDebounceRef.current);
+    priceDebounceRef.current = window.setTimeout(() => fetchFirstPage(), 100);
+  }
 
   const loadMore = useCallback(async () => {
     if (loadingMore || !hasMore) return;
@@ -100,7 +126,7 @@ export function ShopView({
     setLoadingMore(true);
     try {
       const nextPage = page + 1;
-      const res = await fetch(`/api/shop/items?${buildQueryParams(nextPage)}`);
+      const res = await fetch(`/api/shop/items?${buildQueryString(nextPage)}`);
       if (!res.ok) throw new Error('Failed');
 
       const data = await res.json();
@@ -124,7 +150,7 @@ export function ShopView({
     } finally {
       setLoadingMore(false);
     }
-  }, [loadingMore, hasMore, page, selectedSort, selectedCategoryId, selectedAgeFilter, priceMin, priceMax]);
+  }, [loadingMore, hasMore, page]);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
@@ -157,12 +183,14 @@ export function ShopView({
         categories={categories}
         selectedCategoryId={selectedCategoryId}
         selectedAgeFilter={selectedAgeFilter}
-        onSelectCategory={setSelectedCategoryId}
-        onSelectAgeFilter={setSelectedAgeFilter}
+        priceBounds={priceBounds}
         priceMin={priceMin}
         priceMax={priceMax}
-        onPriceMinChange={setPriceMin}
-        onPriceMaxChange={setPriceMax}
+        onSelectCategory={setSelectedCategoryId}
+        onSelectAgeFilter={setSelectedAgeFilter}
+        onPriceMinChange={handlePriceMinChange}
+        onPriceMaxChange={handlePriceMaxChange}
+        onPriceReset={handlePriceReset}
       />
 
       <div>

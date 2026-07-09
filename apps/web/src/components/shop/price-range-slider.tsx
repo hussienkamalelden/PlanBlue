@@ -1,6 +1,6 @@
 'use client';
 
-import { formatPrice } from '@/lib/api/strapi';
+import { formatPriceWhole } from '@/lib/api/strapi';
 import type { Locale } from '@/lib/i18n/config';
 import { isPriceFilterActive } from '@/lib/shop/filters';
 
@@ -82,7 +82,7 @@ export function PriceRangeSlider({
   if (isSinglePrice) {
     return (
       <p className="px-1 text-sm font-medium text-neutral-700">
-        {formatPrice(boundMin, locale)}
+        {formatPriceWhole(boundMin, locale)}
       </p>
     );
   }
@@ -92,9 +92,9 @@ export function PriceRangeSlider({
       {/* Keep slider + values LTR so thumbs match the fill bar in Arabic layout */}
       <div dir="ltr" className="price-range-ltr">
         <div className="mb-3 flex items-center justify-between gap-2 text-sm font-medium text-neutral-800">
-          <span>{formatPrice(min, locale)}</span>
+          <span>{formatPriceWhole(Math.round(min), locale)}</span>
           <span className="text-neutral-300">–</span>
-          <span>{formatPrice(max, locale)}</span>
+          <span>{formatPriceWhole(Math.round(max), locale)}</span>
         </div>
 
         <div className="relative mx-1 h-6">
