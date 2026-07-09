@@ -29,7 +29,7 @@ export function formatPrice(amount: number, locale: Locale): string {
     maximumFractionDigits: 2,
   }).format(amount);
 
-  return locale === "ar" ? `${formatted} جنيه مصري` : `${formatted} EGP`;
+  return locale === "ar" ? `${formatted} جنيه` : `${formatted} EGP`;
 }
 
 /** Whole-number price display (no decimal fraction). */
@@ -39,7 +39,7 @@ export function formatPriceWhole(amount: number, locale: Locale): string {
     maximumFractionDigits: 0,
   }).format(Math.round(amount));
 
-  return locale === "ar" ? `${formatted} جنيه مصري` : `${formatted} EGP`;
+  return locale === "ar" ? `${formatted} جنيه` : `${formatted} EGP`;
 }
 
 /** Like formatPrice, but drops ".00" when the amount is a whole number. */
@@ -52,7 +52,7 @@ export function formatCommission(amount: number, locale: Locale): string {
     maximumFractionDigits: 2,
   }).format(value);
 
-  return locale === "ar" ? `${formatted} جنيه مصري` : `${formatted} EGP`;
+  return locale === "ar" ? `${formatted} جنيه` : `${formatted} EGP`;
 }
 
 export function getMediaUrl(url: string): string {
