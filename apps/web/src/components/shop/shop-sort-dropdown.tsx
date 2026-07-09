@@ -61,7 +61,7 @@ export function ShopSortDropdown({
   }
 
   return (
-    <div className="pb-shop-item-shorting mb-10">
+    <div className="pb-shop-item-shorting">
       <div className="pb-shop-short-box">
         <p className="pb-shop-short-box__label">{label}:</p>
 
@@ -77,7 +77,9 @@ export function ShopSortDropdown({
             aria-controls={listId}
             onClick={() => setOpen((current) => !current)}
           >
-            <span className="pb-shop-sort-dropdown__value">{selectedLabel}</span>
+            <span className="pb-shop-sort-dropdown__value">
+              {selectedLabel}
+            </span>
             <span className="pb-shop-sort-dropdown__arrow" aria-hidden="true" />
           </button>
 

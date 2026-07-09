@@ -1,5 +1,8 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+import { useState, type FormEvent } from 'react';
+
 import { PriceRangeSlider } from '@/components/shop/price-range-slider';
 import { useTranslations } from '@/lib/i18n/use-translations';
 import {
@@ -38,6 +41,8 @@ export function ShopFiltersSidebar({
 }: ShopFiltersSidebarProps) {
   const t = useTranslations();
   const locale = useLocaleStore((state) => state.locale);
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState('');
 
   function getAgeLabel(filter: Exclude<AgeFilter, null>): string {
     const labels: Record<Exclude<AgeFilter, null>, string> = {
@@ -52,37 +57,67 @@ export function ShopFiltersSidebar({
     return labels[filter];
   }
 
+  function handleSearchSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const query = searchQuery.trim();
+    if (!query) return;
+
+    router.push(`/shop?search=${encodeURIComponent(query)}`);
+  }
+
   return (
     <aside
       aria-label={t.shop.filtersTitle}
-      className="rounded-xl border border-neutral-200 bg-white shadow-sm lg:sticky lg:top-6 lg:self-start"
+      className="pb-shop-sidebar lg:sticky lg:top-6 lg:self-start"
     >
-      <div className="border-b border-neutral-100 px-4 py-3">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-neutral-700">
-          {t.shop.filtersTitle}
-        </h2>
-      </div>
+      <div className="pb-shop-sidebar-widget">
+        <section className="pb-shop-sidebar-section pb-shop-sidebar-section--search">
+          <form onSubmit={handleSearchSubmit}>
+            <div className="pb-shop-sidebar-search__group">
+              <input
+                type="search"
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                placeholder={t.header.searchPlaceholder}
+                aria-label={t.header.searchPlaceholder}
+              />
+              <button type="submit" aria-label={t.header.searchPlaceholder}>
+                <i className="icon-4" aria-hidden="true" />
+              </button>
+            </div>
+          </form>
+        </section>
 
-      <div className="max-h-[min(70vh,560px)] overflow-y-auto px-3 py-3">
         {priceBounds.max > 0 && (
-          <FilterSection title={t.shop.priceTitle}>
-            <PriceRangeSlider
-              bounds={priceBounds}
-              min={priceMin}
-              max={priceMax}
-              locale={locale}
-              fromLabel={t.shop.priceFrom}
-              toLabel={t.shop.priceTo}
-              resetLabel={t.shop.priceReset}
-              onMinChange={onPriceMinChange}
-              onMaxChange={onPriceMaxChange}
-              onReset={onPriceReset}
-            />
-          </FilterSection>
+          <>
+            <hr className="pb-shop-sidebar-separator" />
+            <section className="pb-shop-sidebar-section">
+              <div className="pb-shop-sidebar-widget__title">
+                <h4>{t.shop.priceTitle}</h4>
+              </div>
+              <PriceRangeSlider
+                bounds={priceBounds}
+                min={priceMin}
+                max={priceMax}
+                locale={locale}
+                fromLabel={t.shop.priceFrom}
+                toLabel={t.shop.priceTo}
+                resetLabel={t.shop.priceReset}
+                onMinChange={onPriceMinChange}
+                onMaxChange={onPriceMaxChange}
+                onReset={onPriceReset}
+              />
+            </section>
+          </>
         )}
 
-        <FilterSection title={t.shop.ageTitle}>
-          <ul className="space-y-1">
+        <hr className="pb-shop-sidebar-separator" />
+
+        <section className="pb-shop-sidebar-section">
+          <div className="pb-shop-sidebar-widget__title">
+            <h4>{t.shop.ageTitle}</h4>
+          </div>
+          <ul className="pb-shop-sidebar-list">
             {AGE_FILTER_OPTIONS.map((filter) => (
               <li key={filter}>
                 <FilterOption
@@ -97,12 +132,19 @@ export function ShopFiltersSidebar({
               </li>
             ))}
           </ul>
-        </FilterSection>
+        </section>
 
-        <FilterSection title={t.category.title}>
-          <ul className="space-y-1">
+        <hr className="pb-shop-sidebar-separator" />
+
+        <section className="pb-shop-sidebar-section pb-shop-sidebar-section--scroll">
+          <div className="pb-shop-sidebar-widget__title">
+            <h3>{t.category.title}</h3>
+          </div>
+          <ul className="pb-shop-sidebar-list">
             {categories.map((category) => {
-              const label = locale === 'ar' ? category.title_ar : category.title;
+              const label =
+                locale === 'ar' ? category.title_ar : category.title;
+
               return (
                 <li key={category.documentId}>
                   <FilterOption
@@ -120,26 +162,9 @@ export function ShopFiltersSidebar({
               );
             })}
           </ul>
-        </FilterSection>
+        </section>
       </div>
     </aside>
-  );
-}
-
-function FilterSection({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="mb-4 last:mb-0">
-      <h3 className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-neutral-500">
-        {title}
-      </h3>
-      {children}
-    </section>
   );
 }
 
@@ -157,11 +182,7 @@ function FilterOption({
       type="button"
       onClick={onClick}
       aria-pressed={selected}
-      className={`w-full rounded-lg px-3 py-2 text-start text-sm transition-colors ${
-        selected
-          ? 'bg-neutral-900 font-medium text-white'
-          : 'text-neutral-700 hover:bg-neutral-50'
-      }`}
+      className={`pb-shop-sidebar-option${selected ? ' is-selected' : ''}`}
     >
       {label}
     </button>

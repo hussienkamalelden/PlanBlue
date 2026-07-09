@@ -30,11 +30,12 @@ export default async function ShopPage({
         style={{
           backgroundImage: `url(/images/shop/shop_banner.png)`,
           backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          backgroundPosition: 'top',
           backgroundRepeat: 'no-repeat',
         }}
       />
-      <main className="pb-large-container py-10">
+      <main className="relative  pb-large-container py-10">
+        <div className="pb-shop-page"></div>
         <ShopView
           categories={categories}
           items={shopResult.data}

@@ -226,7 +226,7 @@ export function ShopView({
   );
 
   return (
-    <div className="mt-10 grid gap-8 lg:grid-cols-[260px_minmax(0,1fr)]">
+    <div className="pt-10 grid gap-8 lg:grid-cols-[300px_minmax(0,1fr)] xl:grid-cols-[320px_minmax(0,1fr)]">
       <ShopFiltersSidebar
         categories={categories}
         selectedCategoryId={selectedCategoryId}
@@ -258,7 +258,7 @@ export function ShopView({
             {t.shop.filteredEmpty}
           </p>
         ) : (
-          <ul className="grid gap-x-3 gap-y-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5">
+          <ul className="bg-white rounded-lg p-4 border border-dashed border-neutral-300 grid gap-x-3 gap-y-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5">
             {items.map((item) => (
               <li key={item.documentId} className="px-1 pb-2">
                 <ShopProductCard item={item} locale={locale} />
