@@ -1,5 +1,13 @@
 'use client';
 
+import {
+  Baby,
+  CircleDot,
+  LayoutGrid,
+  Tag,
+  Wallet,
+  type LucideIcon,
+} from 'lucide-react';
 import { type FormEvent } from 'react';
 
 import { PriceRangeSlider } from '@/components/shop/price-range-slider';
@@ -92,9 +100,7 @@ export function ShopFiltersSidebar({
           <>
             <hr className="pb-shop-sidebar-separator" />
             <section className="pb-shop-sidebar-section">
-              <div className="pb-shop-sidebar-widget__title">
-                <h4>{t.shop.priceTitle}</h4>
-              </div>
+              <SidebarSectionTitle icon={Wallet} title={t.shop.priceTitle} />
               <PriceRangeSlider
                 bounds={priceBounds}
                 min={priceMin}
@@ -114,13 +120,12 @@ export function ShopFiltersSidebar({
         <hr className="pb-shop-sidebar-separator" />
 
         <section className="pb-shop-sidebar-section">
-          <div className="pb-shop-sidebar-widget__title">
-            <h4>{t.shop.ageTitle}</h4>
-          </div>
+          <SidebarSectionTitle icon={Baby} title={t.shop.ageTitle} />
           <ul className="pb-shop-sidebar-list">
             {AGE_FILTER_OPTIONS.map((filter) => (
               <li key={filter}>
                 <FilterOption
+                  icon={CircleDot}
                   label={getAgeLabel(filter)}
                   selected={selectedAgeFilters.includes(filter)}
                   onClick={() => onToggleAgeFilter(filter)}
@@ -133,9 +138,7 @@ export function ShopFiltersSidebar({
         <hr className="pb-shop-sidebar-separator" />
 
         <section className="pb-shop-sidebar-section">
-          <div className="pb-shop-sidebar-widget__title">
-            <h3>{t.category.title}</h3>
-          </div>
+          <SidebarSectionTitle icon={LayoutGrid} title={t.category.title} />
           <div className="pb-shop-sidebar-list-scroll">
             <ul className="pb-shop-sidebar-list">
               {categories.map((category) => {
@@ -145,6 +148,7 @@ export function ShopFiltersSidebar({
                 return (
                   <li key={category.documentId}>
                     <FilterOption
+                      icon={Tag}
                       label={label}
                       selected={selectedCategoryIds.includes(category.documentId)}
                       onClick={() => onToggleCategory(category.documentId)}
@@ -160,11 +164,30 @@ export function ShopFiltersSidebar({
   );
 }
 
+function SidebarSectionTitle({
+  icon: Icon,
+  title,
+}: {
+  icon: LucideIcon;
+  title: string;
+}) {
+  return (
+    <div className="pb-shop-sidebar-widget__title">
+      <span className="pb-shop-sidebar-widget__title-icon" aria-hidden="true">
+        <Icon className="size-5" strokeWidth={2.25} />
+      </span>
+      <h4>{title}</h4>
+    </div>
+  );
+}
+
 function FilterOption({
+  icon: Icon,
   label,
   selected,
   onClick,
 }: {
+  icon: LucideIcon;
   label: string;
   selected: boolean;
   onClick: () => void;
@@ -176,7 +199,10 @@ function FilterOption({
       aria-pressed={selected}
       className={`pb-shop-sidebar-option${selected ? ' is-selected' : ''}`}
     >
-      {label}
+      <span className="pb-shop-sidebar-option__icon" aria-hidden="true">
+        <Icon className="size-4" strokeWidth={2.25} />
+      </span>
+      <span className="pb-shop-sidebar-option__label">{label}</span>
     </button>
   );
 }
