@@ -1899,6 +1899,19 @@ html[dir='rtl'] .planblue-site {
   background: #eef4ff;
 }
 
+.pb-product-details__btn--share {
+  gap: 8px;
+  border: 1px dashed #d8d8d8;
+  background: #fff;
+  color: #475569;
+}
+
+.pb-product-details__btn--share:hover {
+  border-color: var(--pb-theme);
+  color: var(--pb-theme);
+  background: #eef4ff;
+}
+
 .pb-product-details__alert {
   margin-top: 14px;
   border-radius: 12px;

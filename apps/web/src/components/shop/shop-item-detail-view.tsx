@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { CircleCheck, CircleX } from 'lucide-react';
+import { CircleCheck, CircleX, Share2 } from 'lucide-react';
 
 import { QuantitySelector } from '@/components/shop/quantity-selector';
 import { ShopItemMediaGallery } from '@/components/shop/shop-item-media-gallery';
@@ -39,6 +39,7 @@ export function ShopItemDetailView({
 
   const [quantity, setQuantity] = useState(1);
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [shareFeedback, setShareFeedback] = useState<string | null>(null);
 
   const stockQuantity = getStockQuantity(item);
   const outOfStock = isShopItemOutOfStock(item);
@@ -89,6 +90,28 @@ export function ShopItemDetailView({
       addItem(buildCartLine());
     }
     router.push('/checkout');
+  }
+
+  async function handleShare() {
+    const url = `${window.location.origin}/shop/${item.slug}`;
+
+    try {
+      if (typeof navigator.share === 'function') {
+        await navigator.share({ title, url });
+        return;
+      }
+
+      await navigator.clipboard.writeText(url);
+      setShareFeedback(t.shopItemDetail.shareCopied);
+      window.setTimeout(() => setShareFeedback(null), 2500);
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        return;
+      }
+
+      setShareFeedback(t.shopItemDetail.shareFailed);
+      window.setTimeout(() => setShareFeedback(null), 2500);
+    }
   }
 
   return (
@@ -206,7 +229,23 @@ export function ShopItemDetailView({
             >
               {t.shopItemDetail.buyNow}
             </button>
+
+            <button
+              type="button"
+              onClick={handleShare}
+              aria-label={t.shopItemDetail.share}
+              className="pb-product-details__btn pb-product-details__btn--share"
+            >
+              <Share2 className="h-5 w-5" aria-hidden="true" />
+              <span>{t.shopItemDetail.share}</span>
+            </button>
           </div>
+
+          {shareFeedback && (
+            <p className="pb-product-details__feedback" role="status">
+              {shareFeedback}
+            </p>
+          )}
 
           {exceedsStock && !outOfStock && (
             <p role="alert" className="pb-product-details__alert">
