@@ -53,6 +53,11 @@ export function PlanBlueHeader() {
     { href: '/shop', label: t.header.nav.shop },
   ];
 
+  function isNavActive(href: string) {
+    if (href === '/') return pathname === '/';
+    return pathname === href || pathname.startsWith(`${href}/`);
+  }
+
   useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
@@ -106,7 +111,7 @@ export function PlanBlueHeader() {
                 </Link>
               </figure>
 
-              <div className="pb-support-box">
+              <div className="pb-support-box hidden lg:flex">
                 <div className="pb-support-icon">
                   <i className="icon-2" aria-hidden="true" />
                 </div>
@@ -128,7 +133,7 @@ export function PlanBlueHeader() {
                     <li
                       key={item.href}
                       className={
-                        pathname === item.href ? 'pb-current' : undefined
+                        isNavActive(item.href) ? 'pb-current' : undefined
                       }
                     >
                       <Link href={item.href}>{item.label}</Link>
@@ -160,7 +165,7 @@ export function PlanBlueHeader() {
 
               <Link
                 href="/cart"
-                className="inline-flex items-center gap-2.5 py-1.5 text-neutral-900 transition-colors hover:text-[#4389F7]"
+                className="hidden lg:inline-flex items-center gap-2.5 py-1.5 text-neutral-900 transition-colors hover:text-[#4389F7]"
                 aria-label={t.header.cart}
               >
                 <span className="relative inline-flex shrink-0 items-center justify-center">
@@ -198,6 +203,7 @@ export function PlanBlueHeader() {
         </div>
       </div>
 
+      {/* Mobile sidebar overlay */}
       <div
         className={`fixed inset-0 z-[70] lg:hidden ${
           mobileOpen ? 'pointer-events-auto' : 'pointer-events-none'
@@ -219,8 +225,8 @@ export function PlanBlueHeader() {
               : 'ltr:translate-x-full rtl:-translate-x-full'
           }`}
         >
-          <div className="mb-5 flex items-center justify-between gap-3">
-            <LocaleSwitcher />
+          {/* Close button */}
+          <div className="mb-4 flex items-center justify-end">
             <button
               type="button"
               className="text-3xl leading-none text-neutral-900"
@@ -231,47 +237,92 @@ export function PlanBlueHeader() {
             </button>
           </div>
 
-          <div className="pb-search-box mb-4 w-full">
-            <form className="pb-search-form" onSubmit={handleSearchSubmit}>
+          {/* Search — full width */}
+          <div className="mb-5 w-full">
+            <form
+              className="relative flex items-center"
+              onSubmit={handleSearchSubmit}
+            >
               <input
                 type="search"
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
                 placeholder={t.header.searchPlaceholder}
                 aria-label={t.header.searchPlaceholder}
+                className="w-full h-[44px] rounded-full border border-dashed border-neutral-300 bg-white px-4 pe-12 text-sm outline-none focus:border-[#4389F7]"
               />
-              <button type="submit" aria-label={t.header.searchPlaceholder}>
+              <button
+                type="submit"
+                aria-label={t.header.searchPlaceholder}
+                className="absolute end-1 top-1 flex h-9 w-9 items-center justify-center rounded-full bg-[#4389F7] text-white"
+              >
                 <i className="icon-4" aria-hidden="true" />
               </button>
             </form>
           </div>
 
-          <nav aria-label="Mobile">
+          {/* Nav links */}
+          <nav aria-label="Mobile" className="flex-1">
             <ul className="m-0 list-none p-0">
               {navItems.map((item) => (
                 <li key={item.href} className="border-b border-neutral-100">
                   <Link
                     href={item.href}
-                    className="block py-3 text-base font-semibold text-neutral-900"
+                    className={`block py-3 text-base font-semibold transition-colors ${
+                      isNavActive(item.href)
+                        ? 'text-[#4389F7]'
+                        : 'text-neutral-900'
+                    }`}
                     onClick={() => setMobileOpen(false)}
                   >
                     {item.label}
                   </Link>
                 </li>
               ))}
+
+              {/* Cart */}
               <li className="border-b border-neutral-100">
                 <Link
                   href="/cart"
-                  className="block py-3 text-base font-semibold text-neutral-900"
+                  className={`flex items-center gap-2.5 py-3 text-base font-semibold transition-colors ${
+                    isNavActive('/cart')
+                      ? 'text-[#4389F7]'
+                      : 'text-neutral-900'
+                  }`}
                   onClick={() => setMobileOpen(false)}
                 >
-                  {t.header.cartTotal}
-                  {cartItemCount > 0 ? ` (${cartItemCount})` : ''} —{' '}
-                  {formatPriceWhole(cartTotal, locale)}
+                  <ShoppingCart className="size-[18px] shrink-0" strokeWidth={2} aria-hidden="true" />
+                  <span>
+                    {t.header.cartTotal}
+                    {cartItemCount > 0 ? ` (${cartItemCount})` : ''} — {formatPriceWhole(cartTotal, locale)}
+                  </span>
                 </Link>
               </li>
             </ul>
           </nav>
+
+          {/* Hotline */}
+          <div className="mt-6 border-t border-neutral-100 pt-4">
+            <div className="flex items-center gap-2.5">
+              <span className="text-xl text-[#4389F7]">
+                <i className="icon-2" aria-hidden="true" />
+              </span>
+              <div className="leading-tight">
+                <span className="block text-xs text-neutral-500">{t.header.hotline}</span>
+                <a
+                  href={`tel:${t.header.phone.replace(/\s/g, '')}`}
+                  className="text-sm font-bold text-neutral-900"
+                >
+                  012-88-739-168
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* Language switcher — last item */}
+          <div className="mt-4 border-t border-neutral-100 pt-4">
+            <LocaleSwitcher />
+          </div>
         </div>
       </div>
     </header>
