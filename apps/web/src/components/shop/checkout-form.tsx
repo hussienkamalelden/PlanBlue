@@ -177,7 +177,7 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
 
   if (items.length === 0 && status !== "success") {
     return (
-      <main className="mx-auto flex min-h-[50vh] max-w-6xl flex-col items-center justify-center px-4 py-16 text-center">
+      <main className="pb-large-container flex min-h-[50vh] flex-col items-center justify-center py-16 text-center">
         <p className="text-neutral-600">{t.checkout.emptyCart}</p>
         <Link
           href="/cart"
@@ -191,7 +191,7 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
 
   if (status === "success") {
     return (
-      <main className="mx-auto flex min-h-[50vh] max-w-6xl flex-col items-center justify-center px-4 py-16 text-center">
+      <main className="pb-large-container flex min-h-[50vh] flex-col items-center justify-center py-16 text-center">
         <div className="rounded-2xl border border-green-200 bg-green-50 p-8">
           <h1 className="text-2xl font-bold text-green-800">
             {t.checkout.success.title}
@@ -217,7 +217,7 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
   const isPlacingOrder = status === "submitting";
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-10">
+    <main className="pb-large-container py-10">
       <h1 className="text-3xl font-bold text-neutral-900">{t.checkout.title}</h1>
       <p className="mt-1 text-sm text-neutral-500">{t.checkout.subtitle}</p>
 
