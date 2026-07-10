@@ -302,6 +302,32 @@ export async function fetchShopItemBySlug(
   }
 }
 
+export async function fetchMostViewedShopItems(
+  item: StrapiShopItem,
+  limit = 12,
+): Promise<StrapiShopItem[]> {
+  try {
+    const json = await strapiFetch<StrapiListResponse<StrapiShopItem>>(
+      '/products',
+      {
+        'populate[categories][fields][0]': 'title',
+        'populate[categories][fields][1]': 'title_ar',
+        'populate[categories][fields][2]': 'documentId',
+        'populate[media][fields][0]': 'url',
+        'populate[media][fields][1]': 'name',
+        'populate[media][fields][2]': 'mime',
+        'filters[documentId][$ne]': item.documentId,
+        'pagination[pageSize]': String(limit),
+        sort: 'views:desc',
+      },
+    );
+
+    return json.data;
+  } catch {
+    return [];
+  }
+}
+
 export async function fetchRelatedShopItems(
   item: StrapiShopItem,
   limit = 12,

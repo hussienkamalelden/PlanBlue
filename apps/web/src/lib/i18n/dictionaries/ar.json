@@ -120,6 +120,7 @@
     "mediaImage": "صورة المنتج {index}",
     "mediaVideo": "فيديو المنتج {index}",
     "relatedItems": "منتجات ذات صلة",
+    "youMayAlsoLike": "قد يعجبك أيضاً",
     "notFound": "المنتج غير موجود",
     "notFoundDescription": "المنتج الذي تبحث عنه غير موجود أو تمت إزالته."
   },

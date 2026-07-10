@@ -23,11 +23,13 @@ import { useLocaleStore } from '@/stores/locale-store';
 type ShopItemDetailViewProps = {
   item: StrapiShopItem;
   relatedItems: StrapiShopItem[];
+  youMayAlsoLikeItems: StrapiShopItem[];
 };
 
 export function ShopItemDetailView({
   item,
   relatedItems,
+  youMayAlsoLikeItems,
 }: ShopItemDetailViewProps) {
   const router = useRouter();
   const locale = useLocaleStore((state) => state.locale);
@@ -231,7 +233,8 @@ export function ShopItemDetailView({
         </div>
       </div>
 
-      <RelatedShopItems items={relatedItems} />
+      <RelatedShopItems items={relatedItems} titleKey="relatedItems" />
+      <RelatedShopItems items={youMayAlsoLikeItems} titleKey="youMayAlsoLike" />
     </div>
   );
 }
