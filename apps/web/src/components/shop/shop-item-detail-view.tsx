@@ -3,13 +3,13 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { CircleCheck, CircleX } from 'lucide-react';
 
 import { QuantitySelector } from '@/components/shop/quantity-selector';
 import { ShopItemMediaGallery } from '@/components/shop/shop-item-media-gallery';
 import { RelatedShopItems } from '@/components/shop/related-shop-items';
 import { formatPrice, getShopItemPrices } from '@/lib/api/strapi';
 import { useCartStore } from '@/lib/cart/cart-store';
-import { interpolate } from '@/lib/i18n/dictionary';
 import { useTranslations } from '@/lib/i18n/use-translations';
 import {
   arePurchaseActionsDisabled,
@@ -103,13 +103,6 @@ export function ShopItemDetailView({
 
   return (
     <div className="pb-product-details space-y-10">
-      <Link
-        href="/shop"
-        className="inline-flex text-sm font-medium text-neutral-600 transition-colors hover:text-brand-primary"
-      >
-        ← {t.shopItemDetail.backToShop}
-      </Link>
-
       <div className="pb-product-details__content">
         <div className="pb-product-details__gallery">
           <ShopItemMediaGallery media={item.media ?? []} alt={title} />
@@ -166,12 +159,14 @@ export function ShopItemDetailView({
             <li>
               <strong>{t.shopItemDetail.availability}:</strong>
               {outOfStock ? (
-                <span className="pb-product-details__unavailable">
-                  {t.shopItemDetail.outOfStock}
+                <span className="pb-product-details__availability pb-product-details__availability--out">
+                  <CircleX className="h-4 w-4 shrink-0" aria-hidden="true" />
+                  {t.shopItemDetail.notInStock}
                 </span>
               ) : (
-                <span className="pb-product-details__available">
-                  {interpolate(t.shopItemDetail.inStock, { stock: stockQuantity })}
+                <span className="pb-product-details__availability pb-product-details__availability--in">
+                  <CircleCheck className="h-4 w-4 shrink-0" aria-hidden="true" />
+                  {t.shopItemDetail.availableNow}
                 </span>
               )}
             </li>
@@ -209,13 +204,8 @@ export function ShopItemDetailView({
           </div>
 
           {exceedsStock && !outOfStock && (
-            <p
-              role="alert"
-              className="pb-product-details__alert"
-            >
-              {interpolate(t.shopItemDetail.quantityWarning, {
-                stock: stockQuantity,
-              })}
+            <p role="alert" className="pb-product-details__alert">
+              {t.shopItemDetail.quantityUnavailable}
             </p>
           )}
 
