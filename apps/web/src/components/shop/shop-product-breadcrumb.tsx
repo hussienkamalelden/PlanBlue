@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ChevronRight, Home } from 'lucide-react';
+import { ChevronRight, Home, Package, ShoppingBag } from 'lucide-react';
 
 import { useTranslations } from '@/lib/i18n/use-translations';
 import { useLocaleStore } from '@/stores/locale-store';
@@ -21,21 +21,26 @@ export function ShopProductBreadcrumb({
 
   return (
     <nav className="pb-shop-breadcrumb" aria-label="Breadcrumb">
-      <Link href="/" className="pb-shop-breadcrumb__link inline-flex items-center gap-1">
-        <Home className="h-4 w-4" aria-hidden="true" />
+      <Link href="/" className="pb-shop-breadcrumb__chip">
+        <Home className="pb-shop-breadcrumb__icon" aria-hidden="true" />
         <span>{t.header.nav.home}</span>
       </Link>
 
-      <ChevronRight className="pb-shop-breadcrumb__sep h-4 w-4 shrink-0" aria-hidden="true" />
+      <ChevronRight className="pb-shop-breadcrumb__sep" aria-hidden="true" />
 
-      <Link href="/shop" className="pb-shop-breadcrumb__link">
-        {t.header.nav.shop}
+      <Link href="/shop" className="pb-shop-breadcrumb__chip">
+        <ShoppingBag className="pb-shop-breadcrumb__icon" aria-hidden="true" />
+        <span>{t.header.nav.shop}</span>
       </Link>
 
-      <ChevronRight className="pb-shop-breadcrumb__sep h-4 w-4 shrink-0" aria-hidden="true" />
+      <ChevronRight className="pb-shop-breadcrumb__sep" aria-hidden="true" />
 
-      <span className="pb-shop-breadcrumb__current line-clamp-1" aria-current="page">
-        {productTitle}
+      <span
+        className="pb-shop-breadcrumb__chip pb-shop-breadcrumb__chip--current"
+        aria-current="page"
+      >
+        <Package className="pb-shop-breadcrumb__icon" aria-hidden="true" />
+        <span className="line-clamp-1">{productTitle}</span>
       </span>
     </nav>
   );

@@ -131,6 +131,15 @@ export function ShopItemDetailView({
                 <span>{item.sku}</span>
               </li>
             )}
+            {item.need_batteries && (
+              <li>
+                <strong>{t.shopItemDetail.freeBatteries}:</strong>
+                <span className="pb-product-details__meta-highlight">
+                  {item.batteries_quantity?.trim() ||
+                    t.shopItemDetail.freeBatteriesIncluded}
+                </span>
+              </li>
+            )}
             {item.categories && item.categories.length > 0 && (
               <li>
                 <strong>{t.shopItemDetail.category}:</strong>

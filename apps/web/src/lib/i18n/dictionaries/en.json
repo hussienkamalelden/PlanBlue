@@ -110,6 +110,8 @@
     "views": "Total views",
     "quantity": "Quantity",
     "sku": "SKU",
+    "freeBatteries": "Free Batteries",
+    "freeBatteriesIncluded": "Included",
     "category": "Category",
     "availability": "Availability",
     "availableNow": "In Stock",

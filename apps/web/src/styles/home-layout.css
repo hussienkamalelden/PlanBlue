@@ -1567,7 +1567,7 @@ html[dir='rtl'] .planblue-site {
 @media (min-width: 768px) {
   .pb-product-gallery__inner {
     padding-inline-start: 140px;
-    min-height: 420px;
+    min-height: 320px;
   }
 }
 
@@ -1636,7 +1636,8 @@ html[dir='rtl'] .planblue-site {
 
 .pb-product-gallery__main {
   position: relative;
-  aspect-ratio: 1;
+  aspect-ratio: 5 / 4;
+  max-height: 360px;
   overflow: hidden;
   border: 1px dashed #d8d8d8;
   border-radius: 10px;
@@ -1691,8 +1692,8 @@ html[dir='rtl'] .planblue-site {
 
 .pb-product-details__price-old {
   font-size: 1.25rem;
-  font-weight: 400;
-  color: #64748b;
+  font-weight: 600;
+  color: #ff0000;
 }
 
 .pb-product-details__stock {
@@ -1768,35 +1769,54 @@ html[dir='rtl'] .planblue-site {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   margin-bottom: 24px;
-  font-size: 14px;
-  line-height: 1.4;
-  color: #64748b;
 }
 
-.pb-shop-breadcrumb__link {
-  color: #475569;
-  font-weight: 600;
-  transition: color 0.2s ease;
+.pb-shop-breadcrumb__chip {
+  display: inline-flex;
+  max-width: min(100%, 20rem);
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  border: 1px dashed #d8d8d8;
+  background: #fff;
+  font-size: 15px;
+  line-height: 1.3;
+  font-weight: 700;
+  color: #334155;
+  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
 }
 
-.pb-shop-breadcrumb__link:hover {
+a.pb-shop-breadcrumb__chip:hover {
+  border-color: var(--pb-theme);
+  background: #eef4ff;
+  color: var(--pb-theme);
+}
+
+.pb-shop-breadcrumb__chip--current {
+  background: #eef4ff;
+  border-color: var(--pb-theme);
+  color: #18181c;
+}
+
+.pb-shop-breadcrumb__icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
   color: var(--pb-theme);
 }
 
 .pb-shop-breadcrumb__sep {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
   color: #94a3b8;
 }
 
 html[dir='rtl'] .pb-shop-breadcrumb__sep {
   transform: scaleX(-1);
-}
-
-.pb-shop-breadcrumb__current {
-  color: #18181c;
-  font-weight: 700;
-  max-width: min(100%, 28rem);
 }
 
 .pb-product-details__meta-link {
@@ -1807,6 +1827,11 @@ html[dir='rtl'] .pb-shop-breadcrumb__sep {
 
 .pb-product-details__meta-link:hover {
   opacity: 0.8;
+}
+
+.pb-product-details__meta-highlight {
+  color: var(--pb-theme);
+  font-weight: 700;
 }
 
 .pb-product-gallery__thumb-play {
