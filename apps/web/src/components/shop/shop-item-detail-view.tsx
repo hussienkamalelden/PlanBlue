@@ -46,6 +46,17 @@ export function ShopItemDetailView({
   const actionsDisabled = arePurchaseActionsDisabled(quantity, item);
   const { basePrice, salePrice } = getShopItemPrices(item);
   const title = locale === 'ar' ? item.title_ar : item.title;
+  const description = locale === 'ar' ? item.description_ar : item.description;
+  const primaryCategory = item.categories?.[0];
+  const categoryLabel = primaryCategory
+    ? locale === 'ar'
+      ? primaryCategory.title_ar
+      : primaryCategory.title
+    : null;
+  const categoryLabels =
+    item.categories?.map((cat) =>
+      locale === 'ar' ? cat.title_ar : cat.title,
+    ) ?? [];
 
   function incrementQuantity() {
     setFeedback(null);
@@ -91,90 +102,84 @@ export function ShopItemDetailView({
   }
 
   return (
-    <div className="space-y-8">
+    <div className="pb-product-details space-y-10">
       <Link
         href="/shop"
-        className="inline-flex text-sm font-medium text-neutral-600 transition-colors hover:text-neutral-900"
+        className="inline-flex text-sm font-medium text-neutral-600 transition-colors hover:text-brand-primary"
       >
         ← {t.shopItemDetail.backToShop}
       </Link>
 
-      <div className="grid gap-10 lg:grid-cols-2">
-        <div className="rounded-2xl border border-neutral-200 bg-white p-8 shadow-sm">
+      <div className="pb-product-details__content">
+        <div className="pb-product-details__gallery">
           <ShopItemMediaGallery media={item.media ?? []} alt={title} />
         </div>
 
-        <div className="space-y-6">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight text-neutral-900">
-              {title}
-            </h1>
+        <div className="pb-product-details__info">
+          {categoryLabel && primaryCategory && (
+            <Link
+              href={`/shop?category=${primaryCategory.documentId}`}
+              className="pb-product-details__category"
+            >
+              {categoryLabel}
+            </Link>
+          )}
 
-            {item.sku && (
-              <p className="mt-1 text-xs font-medium text-neutral-400">
-                {t.shopItemDetail.sku}: {item.sku}
-              </p>
-            )}
+          <h1 className="pb-product-details__title">{title}</h1>
 
-            {item.categories && item.categories.length > 0 && (
-              <div className="mt-4">
-                <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">
-                  {t.shopItemDetail.categories}
-                </p>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {item.categories.map((cat) => (
-                    <span
-                      key={cat.documentId}
-                      className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700"
-                    >
-                      {locale === 'ar' ? cat.title_ar : cat.title}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {outOfStock && (
-              <p className="mt-2 text-sm font-medium text-red-600">
-                {t.shopItemDetail.outOfStock}
-              </p>
-            )}
-          </div>
-
-          <div className="space-y-2 rounded-xl border border-neutral-200 bg-neutral-50 p-4">
-            <div className="flex items-baseline justify-between gap-4">
-              <span className="text-sm text-neutral-600">
-                {item.has_sale && salePrice !== null
-                  ? t.shopItemDetail.discountPrice
-                  : t.shopItemDetail.basePrice}
+          <div className="pb-product-details__price">
+            {item.has_sale && salePrice !== null ? (
+              <>
+                <span className="pb-product-details__price-current">
+                  {formatPrice(salePrice, locale)}
+                </span>
+                <del className="pb-product-details__price-old">
+                  {formatPrice(basePrice, locale)}
+                </del>
+              </>
+            ) : (
+              <span className="pb-product-details__price-current">
+                {formatPrice(basePrice, locale)}
               </span>
-              <div className="flex items-baseline gap-2">
-                {item.has_sale && salePrice !== null ? (
-                  <>
-                    <span className="text-2xl font-bold text-red-600">
-                      {formatPrice(salePrice, locale)}
-                    </span>
-                    <span className="text-sm text-neutral-400 line-through">
-                      {formatPrice(basePrice, locale)}
-                    </span>
-                  </>
-                ) : (
-                  <span className="text-2xl font-bold text-neutral-900">
-                    {formatPrice(basePrice, locale)}
-                  </span>
-                )}
-              </div>
-            </div>
-
-            {!outOfStock && (
-              <p className="text-sm text-neutral-500">
-                {interpolate(t.shopItemDetail.inStock, { stock: stockQuantity })}
-              </p>
             )}
           </div>
 
-          <div className="space-y-3">
+          {description?.trim() && (
+            <div className="pb-product-details__description">
+              <p className="whitespace-pre-line">{description}</p>
+            </div>
+          )}
+
+          <ul className="pb-product-details__meta-box">
+            {item.sku && (
+              <li>
+                <strong>{t.shopItemDetail.sku}:</strong>
+                <span>{item.sku}</span>
+              </li>
+            )}
+            {categoryLabels.length > 0 && (
+              <li>
+                <strong>{t.shopItemDetail.category}:</strong>
+                <span>{categoryLabels.join(', ')}</span>
+              </li>
+            )}
+            <li>
+              <strong>{t.shopItemDetail.availability}:</strong>
+              {outOfStock ? (
+                <span className="pb-product-details__unavailable">
+                  {t.shopItemDetail.outOfStock}
+                </span>
+              ) : (
+                <span className="pb-product-details__available">
+                  {interpolate(t.shopItemDetail.inStock, { stock: stockQuantity })}
+                </span>
+              )}
+            </li>
+          </ul>
+
+          <div className="pb-product-details__actions">
             <QuantitySelector
+              variant="product"
               quantity={quantity}
               stockQuantity={stockQuantity}
               onIncrement={incrementQuantity}
@@ -182,25 +187,12 @@ export function ShopItemDetailView({
               label={t.shopItemDetail.quantity}
             />
 
-            {exceedsStock && !outOfStock && (
-              <p
-                role="alert"
-                className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800"
-              >
-                {interpolate(t.shopItemDetail.quantityWarning, {
-                  stock: stockQuantity,
-                })}
-              </p>
-            )}
-          </div>
-
-          <div className="flex flex-col gap-3 sm:flex-row">
             <button
               type="button"
               onClick={handleAddToCart}
               disabled={actionsDisabled}
               aria-disabled={actionsDisabled}
-              className="flex-1 rounded-lg bg-neutral-900 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-500"
+              className="pb-product-details__btn pb-product-details__btn--primary"
             >
               {t.shopItemDetail.addToCart}
             </button>
@@ -210,26 +202,28 @@ export function ShopItemDetailView({
               onClick={handleBuyNow}
               disabled={actionsDisabled}
               aria-disabled={actionsDisabled}
-              className="flex-1 rounded-lg border border-neutral-900 px-6 py-3 text-sm font-semibold text-neutral-900 transition-colors hover:bg-neutral-50 disabled:cursor-not-allowed disabled:border-neutral-200 disabled:bg-neutral-100 disabled:text-neutral-400"
+              className="pb-product-details__btn pb-product-details__btn--secondary"
             >
               {t.shopItemDetail.buyNow}
             </button>
           </div>
 
-          {feedback && (
-            <p className="text-sm font-medium text-green-700" role="status">
-              {feedback}
+          {exceedsStock && !outOfStock && (
+            <p
+              role="alert"
+              className="pb-product-details__alert"
+            >
+              {interpolate(t.shopItemDetail.quantityWarning, {
+                stock: stockQuantity,
+              })}
             </p>
           )}
 
-          <section className="border-t border-neutral-200 pt-6">
-            <h2 className="mb-3 text-lg font-semibold text-neutral-900">
-              {t.shopItemDetail.description}
-            </h2>
-            <p className="whitespace-pre-line text-sm leading-relaxed text-neutral-600">
-              {locale === 'ar' ? item.description_ar : item.description}
+          {feedback && (
+            <p className="pb-product-details__feedback" role="status">
+              {feedback}
             </p>
-          </section>
+          )}
         </div>
       </div>
 

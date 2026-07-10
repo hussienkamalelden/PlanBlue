@@ -21,10 +21,25 @@ export type StrapiExtra = {
   cost: number;
 };
 
+export type StrapiMediaFormat = {
+  url: string;
+  width?: number;
+  height?: number;
+};
+
+export type StrapiMediaFormats = {
+  thumbnail?: StrapiMediaFormat;
+  small?: StrapiMediaFormat;
+  medium?: StrapiMediaFormat;
+  large?: StrapiMediaFormat;
+};
+
 export type StrapiMedia = {
   url: string;
   name: string;
   mime: string;
+  previewUrl?: string | null;
+  formats?: StrapiMediaFormats | null;
 };
 
 export type StrapiCategory = {

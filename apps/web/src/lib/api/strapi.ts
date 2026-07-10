@@ -67,6 +67,27 @@ export function isVideoMedia(mime: string): boolean {
   return mime.startsWith("video/");
 }
 
+export function getMediaThumbnailUrl(
+  media: StrapiMedia,
+  fallbackMedia?: StrapiMedia[],
+): string | null {
+  if (!isVideoMedia(media.mime)) {
+    return getMediaUrl(media.url);
+  }
+
+  if (media.previewUrl) {
+    return getMediaUrl(media.previewUrl);
+  }
+
+  const thumbnailUrl = media.formats?.thumbnail?.url ?? media.formats?.small?.url;
+  if (thumbnailUrl) {
+    return getMediaUrl(thumbnailUrl);
+  }
+
+  const fallbackImage = fallbackMedia?.find((item) => !isVideoMedia(item.mime));
+  return fallbackImage ? getMediaUrl(fallbackImage.url) : null;
+}
+
 export function getFirstShopItemImage(
   media: StrapiShopItem["media"],
 ): StrapiMedia | null {

@@ -5,7 +5,8 @@ type QuantitySelectorProps = {
   stockQuantity: number;
   onIncrement: () => void;
   onDecrement: () => void;
-  label: string;
+  label?: string;
+  variant?: 'default' | 'product';
 };
 
 export function QuantitySelector({
@@ -14,13 +15,44 @@ export function QuantitySelector({
   onIncrement,
   onDecrement,
   label,
+  variant = 'default',
 }: QuantitySelectorProps) {
   const canDecrement = quantity > 1;
   const canIncrement = stockQuantity > 0;
 
+  if (variant === 'product') {
+    return (
+      <div className="pb-product-qty" aria-label={label}>
+        <button
+          type="button"
+          onClick={onDecrement}
+          disabled={!canDecrement}
+          aria-label="Decrease quantity"
+          className="pb-product-qty__btn"
+        >
+          −
+        </button>
+        <span className="pb-product-qty__value" aria-live="polite">
+          {quantity}
+        </span>
+        <button
+          type="button"
+          onClick={onIncrement}
+          disabled={!canIncrement}
+          aria-label="Increase quantity"
+          className="pb-product-qty__btn"
+        >
+          +
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="flex items-center gap-4">
-      <span className="text-sm font-medium text-neutral-700">{label}</span>
+      {label ? (
+        <span className="text-sm font-medium text-neutral-700">{label}</span>
+      ) : null}
 
       <div className="inline-flex items-center rounded-lg border border-neutral-200 bg-white">
         <button
