@@ -111,7 +111,7 @@ export function PlanBlueHeader() {
                 </Link>
               </figure>
 
-              <div className="pb-support-box hidden lg:flex">
+              <div className="pb-support-box !hidden lg:flex">
                 <div className="pb-support-icon">
                   <i className="icon-2" aria-hidden="true" />
                 </div>
@@ -194,9 +194,9 @@ export function PlanBlueHeader() {
                 aria-expanded={mobileOpen}
                 onClick={() => setMobileOpen(true)}
               >
-                <span className="block h-0.5 w-6 rounded bg-neutral-900" />
-                <span className="block h-0.5 w-6 rounded bg-neutral-900" />
-                <span className="block h-0.5 w-6 rounded bg-neutral-900" />
+                <span className="block h-0.5 w-6 rounded bg-[#4389F7]" />
+                <span className="block h-0.5 w-6 rounded bg-[#4389F7]" />
+                <span className="block h-0.5 w-6 rounded bg-[#4389F7]" />
               </button>
             </div>
           </div>
@@ -285,16 +285,19 @@ export function PlanBlueHeader() {
                 <Link
                   href="/cart"
                   className={`flex items-center gap-2.5 py-3 text-base font-semibold transition-colors ${
-                    isNavActive('/cart')
-                      ? 'text-[#4389F7]'
-                      : 'text-neutral-900'
+                    isNavActive('/cart') ? 'text-[#4389F7]' : 'text-neutral-900'
                   }`}
                   onClick={() => setMobileOpen(false)}
                 >
-                  <ShoppingCart className="size-[18px] shrink-0" strokeWidth={2} aria-hidden="true" />
+                  <ShoppingCart
+                    className="size-[18px] shrink-0"
+                    strokeWidth={2}
+                    aria-hidden="true"
+                  />
                   <span>
                     {t.header.cartTotal}
-                    {cartItemCount > 0 ? ` (${cartItemCount})` : ''} — {formatPriceWhole(cartTotal, locale)}
+                    {cartItemCount > 0 ? ` (${cartItemCount})` : ''} —{' '}
+                    {formatPriceWhole(cartTotal, locale)}
                   </span>
                 </Link>
               </li>
@@ -308,7 +311,9 @@ export function PlanBlueHeader() {
                 <i className="icon-2" aria-hidden="true" />
               </span>
               <div className="leading-tight">
-                <span className="block text-xs text-neutral-500">{t.header.hotline}</span>
+                <span className="block text-xs text-neutral-500">
+                  {t.header.hotline}
+                </span>
                 <a
                   href={`tel:${t.header.phone.replace(/\s/g, '')}`}
                   className="text-sm font-bold text-neutral-900"
