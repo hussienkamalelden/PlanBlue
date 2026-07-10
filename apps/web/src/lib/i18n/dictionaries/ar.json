@@ -124,8 +124,14 @@
     "addedToCart": "تمت الإضافة إلى السلة",
     "mediaImage": "صورة المنتج {index}",
     "mediaVideo": "فيديو المنتج {index}",
-    "relatedItems": "منتجات ذات صلة",
-    "youMayAlsoLike": "قد يعجبك أيضاً",
+    "relatedSection": {
+      "title": "منتجات",
+      "highlight": "ذات صلة"
+    },
+    "youMayAlsoLikeSection": {
+      "title": "قد يعجبك",
+      "highlight": "أيضاً"
+    },
     "notFound": "المنتج غير موجود",
     "notFoundDescription": "المنتج الذي تبحث عنه غير موجود أو تمت إزالته."
   },

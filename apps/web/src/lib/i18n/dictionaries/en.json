@@ -124,8 +124,14 @@
     "addedToCart": "Added to cart",
     "mediaImage": "Product image {index}",
     "mediaVideo": "Product video {index}",
-    "relatedItems": "Related Products",
-    "youMayAlsoLike": "You May Also Like",
+    "relatedSection": {
+      "title": "Related",
+      "highlight": "Products"
+    },
+    "youMayAlsoLikeSection": {
+      "title": "You May Also",
+      "highlight": "Like"
+    },
     "notFound": "Product not found",
     "notFoundDescription": "The product you are looking for does not exist or has been removed."
   },

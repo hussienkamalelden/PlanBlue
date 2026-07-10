@@ -6,14 +6,15 @@ import type { StrapiShopItem } from '@/lib/types/strapi';
 
 type RelatedShopItemsProps = {
   items: StrapiShopItem[];
-  titleKey?: 'relatedItems' | 'youMayAlsoLike';
+  titleKey?: 'relatedSection' | 'youMayAlsoLikeSection';
 };
 
 export function RelatedShopItems({
   items,
-  titleKey = 'relatedItems',
+  titleKey = 'relatedSection',
 }: RelatedShopItemsProps) {
   const t = useTranslations();
+  const section = t.shopItemDetail[titleKey];
 
   if (items.length === 0) {
     return null;
@@ -21,9 +22,12 @@ export function RelatedShopItems({
 
   return (
     <section className="border-t border-neutral-200 pt-10">
-      <h2 className="mb-6 text-2xl font-bold text-neutral-900">
-        {t.shopItemDetail[titleKey]}
-      </h2>
+      <div className="mb-6">
+        <h2 className="text-3xl font-extrabold text-neutral-900 md:text-4xl">
+          {section.title}{' '}
+          <span className="text-[#4389F7]">{section.highlight}</span>
+        </h2>
+      </div>
       <div className="popular-shop-carousel-wrap relative">
         <PopularShopCarousel items={items} disableLoop />
       </div>

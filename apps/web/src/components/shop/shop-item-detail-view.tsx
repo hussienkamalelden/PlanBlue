@@ -47,16 +47,6 @@ export function ShopItemDetailView({
   const { basePrice, salePrice } = getShopItemPrices(item);
   const title = locale === 'ar' ? item.title_ar : item.title;
   const description = locale === 'ar' ? item.description_ar : item.description;
-  const primaryCategory = item.categories?.[0];
-  const categoryLabel = primaryCategory
-    ? locale === 'ar'
-      ? primaryCategory.title_ar
-      : primaryCategory.title
-    : null;
-  const categoryLabels =
-    item.categories?.map((cat) =>
-      locale === 'ar' ? cat.title_ar : cat.title,
-    ) ?? [];
 
   function incrementQuantity() {
     setFeedback(null);
@@ -109,15 +99,6 @@ export function ShopItemDetailView({
         </div>
 
         <div className="pb-product-details__info">
-          {categoryLabel && primaryCategory && (
-            <Link
-              href={`/shop?category=${primaryCategory.documentId}`}
-              className="pb-product-details__category"
-            >
-              {categoryLabel}
-            </Link>
-          )}
-
           <h1 className="pb-product-details__title">{title}</h1>
 
           <div className="pb-product-details__price">
@@ -150,10 +131,22 @@ export function ShopItemDetailView({
                 <span>{item.sku}</span>
               </li>
             )}
-            {categoryLabels.length > 0 && (
+            {item.categories && item.categories.length > 0 && (
               <li>
                 <strong>{t.shopItemDetail.category}:</strong>
-                <span>{categoryLabels.join(', ')}</span>
+                <span className="pb-product-details__meta-links">
+                  {item.categories.map((cat, index) => (
+                    <span key={cat.documentId}>
+                      {index > 0 ? ', ' : null}
+                      <Link
+                        href={`/shop?category=${cat.documentId}`}
+                        className="pb-product-details__meta-link"
+                      >
+                        {locale === 'ar' ? cat.title_ar : cat.title}
+                      </Link>
+                    </span>
+                  ))}
+                </span>
               </li>
             )}
             <li>
@@ -220,8 +213,8 @@ export function ShopItemDetailView({
         </div>
       </div>
 
-      <RelatedShopItems items={relatedItems} titleKey="relatedItems" />
-      <RelatedShopItems items={youMayAlsoLikeItems} titleKey="youMayAlsoLike" />
+      <RelatedShopItems items={relatedItems} titleKey="relatedSection" />
+      <RelatedShopItems items={youMayAlsoLikeItems} titleKey="youMayAlsoLikeSection" />
     </div>
   );
 }

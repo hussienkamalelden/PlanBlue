@@ -36,11 +36,10 @@ export default async function ShopItemDetailPage({
 
   return (
     <>
-      <ShopPageBanner>
-        <ShopProductBreadcrumb title={item.title} titleAr={item.title_ar} />
-      </ShopPageBanner>
+      <ShopPageBanner />
       <main className="relative pb-large-container py-10">
         <div className="pb-shop-page" />
+        <ShopProductBreadcrumb title={item.title} titleAr={item.title_ar} />
         <ShopItemDetailView
           item={item}
           relatedItems={relatedItems}
