@@ -61,7 +61,7 @@ export function ShopItemMediaGallery({ media, alt }: ShopItemMediaGalleryProps) 
                           alt=""
                           fill
                           className="object-cover"
-                          sizes="120px"
+                          sizes="88px"
                         />
                         {isVideo && (
                           <span className="pb-product-gallery__thumb-play" aria-hidden="true">

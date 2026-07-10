@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, Home, ShoppingBag } from 'lucide-react';
 
 import { HeaderPromoBar } from '@/components/layout/header-promo-bar';
 import { LocaleSwitcher } from '@/components/locale/locale-switcher';
@@ -49,8 +49,8 @@ export function PlanBlueHeader() {
   );
 
   const navItems = [
-    { href: '/', label: t.header.nav.home },
-    { href: '/shop', label: t.header.nav.shop },
+    { href: '/', label: t.header.nav.home, icon: Home },
+    { href: '/shop', label: t.header.nav.shop, icon: ShoppingBag },
   ];
 
   function isNavActive(href: string) {
@@ -129,16 +129,22 @@ export function PlanBlueHeader() {
             <div className="pb-main-menu">
               <nav aria-label="Main">
                 <ul className="pb-navigation">
-                  {navItems.map((item) => (
-                    <li
-                      key={item.href}
-                      className={
-                        isNavActive(item.href) ? 'pb-current' : undefined
-                      }
-                    >
-                      <Link href={item.href}>{item.label}</Link>
-                    </li>
-                  ))}
+                  {navItems.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <li
+                        key={item.href}
+                        className={
+                          isNavActive(item.href) ? 'pb-current' : undefined
+                        }
+                      >
+                        <Link href={item.href} className="inline-flex items-center gap-2">
+                          <Icon className="h-[18px] w-[18px] shrink-0" aria-hidden="true" />
+                          {item.label}
+                        </Link>
+                      </li>
+                    );
+                  })}
                 </ul>
               </nav>
             </div>
@@ -264,21 +270,25 @@ export function PlanBlueHeader() {
           {/* Nav links */}
           <nav aria-label="Mobile" className="flex-1">
             <ul className="m-0 list-none p-0">
-              {navItems.map((item) => (
-                <li key={item.href} className="border-b border-neutral-100">
-                  <Link
-                    href={item.href}
-                    className={`block py-3 text-base font-semibold transition-colors ${
-                      isNavActive(item.href)
-                        ? 'text-[#4389F7]'
-                        : 'text-neutral-900'
-                    }`}
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
+              {navItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <li key={item.href} className="border-b border-neutral-100">
+                    <Link
+                      href={item.href}
+                      className={`flex items-center gap-2.5 py-3 text-base font-semibold transition-colors ${
+                        isNavActive(item.href)
+                          ? 'text-[#4389F7]'
+                          : 'text-neutral-900'
+                      }`}
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      <Icon className="size-[18px] shrink-0" aria-hidden="true" />
+                      {item.label}
+                    </Link>
+                  </li>
+                );
+              })}
 
               {/* Cart */}
               <li className="border-b border-neutral-100">
