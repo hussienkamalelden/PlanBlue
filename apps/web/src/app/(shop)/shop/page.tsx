@@ -1,3 +1,4 @@
+import { ShopPageBanner } from '@/components/shop/shop-page-banner';
 import { ShopView } from '@/components/shop/shop-view';
 import { fetchCategories, fetchShopItems } from '@/lib/api/strapi.server';
 import type { Metadata } from 'next';
@@ -32,16 +33,7 @@ export default async function ShopPage({
 
   return (
     <>
-      <div
-        className="h-20 w-full bg-brand-primary md:h-40 opacity-80"
-        aria-hidden="true"
-        style={{
-          backgroundImage: `url(/images/shop/shop_banner.png)`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'top',
-          backgroundRepeat: 'no-repeat',
-        }}
-      />
+      <ShopPageBanner />
       <main className="relative pb-large-container py-10">
         <div className="pb-shop-page" />
         <ShopView

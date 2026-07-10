@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 
 import { ShopItemDetailView } from '@/components/shop/shop-item-detail-view';
+import { ShopPageBanner } from '@/components/shop/shop-page-banner';
 import {
   fetchMostViewedShopItems,
   fetchRelatedShopItems,
@@ -33,12 +34,16 @@ export default async function ShopItemDetailPage({
   );
 
   return (
-    <main className="pb-large-container py-10">
-      <ShopItemDetailView
-        item={item}
-        relatedItems={relatedItems}
-        youMayAlsoLikeItems={filteredYouMayAlsoLikeItems}
-      />
-    </main>
+    <>
+      <ShopPageBanner />
+      <main className="relative pb-large-container py-10">
+        <div className="pb-shop-page" />
+        <ShopItemDetailView
+          item={item}
+          relatedItems={relatedItems}
+          youMayAlsoLikeItems={filteredYouMayAlsoLikeItems}
+        />
+      </main>
+    </>
   );
 }
