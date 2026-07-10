@@ -111,7 +111,7 @@ export function PlanBlueHeader() {
                 </Link>
               </figure>
 
-              <div className="pb-support-box !hidden lg:flex">
+              <div className="pb-support-box !hidden lg:!flex">
                 <div className="pb-support-icon">
                   <i className="icon-2" aria-hidden="true" />
                 </div>
