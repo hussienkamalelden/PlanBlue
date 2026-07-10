@@ -21,6 +21,7 @@ import { useLocaleStore } from '@/stores/locale-store';
 type ShopViewProps = {
   categories: StrapiCategory[];
   items: StrapiShopItem[];
+  allItems?: StrapiShopItem[];
   initialCategoryIds?: string[];
   initialSearch?: string;
 };
@@ -51,6 +52,7 @@ function getSortParam(sort: ShopSort): string {
 export function ShopView({
   categories,
   items: initialItems,
+  allItems,
   initialCategoryIds = [],
   initialSearch = '',
 }: ShopViewProps) {
@@ -71,8 +73,8 @@ export function ShopView({
   const [activeSearch, setActiveSearch] = useState(initialSearch);
 
   const priceBounds = useMemo(
-    () => getShopItemPriceBounds(initialItems),
-    [initialItems],
+    () => getShopItemPriceBounds(allItems && allItems.length > 0 ? allItems : initialItems),
+    [allItems, initialItems],
   );
   const [priceMin, setPriceMin] = useState(priceBounds.min);
   const [priceMax, setPriceMax] = useState(priceBounds.max);

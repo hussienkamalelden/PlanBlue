@@ -12,18 +12,23 @@ export default async function ShopPage({
   searchParams: Promise<{ category?: string; search?: string }>;
 }) {
   const { category, search } = await searchParams;
-  const [categories, shopResult] = await Promise.all([
+  const trimmedSearch = search?.trim() || undefined;
+
+  const [categories, shopResult, allItemsResult] = await Promise.all([
     fetchCategories(),
     fetchShopItems({
       pageSize: 12,
-      search: search?.trim() || undefined,
+      search: trimmedSearch,
       categoryIds: category ? [category] : undefined,
     }),
+    fetchShopItems({ pageSize: 100 }),
   ]);
 
   const initialCategoryIds = category && categories.some((item) => item.documentId === category)
     ? [category]
     : [];
+
+  const viewKey = `${trimmedSearch ?? ''}_${category ?? ''}`;
 
   return (
     <>
@@ -40,10 +45,12 @@ export default async function ShopPage({
       <main className="relative pb-large-container py-10">
         <div className="pb-shop-page" />
         <ShopView
+          key={viewKey}
           categories={categories}
           items={shopResult.data}
+          allItems={allItemsResult.data}
           initialCategoryIds={initialCategoryIds}
-          initialSearch={search?.trim() ?? ''}
+          initialSearch={trimmedSearch ?? ''}
         />
       </main>
     </>
