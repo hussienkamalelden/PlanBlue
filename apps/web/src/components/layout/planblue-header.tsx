@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
-import { ShoppingCart, Home, ShoppingBag } from 'lucide-react';
+import { ShoppingCart, Home, ToyBrick } from 'lucide-react';
 
 import { HeaderPromoBar } from '@/components/layout/header-promo-bar';
 import { LocaleSwitcher } from '@/components/locale/locale-switcher';
@@ -50,7 +50,7 @@ export function PlanBlueHeader() {
 
   const navItems = [
     { href: '/', label: t.header.nav.home, icon: Home },
-    { href: '/shop', label: t.header.nav.shop, icon: ShoppingBag },
+    { href: '/shop', label: t.header.nav.shop, icon: ToyBrick },
   ];
 
   function isNavActive(href: string) {
@@ -138,9 +138,9 @@ export function PlanBlueHeader() {
                           isNavActive(item.href) ? 'pb-current' : undefined
                         }
                       >
-                        <Link href={item.href} className="inline-flex items-center gap-2">
-                          <Icon className="h-[18px] w-[18px] shrink-0" aria-hidden="true" />
-                          {item.label}
+                        <Link href={item.href} className="pb-nav-link">
+                          <Icon className="pb-nav-link__icon" aria-hidden="true" />
+                          <span>{item.label}</span>
                         </Link>
                       </li>
                     );

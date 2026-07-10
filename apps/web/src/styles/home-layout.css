@@ -402,7 +402,10 @@ html[dir='rtl'] .planblue-site {
 }
 
 .pb-main-menu .pb-navigation > li > a {
-  display: block;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
   padding: 12px 14px;
   font-size: 18px;
   line-height: 1.4;
@@ -410,6 +413,12 @@ html[dir='rtl'] .planblue-site {
   color: var(--pb-title);
   text-decoration: none;
   transition: color 0.3s ease;
+}
+
+.pb-nav-link__icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
 }
 
 .pb-main-menu .pb-navigation > li > a:hover,
@@ -1551,7 +1560,7 @@ html[dir='rtl'] .planblue-site {
 
 @media (min-width: 1024px) {
   .pb-product-details__content {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.8fr);
     gap: 48px;
     align-items: start;
   }
@@ -1641,12 +1650,9 @@ html[dir='rtl'] .planblue-site {
 .pb-product-gallery__main {
   position: relative;
   aspect-ratio: 1;
-  width: 100%;
   max-height: 460px;
   overflow: hidden;
-  border: 1px dashed #d8d8d8;
   border-radius: 10px;
-  background: #f4f8ff;
 }
 
 .pb-product-gallery__main--empty {
@@ -1689,7 +1695,7 @@ html[dir='rtl'] .planblue-site {
 }
 
 .pb-product-details__price-current {
-  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-size: 28px;
   line-height: 1.1;
   font-weight: 800;
   color: var(--pb-theme);
@@ -1768,51 +1774,6 @@ html[dir='rtl'] .planblue-site {
 
 .pb-product-details__availability--out {
   color: #dc2626;
-}
-
-.pb-shop-breadcrumb {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 24px;
-}
-
-.pb-shop-breadcrumb__item {
-  display: inline-flex;
-  max-width: min(100%, 20rem);
-  align-items: center;
-  gap: 8px;
-  font-size: 15px;
-  line-height: 1.3;
-  font-weight: 700;
-  color: #475569;
-}
-
-a.pb-shop-breadcrumb__item:hover {
-  color: var(--pb-theme);
-}
-
-.pb-shop-breadcrumb__item--current {
-  color: #18181c;
-}
-
-.pb-shop-breadcrumb__icon {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
-  color: var(--pb-theme);
-}
-
-.pb-shop-breadcrumb__sep {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
-  color: #94a3b8;
-}
-
-html[dir='rtl'] .pb-shop-breadcrumb__sep {
-  transform: scaleX(-1);
 }
 
 .pb-product-details__meta-link {

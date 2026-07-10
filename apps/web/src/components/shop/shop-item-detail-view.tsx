@@ -92,8 +92,8 @@ export function ShopItemDetailView({
   }
 
   return (
-    <div className="pb-product-details space-y-10">
-      <div className="pb-product-details__content bg-white border border-dashed border-neutral-300 rounded-lg p-4">
+    <div className="pb-product-details">
+      <div className="pb-product-details__content bg-white border border-dashed border-neutral-300 rounded-lg p-8 my-10">
         <div className="pb-product-details__gallery">
           <ShopItemMediaGallery media={item.media ?? []} alt={title} />
         </div>
@@ -223,7 +223,10 @@ export function ShopItemDetailView({
       </div>
 
       <RelatedShopItems items={relatedItems} titleKey="relatedSection" />
-      <RelatedShopItems items={youMayAlsoLikeItems} titleKey="youMayAlsoLikeSection" />
+      <RelatedShopItems
+        items={youMayAlsoLikeItems}
+        titleKey="youMayAlsoLikeSection"
+      />
     </div>
   );
 }

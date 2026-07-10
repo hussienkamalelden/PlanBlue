@@ -35,7 +35,7 @@ export function ShopItemMediaGallery({ media, alt }: ShopItemMediaGalleryProps) 
   return (
     <div className="pb-product-gallery">
       <div className="pb-product-gallery__inner">
-        {media.length > 1 && (
+        {media.length > 0 && (
           <ul className="pb-product-gallery__thumbs">
             {media.map((entry, index) => {
               const isVideo = isVideoMedia(entry.mime);

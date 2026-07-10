@@ -2,7 +2,6 @@ import { notFound } from 'next/navigation';
 
 import { ShopItemDetailView } from '@/components/shop/shop-item-detail-view';
 import { ShopPageBanner } from '@/components/shop/shop-page-banner';
-import { ShopProductBreadcrumb } from '@/components/shop/shop-product-breadcrumb';
 import {
   fetchMostViewedShopItems,
   fetchRelatedShopItems,
@@ -39,7 +38,6 @@ export default async function ShopItemDetailPage({
       <ShopPageBanner />
       <main className="relative pb-large-container py-10">
         <div className="pb-shop-page" />
-        <ShopProductBreadcrumb title={item.title} titleAr={item.title_ar} />
         <ShopItemDetailView
           item={item}
           relatedItems={relatedItems}
