@@ -1556,6 +1556,12 @@ html[dir='rtl'] .planblue-site {
 .pb-product-details__content {
   display: grid;
   gap: 40px;
+  overflow: visible;
+}
+
+.pb-product-details__gallery {
+  min-width: 0;
+  overflow: visible;
 }
 
 @media (min-width: 1024px) {
@@ -1577,8 +1583,11 @@ html[dir='rtl'] .planblue-site {
 
 @media (min-width: 768px) {
   .pb-product-gallery__inner {
-    padding-inline-start: 100px;
-    min-height: 360px;
+    display: grid;
+    grid-template-columns: 88px minmax(0, 1fr);
+    gap: 12px;
+    align-items: start;
+    min-height: 0;
   }
 }
 
@@ -1594,9 +1603,8 @@ html[dir='rtl'] .planblue-site {
 
 @media (min-width: 768px) {
   .pb-product-gallery__thumbs {
-    position: absolute;
-    inset-inline-start: 0;
-    top: 0;
+    position: static;
+    inset: auto;
     flex-direction: column;
     flex-wrap: nowrap;
     gap: 12px;
