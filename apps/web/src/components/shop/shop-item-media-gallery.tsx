@@ -35,6 +35,29 @@ export function ShopItemMediaGallery({ media, alt }: ShopItemMediaGalleryProps) 
   return (
     <div className="pb-product-gallery">
       <div className="pb-product-gallery__inner">
+        <div className="pb-product-gallery__main">
+          {activeIsVideo ? (
+            <video
+              key={activeMedia.url}
+              src={getMediaUrl(activeMedia.url)}
+              controls
+              playsInline
+              className="h-full w-full object-contain"
+              aria-label={activeMedia.name || alt}
+            />
+          ) : (
+            <Image
+              key={activeMedia.url}
+              src={getMediaUrl(activeMedia.url)}
+              alt={activeMedia.name || alt}
+              fill
+              className="object-contain"
+              sizes="(max-width: 767px) 100vw, 460px"
+              priority={activeIndex === 0}
+            />
+          )}
+        </div>
+
         {media.length > 0 && (
           <ul className="pb-product-gallery__thumbs">
             {media.map((entry, index) => {
@@ -61,7 +84,7 @@ export function ShopItemMediaGallery({ media, alt }: ShopItemMediaGalleryProps) 
                           alt=""
                           fill
                           className="object-cover"
-                          sizes="88px"
+                          sizes="56px"
                         />
                         {isVideo && (
                           <span className="pb-product-gallery__thumb-play" aria-hidden="true">
@@ -80,29 +103,6 @@ export function ShopItemMediaGallery({ media, alt }: ShopItemMediaGalleryProps) 
             })}
           </ul>
         )}
-
-        <div className="pb-product-gallery__main">
-          {activeIsVideo ? (
-            <video
-              key={activeMedia.url}
-              src={getMediaUrl(activeMedia.url)}
-              controls
-              playsInline
-              className="h-full w-full object-contain"
-              aria-label={activeMedia.name || alt}
-            />
-          ) : (
-            <Image
-              key={activeMedia.url}
-              src={getMediaUrl(activeMedia.url)}
-              alt={activeMedia.name || alt}
-              fill
-              className="object-contain"
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              priority={activeIndex === 0}
-            />
-          )}
-        </div>
       </div>
     </div>
   );

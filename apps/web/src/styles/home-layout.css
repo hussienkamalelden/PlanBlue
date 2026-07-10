@@ -1564,9 +1564,16 @@ html[dir='rtl'] .planblue-site {
   overflow: visible;
 }
 
+@media (max-width: 1023px) {
+  .pb-product-details__gallery {
+    display: flex;
+    justify-content: center;
+  }
+}
+
 @media (min-width: 1024px) {
   .pb-product-details__content {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.8fr);
+    grid-template-columns: minmax(528px, 1fr) minmax(0, 1.8fr);
     gap: 48px;
     align-items: start;
   }
@@ -1576,29 +1583,58 @@ html[dir='rtl'] .planblue-site {
   }
 }
 
+.pb-product-gallery {
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .pb-product-gallery {
+    width: auto;
+  }
+}
+
 .pb-product-gallery__inner {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
   padding-inline-start: 0;
 }
 
 @media (min-width: 768px) {
   .pb-product-gallery__inner {
     display: grid;
-    grid-template-columns: 88px minmax(0, 1fr);
+    grid-template-columns: 56px 460px;
+    grid-template-rows: auto;
     gap: 12px;
     align-items: start;
+    width: fit-content;
     min-height: 0;
+  }
+
+  .pb-product-gallery__main {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .pb-product-gallery__thumbs {
+    grid-column: 1;
+    grid-row: 1;
   }
 }
 
 .pb-product-gallery__thumbs {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 12px;
-  margin-top: 16px;
+  order: 2;
   list-style: none;
   padding: 0;
-  margin-bottom: 0;
+  margin: 0;
+  width: 100%;
 }
 
 @media (min-width: 768px) {
@@ -1607,9 +1643,10 @@ html[dir='rtl'] .planblue-site {
     inset: auto;
     flex-direction: column;
     flex-wrap: nowrap;
+    justify-content: flex-start;
     gap: 12px;
-    margin-top: 0;
-    width: 88px;
+    order: unset;
+    width: 56px;
   }
 }
 
@@ -1626,13 +1663,6 @@ html[dir='rtl'] .planblue-site {
   transition:
     border-color 0.3s ease,
     box-shadow 0.3s ease;
-}
-
-@media (min-width: 768px) {
-  .pb-product-gallery__thumb {
-    width: 88px;
-    height: 88px;
-  }
 }
 
 .pb-product-gallery__thumb:hover {
@@ -1657,10 +1687,23 @@ html[dir='rtl'] .planblue-site {
 
 .pb-product-gallery__main {
   position: relative;
+  order: 1;
+  width: 100%;
   aspect-ratio: 1;
-  max-height: 460px;
   overflow: hidden;
   border-radius: 10px;
+}
+
+@media (min-width: 768px) {
+  .pb-product-gallery__main {
+    order: unset;
+    flex-shrink: 0;
+    width: 460px;
+    height: 460px;
+    max-width: 460px;
+    max-height: 460px;
+    aspect-ratio: auto;
+  }
 }
 
 .pb-product-gallery__main--empty {
