@@ -103,7 +103,7 @@ export function ShopItemDetailView({
 
   return (
     <div className="pb-product-details space-y-10">
-      <div className="pb-product-details__content">
+      <div className="pb-product-details__content bg-white border border-dashed border-neutral-300 rounded-lg p-4">
         <div className="pb-product-details__gallery">
           <ShopItemMediaGallery media={item.media ?? []} alt={title} />
         </div>
@@ -165,7 +165,10 @@ export function ShopItemDetailView({
                 </span>
               ) : (
                 <span className="pb-product-details__availability pb-product-details__availability--in">
-                  <CircleCheck className="h-4 w-4 shrink-0" aria-hidden="true" />
+                  <CircleCheck
+                    className="h-4 w-4 shrink-0"
+                    aria-hidden="true"
+                  />
                   {t.shopItemDetail.availableNow}
                 </span>
               )}
