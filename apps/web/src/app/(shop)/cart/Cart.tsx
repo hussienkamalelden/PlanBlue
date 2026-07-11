@@ -5,6 +5,7 @@ import { useState } from 'react';
 
 import {
   CartItemValidationMessages,
+  CartItemValidationOverlay,
   CartValidationBanner,
 } from '@/components/shop/cart-validation-messages';
 import { CartTopSellers } from '@/components/shop/cart-top-sellers';
@@ -23,7 +24,7 @@ export default function Cart() {
   const setItemQuantity = useCartStore((state) => state.setItemQuantity);
   const removeItem = useCartStore((state) => state.removeItem);
   const clearCart = useCartStore((state) => state.clearCart);
-  const { status, validation, isBlocked } = useCartValidation();
+  const { status, validation, validatingDocumentIds, isBlocked } = useCartValidation();
 
   const [showClearConfirm, setShowClearConfirm] = useState(false);
 
@@ -72,16 +73,20 @@ export default function Cart() {
                   ? item.discountPrice
                   : item.price;
               const hasIssue = itemHasIssue(item.documentId);
+              const isValidating = validatingDocumentIds.includes(item.documentId);
 
               return (
                 <li
                   key={item.documentId}
-                  className={`rounded-xl border bg-white p-5 ${
+                  className={`relative rounded-xl border bg-white p-5 ${
                     hasIssue
                       ? 'border-amber-300 bg-amber-50/50'
                       : 'border-neutral-200'
                   }`}
                 >
+                  {isValidating && (
+                    <CartItemValidationOverlay label={t.cart.validation.checking} />
+                  )}
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
                       <Link
@@ -99,6 +104,7 @@ export default function Cart() {
                         item={item}
                         validation={validation}
                         locale={locale}
+                        isValidating={isValidating}
                       />
                     </div>
 
