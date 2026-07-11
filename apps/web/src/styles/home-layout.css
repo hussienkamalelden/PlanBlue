@@ -2452,8 +2452,9 @@ html[dir='rtl'] .planblue-site {
 
 @media (max-width: 1023px) {
   .pb-cart-summary {
-    max-width: 520px;
-    margin-inline: auto;
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
   }
 }
 
