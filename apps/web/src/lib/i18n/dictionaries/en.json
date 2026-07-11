@@ -192,6 +192,7 @@
       "extraNotesPlaceholder": "Any special requests or delivery instructions..."
     },
     "orderSummary": "Order Summary",
+    "order": "Order",
     "subtotal": "Subtotal",
     "discount": "Discount",
     "promoApply": "Apply",
@@ -205,6 +206,8 @@
     "total": "Total",
     "items": "items",
     "placeOrder": "Place Order",
+    "confirmOrder": "Confirm Order",
+    "confirming": "Confirming order...",
     "placing": "Placing order...",
     "emptyCart": "Your cart is empty. Add some products before checkout.",
     "backToCart": "Back to Cart",
@@ -233,6 +236,16 @@
       "blockedMessage": "Some cart items are unavailable, out of stock, or have price changes. Go back to your cart to fix them.",
       "submitRechecking": "Rechecking your cart before placing the order...",
       "submitRecheckFailed": "We rechecked your cart and found issues. Review the messages below, then return to your cart to fix them."
+    },
+    "confirmModal": {
+      "title": "Review Your Order",
+      "subtitle": "Please confirm that all details below are correct before placing your order.",
+      "emailNote": "These are the same details that will be sent to your email after confirmation.",
+      "customerDetails": "Customer Details",
+      "deliveryDetails": "Delivery Details",
+      "orderItems": "Order Items",
+      "none": "—",
+      "close": "Back to Edit"
     }
   },
   "affiliates": {

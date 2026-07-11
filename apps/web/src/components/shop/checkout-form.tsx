@@ -7,6 +7,7 @@ import {
   CartItemValidationMessages,
   CheckoutBlockedNotice,
 } from "@/components/shop/cart-validation-messages";
+import { CheckoutConfirmModal } from "@/components/shop/checkout-confirm-modal";
 import { ShopPageShell } from "@/components/shop/shop-page-shell";
 import { createOrder, calculateTotal, validatePromoCode } from "@/lib/api/orders";
 import { formatPrice } from "@/lib/api/strapi";
@@ -65,6 +66,8 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
   const [promoDiscount, setPromoDiscount] = useState(0);
   const [promoError, setPromoError] = useState("");
   const [submitRecheck, setSubmitRecheck] = useState(false);
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [isReviewing, setIsReviewing] = useState(false);
 
   const subtotal = calculateTotal(items);
   const discountAmount =
@@ -131,7 +134,7 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
     return Object.keys(newErrors).length === 0;
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleReviewOrder(e: React.FormEvent) {
     e.preventDefault();
 
     if (!validate() || items.length === 0 || !selectedShipping) {
@@ -139,12 +142,26 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
     }
 
     setSubmitRecheck(true);
-    const cartResult = await validateNow();
+    setIsReviewing(true);
 
-    if (!cartResult?.valid) {
-      document
-        .getElementById("checkout-cart-validation")
-        ?.scrollIntoView({ behavior: "smooth", block: "center" });
+    try {
+      const cartResult = await validateNow();
+
+      if (!cartResult?.valid) {
+        document
+          .getElementById("checkout-cart-validation")
+          ?.scrollIntoView({ behavior: "smooth", block: "center" });
+        return;
+      }
+
+      setConfirmModalOpen(true);
+    } finally {
+      setIsReviewing(false);
+    }
+  }
+
+  async function handleConfirmOrder() {
+    if (!selectedShipping || items.length === 0) {
       return;
     }
 
@@ -168,10 +185,12 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
         },
         items,
       );
+      setConfirmModalOpen(false);
       setOrderId(response.data.order_id);
       clearCart();
       setStatus("success");
     } catch {
+      setConfirmModalOpen(false);
       setStatus("error");
     }
   }
@@ -227,10 +246,41 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
 
   const isCheckingCart = cartValidationStatus === "loading";
   const isPlacingOrder = status === "submitting";
-  const isSubmitDisabled = isPlacingOrder || isCheckingCart;
+  const isReviewDisabled = isReviewing || isCheckingCart || isPlacingOrder;
 
   return (
     <ShopPageShell bannerSrc="/images/checkout/banner.png">
+      <CheckoutConfirmModal
+        open={confirmModalOpen}
+        onClose={() => {
+          if (!isPlacingOrder) {
+            setConfirmModalOpen(false);
+          }
+        }}
+        onConfirm={handleConfirmOrder}
+        isConfirming={isPlacingOrder}
+        locale={locale}
+        t={t}
+        customer={{
+          name: form.name.trim(),
+          email: form.email.trim(),
+          phone: form.phone.trim(),
+          governorate: selectedShipping?.name ?? "",
+          address: form.address.trim(),
+          extraNotes: form.extra_notes,
+        }}
+        items={items}
+        promoCode={promoStatus === "valid" ? form.promo_code.trim() : ""}
+        promoDiscount={promoDiscount}
+        discountAmount={discountAmount}
+        shippingCost={shippingCost}
+        shippingName={selectedShipping?.name ?? ""}
+        giftWrapping={giftWrappingChecked}
+        giftWrappingCost={giftWrappingCost}
+        subtotal={subtotal}
+        total={total}
+      />
+
       <section className="pb-checkout-section mt-10">
         <CheckoutBlockedNotice
           status={cartValidationStatus}
@@ -248,7 +298,7 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
           </Link>
         )}
 
-        <form onSubmit={handleSubmit} className="pb-cart-layout">
+        <form onSubmit={handleReviewOrder} className="pb-cart-layout">
           <div className="pb-checkout-main">
             <section className="pb-checkout-panel">
               <h2 className="pb-checkout-panel__title">
@@ -375,7 +425,7 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
             className={`pb-cart-summary${isCartBlocked ? " pb-cart-summary--blocked" : ""}`}
           >
             <h2 className="pb-checkout-summary__title">
-              {t.checkout.orderSummary}
+              {t.checkout.order}
             </h2>
 
             <ul className="pb-checkout-summary__items">
@@ -522,18 +572,16 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
             <div className="pb-cart-summary__actions">
               <button
                 type="submit"
-                disabled={isSubmitDisabled}
+                disabled={isReviewDisabled}
                 className={`pb-cart-summary__btn pb-cart-summary__btn--primary${
-                  isSubmitDisabled ? " pb-cart-summary__btn--disabled" : ""
+                  isReviewDisabled ? " pb-cart-summary__btn--disabled" : ""
                 }`}
               >
-                {isPlacingOrder
-                  ? t.checkout.placing
-                  : isCheckingCart && submitRecheck
+                {isReviewing
+                  ? isCheckingCart && submitRecheck
                     ? t.checkout.cartValidation.submitRechecking
-                    : isCheckingCart
-                      ? t.checkout.cartValidation.checking
-                      : t.checkout.placeOrder}
+                    : t.checkout.cartValidation.checking
+                  : t.checkout.placeOrder}
               </button>
             </div>
           </aside>
