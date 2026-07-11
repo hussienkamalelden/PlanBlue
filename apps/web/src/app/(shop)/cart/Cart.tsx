@@ -45,16 +45,8 @@ export default function Cart() {
 
   return (
     <ShopPageShell bannerSrc="/images/cart/banner.png">
-      <section className="pb-cart-section">
-        <h2 className="pb-cart-section__title">
-          {locale === 'en' ? (
-            <>
-              Your <span>{t.header.cart}</span>
-            </>
-          ) : (
-            <span>{t.cart.title}</span>
-          )}
-        </h2>
+      <section className="pb-cart-section mt-10">
+       
 
         {items.length === 0 ? (
           <div className="pb-cart-empty">
