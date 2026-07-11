@@ -2754,6 +2754,28 @@ html[dir='rtl'] .planblue-site {
   color: var(--pb-title);
 }
 
+.pb-checkout-summary__payment {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px dashed #d8d8d8;
+  font-size: 14px;
+}
+
+.pb-checkout-summary__payment-label {
+  font-weight: 600;
+  color: #64748b;
+}
+
+.pb-checkout-summary__payment-value {
+  font-weight: 700;
+  color: var(--pb-title);
+  text-align: end;
+}
+
 .pb-checkout-summary__items {
   margin: 0;
   padding: 0;
@@ -2784,12 +2806,20 @@ html[dir='rtl'] .planblue-site {
   gap: 12px;
 }
 
+.pb-checkout-summary__item-info {
+  min-width: 0;
+  flex: 1;
+}
+
 .pb-checkout-summary__item-name {
   margin: 0;
+  overflow: hidden;
   font-size: 14px;
   font-weight: 600;
   line-height: 1.35;
   color: var(--pb-title);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .pb-checkout-summary__item-meta {
@@ -3051,6 +3081,42 @@ html[dir='rtl'] .planblue-site {
   margin-top: 1.25rem;
 }
 
+.pb-checkout-spinner {
+  position: fixed;
+  inset: 0;
+  z-index: 140;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  background: rgb(255 255 255 / 40%);
+}
+
+.pb-checkout-spinner__ring {
+  width: 46px;
+  height: 46px;
+  border: 4px solid #e5e7eb;
+  border-top-color: var(--pb-theme);
+  border-radius: 50%;
+  animation: pb-checkout-spin 0.8s linear infinite;
+}
+
+.pb-checkout-btn-spinner {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  border: 3px solid rgb(255 255 255 / 35%);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: pb-checkout-spin 0.8s linear infinite;
+}
+
+@keyframes pb-checkout-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @media (max-width: 1023px) {
   .pb-checkout-section .pb-cart-summary {
     width: 100%;
@@ -3179,6 +3245,20 @@ html[dir='rtl'] .planblue-site {
   background: #f4f8ff;
 }
 
+.pb-checkout-modal__card--details {
+  padding: 0;
+  overflow: hidden;
+}
+
+.pb-checkout-modal__section {
+  padding: 16px;
+  border-bottom: 1px dashed #eef2f7;
+}
+
+.pb-checkout-modal__section--last {
+  border-bottom: none;
+}
+
 .pb-checkout-modal__card-title {
   margin: 0 0 12px;
   font-size: 15px;
@@ -3254,10 +3334,14 @@ html[dir='rtl'] .planblue-site {
 
 .pb-checkout-modal__item-name {
   grid-column: 1;
+  min-width: 0;
+  overflow: hidden;
   font-size: 14px;
   font-weight: 600;
   line-height: 1.35;
   color: var(--pb-title);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .pb-checkout-modal__item-meta {
@@ -3283,29 +3367,23 @@ html[dir='rtl'] .planblue-site {
   margin-top: 14px;
   padding: 14px 16px;
   border-radius: 10px;
-  background: var(--pb-theme);
+  background: #f7b90c;
   font-size: 17px;
   font-weight: 800;
-  color: #fff;
+  color: var(--pb-title);
 }
 
 .pb-checkout-modal__footer {
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: row;
   gap: 10px;
   padding: 16px 22px 22px;
   border-top: 1px dashed #eef2f7;
   background: #fff;
 }
 
-@media (min-width: 640px) {
-  .pb-checkout-modal__footer {
-    flex-direction: row;
-    justify-content: flex-end;
-  }
-
-  .pb-checkout-modal__footer .pb-cart-summary__btn {
-    width: auto;
-    min-width: 160px;
-  }
+.pb-checkout-modal__footer .pb-cart-summary__btn {
+  flex: 1 1 0;
+  width: auto;
+  min-width: 0;
 }

@@ -6,6 +6,7 @@ import { useState } from "react";
 import {
   CartItemValidationMessages,
   CheckoutBlockedNotice,
+  CheckoutFloatingSpinner,
 } from "@/components/shop/cart-validation-messages";
 import { CheckoutConfirmModal } from "@/components/shop/checkout-confirm-modal";
 import { ShopPageShell } from "@/components/shop/shop-page-shell";
@@ -67,7 +68,7 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
   const [promoError, setPromoError] = useState("");
   const [submitRecheck, setSubmitRecheck] = useState(false);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
-  const [isReviewing, setIsReviewing] = useState(false);
+  const [isValidatingCart, setIsValidatingCart] = useState(false);
 
   const subtotal = calculateTotal(items);
   const discountAmount =
@@ -142,7 +143,7 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
     }
 
     setSubmitRecheck(true);
-    setIsReviewing(true);
+    setIsValidatingCart(true);
 
     try {
       const cartResult = await validateNow();
@@ -156,7 +157,7 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
 
       setConfirmModalOpen(true);
     } finally {
-      setIsReviewing(false);
+      setIsValidatingCart(false);
     }
   }
 
@@ -165,9 +166,22 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
       return;
     }
 
-    setStatus("submitting");
+    setSubmitRecheck(true);
+    setIsValidatingCart(true);
 
     try {
+      const cartResult = await validateNow();
+
+      if (!cartResult?.valid) {
+        setConfirmModalOpen(false);
+        document
+          .getElementById("checkout-cart-validation")
+          ?.scrollIntoView({ behavior: "smooth", block: "center" });
+        return;
+      }
+
+      setStatus("submitting");
+
       const response = await createOrder(
         {
           name: form.name,
@@ -192,6 +206,8 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
     } catch {
       setConfirmModalOpen(false);
       setStatus("error");
+    } finally {
+      setIsValidatingCart(false);
     }
   }
 
@@ -246,19 +262,24 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
 
   const isCheckingCart = cartValidationStatus === "loading";
   const isPlacingOrder = status === "submitting";
-  const isReviewDisabled = isReviewing || isCheckingCart || isPlacingOrder;
+  const isBusy = isValidatingCart || isPlacingOrder;
+  const isCheckoutDisabled = isBusy || (isCheckingCart && !submitRecheck);
 
   return (
     <ShopPageShell bannerSrc="/images/checkout/banner.png">
+      {isBusy && (
+        <CheckoutFloatingSpinner label={t.checkout.cartValidation.checking} />
+      )}
+
       <CheckoutConfirmModal
         open={confirmModalOpen}
         onClose={() => {
-          if (!isPlacingOrder) {
+          if (!isBusy) {
             setConfirmModalOpen(false);
           }
         }}
         onConfirm={handleConfirmOrder}
-        isConfirming={isPlacingOrder}
+        isConfirming={isBusy}
         locale={locale}
         t={t}
         customer={{
@@ -300,25 +321,6 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
 
         <form onSubmit={handleReviewOrder} className="pb-cart-layout">
           <div className="pb-checkout-main">
-            <section className="pb-checkout-panel">
-              <h2 className="pb-checkout-panel__title">
-                {t.checkout.paymentMethod}
-              </h2>
-              <div className="pb-checkout-payment">
-                <div className="pb-checkout-payment__radio" aria-hidden="true">
-                  <div className="pb-checkout-payment__radio-dot" />
-                </div>
-                <div>
-                  <p className="pb-checkout-payment__title">
-                    {t.checkout.cashOnDelivery}
-                  </p>
-                  <p className="pb-checkout-payment__desc">
-                    {t.checkout.cashOnDeliveryDesc}
-                  </p>
-                </div>
-              </div>
-            </section>
-
             <section className="pb-checkout-panel">
               <div className="pb-checkout-fields">
                 <FieldInput
@@ -425,8 +427,17 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
             className={`pb-cart-summary${isCartBlocked ? " pb-cart-summary--blocked" : ""}`}
           >
             <h2 className="pb-checkout-summary__title">
-              {t.checkout.order}
+              {t.checkout.orderDetails}
             </h2>
+
+            <div className="pb-checkout-summary__payment">
+              <span className="pb-checkout-summary__payment-label">
+                {t.checkout.paymentMethod}
+              </span>
+              <span className="pb-checkout-summary__payment-value">
+                {t.checkout.cashOnDelivery}
+              </span>
+            </div>
 
             <ul className="pb-checkout-summary__items">
               {items.map((item) => {
@@ -445,7 +456,7 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
                     }`}
                   >
                     <div className="pb-checkout-summary__item-row">
-                      <div>
+                      <div className="pb-checkout-summary__item-info">
                         <p className="pb-checkout-summary__item-name">{item.title}</p>
                         <p className="pb-checkout-summary__item-meta">
                           {item.quantity} × {formatPrice(unitPrice, locale)}
@@ -572,16 +583,12 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
             <div className="pb-cart-summary__actions">
               <button
                 type="submit"
-                disabled={isReviewDisabled}
+                disabled={isCheckoutDisabled}
                 className={`pb-cart-summary__btn pb-cart-summary__btn--primary${
-                  isReviewDisabled ? " pb-cart-summary__btn--disabled" : ""
+                  isCheckoutDisabled ? " pb-cart-summary__btn--disabled" : ""
                 }`}
               >
-                {isReviewing
-                  ? isCheckingCart && submitRecheck
-                    ? t.checkout.cartValidation.submitRechecking
-                    : t.checkout.cartValidation.checking
-                  : t.checkout.placeOrder}
+                {t.checkout.checkout}
               </button>
             </div>
           </aside>

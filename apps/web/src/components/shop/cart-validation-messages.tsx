@@ -137,6 +137,14 @@ function renderIssueMessage(
   }
 }
 
+export function CheckoutFloatingSpinner({ label }: { label: string }) {
+  return (
+    <div className="pb-checkout-spinner" role="status" aria-live="polite" aria-label={label}>
+      <div className="pb-checkout-spinner__ring" aria-hidden="true" />
+    </div>
+  );
+}
+
 export function CheckoutBlockedNotice({
   status,
   validation,
@@ -145,16 +153,7 @@ export function CheckoutBlockedNotice({
   const t = useTranslations();
 
   if (status === 'loading') {
-    return (
-      <div
-        id="checkout-cart-validation"
-        className="pb-checkout-alert pb-checkout-alert--loading"
-      >
-        {submitRecheck
-          ? t.checkout.cartValidation.submitRechecking
-          : t.checkout.cartValidation.checking}
-      </div>
-    );
+    return null;
   }
 
   if (status === 'error') {

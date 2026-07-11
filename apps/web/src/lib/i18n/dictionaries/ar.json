@@ -192,7 +192,7 @@
       "extraNotesPlaceholder": "أي طلبات خاصة أو تعليمات للتوصيل..."
     },
     "orderSummary": "ملخص الطلب",
-    "order": "الطلب",
+    "orderDetails": "تفاصيل الطلب",
     "subtotal": "المجموع الفرعي",
     "discount": "الخصم",
     "promoApply": "تطبيق",
@@ -205,8 +205,8 @@
     "giftWrappingDesc": "أضف تغليفاً مميزاً مقابل",
     "total": "الإجمالي",
     "items": "عناصر",
-    "placeOrder": "مراجعة الطلب",
-    "confirmOrder": "تأكيد الطلب",
+    "placeOrder": "تأكيد الطلب",
+    "checkout": "الدفع",
     "confirming": "جاري تأكيد الطلب...",
     "placing": "جاري تأكيد الطلب...",
     "emptyCart": "سلتك فارغة. أضف منتجات قبل الدفع.",
@@ -240,7 +240,6 @@
     "confirmModal": {
       "title": "راجع طلبك",
       "subtitle": "تأكد من صحة جميع البيانات أدناه قبل تأكيد الطلب.",
-      "emailNote": "هذه هي نفس البيانات التي ستصلك في رسالة التأكيد عبر البريد الإلكتروني.",
       "customerDetails": "بيانات العميل",
       "deliveryDetails": "بيانات التوصيل",
       "orderItems": "عناصر الطلب",
