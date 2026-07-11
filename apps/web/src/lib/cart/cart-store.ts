@@ -14,6 +14,7 @@ export type CartLineItem = {
   discountPrice: number | null;
   has_sale: boolean;
   stockQuantity: number;
+  imageUrl?: string | null;
 };
 
 type CartState = {
@@ -25,6 +26,9 @@ type CartState = {
   isInCart: (documentId: string) => boolean;
   syncItemSnapshots: (
     snapshots: Array<{ documentId: string; stockQuantity: number }>,
+  ) => void;
+  syncItemImages: (
+    images: Array<{ documentId: string; imageUrl: string | null }>,
   ) => void;
 };
 
@@ -46,6 +50,7 @@ export const useCartStore = create<CartState>()(
                     ...line,
                     quantity: line.quantity + item.quantity,
                     stockQuantity: item.stockQuantity,
+                    imageUrl: item.imageUrl ?? line.imageUrl ?? null,
                   }
                 : line,
             ),
@@ -91,6 +96,25 @@ export const useCartStore = create<CartState>()(
             return stockQuantity === undefined
               ? line
               : { ...line, stockQuantity };
+          }),
+        });
+      },
+
+      syncItemImages: (images) => {
+        if (images.length === 0) {
+          return;
+        }
+
+        const imageMap = new Map(
+          images.map((entry) => [entry.documentId, entry.imageUrl]),
+        );
+
+        set({
+          items: get().items.map((line) => {
+            const imageUrl = imageMap.get(line.documentId);
+            return imageUrl === undefined
+              ? line
+              : { ...line, imageUrl };
           }),
         });
       },

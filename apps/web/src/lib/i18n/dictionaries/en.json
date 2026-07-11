@@ -152,6 +152,10 @@
     "subtotal": "Subtotal",
     "total": "Total",
     "items": "items",
+    "tableProduct": "Product",
+    "tablePrice": "Price",
+    "tableQuantity": "Quantity",
+    "tableTotal": "Total",
     "validation": {
       "checking": "Checking item availability and prices...",
       "failed": "We couldn't verify your cart right now. Please try again in a moment.",

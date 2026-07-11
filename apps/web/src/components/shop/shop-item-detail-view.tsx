@@ -8,7 +8,7 @@ import { CircleCheck, CircleX, Share2 } from 'lucide-react';
 import { QuantitySelector } from '@/components/shop/quantity-selector';
 import { ShopItemMediaGallery } from '@/components/shop/shop-item-media-gallery';
 import { RelatedShopItems } from '@/components/shop/related-shop-items';
-import { formatPrice, getShopItemPrices } from '@/lib/api/strapi';
+import { formatPrice, getFirstShopItemImage, getMediaUrl, getShopItemPrices } from '@/lib/api/strapi';
 import { useCartStore } from '@/lib/cart/cart-store';
 import { useTranslations } from '@/lib/i18n/use-translations';
 import {
@@ -60,6 +60,8 @@ export function ShopItemDetailView({
   }
 
   function buildCartLine() {
+    const firstImage = getFirstShopItemImage(item.media);
+
     return {
       documentId: item.documentId,
       slug: item.slug,
@@ -69,6 +71,7 @@ export function ShopItemDetailView({
       discountPrice: salePrice,
       has_sale: item.has_sale,
       stockQuantity,
+      imageUrl: firstImage ? getMediaUrl(firstImage.url) : null,
     };
   }
 
