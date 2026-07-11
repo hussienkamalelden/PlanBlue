@@ -10,7 +10,7 @@ import { ShopProductCard } from '@/components/home/shop-product-card';
 import { useSliderDirection } from '@/lib/hooks/use-slider-direction';
 import { useSliderSwiperProps } from '@/lib/shop/slider-drag-guard';
 import { buildInfiniteSliderItems } from '@/lib/shop/slider-loop';
-import { SLIDER_TOUCH_OPTIONS } from '@/lib/shop/slider-touch';
+import { SLIDER_AUTOPLAY_OPTIONS, SLIDER_TOUCH_OPTIONS } from '@/lib/shop/slider-touch';
 import type { StrapiShopItem } from '@/lib/types/strapi';
 import { useLocaleStore } from '@/stores/locale-store';
 
@@ -90,7 +90,9 @@ function PopularShopCarouselInner({ items, disableLoop = false }: PopularShopCar
         modules={[Navigation, Autoplay]}
         {...SLIDER_TOUCH_OPTIONS}
         {...sliderDragProps}
+        autoplay={SLIDER_AUTOPLAY_OPTIONS}
         loop={shouldLoop}
+        rewind={!shouldLoop}
         {...(shouldLoop ? { loopAdditionalSlides: MAX_SLIDES_PER_VIEW } : {})}
         watchSlidesProgress
         navigation={shouldLoop ? {

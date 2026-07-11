@@ -13,7 +13,7 @@ import { useSliderDirection } from '@/lib/hooks/use-slider-direction';
 import type { Locale } from '@/lib/i18n/config';
 import { useSliderSwiperProps } from '@/lib/shop/slider-drag-guard';
 import { buildInfiniteSliderItems } from '@/lib/shop/slider-loop';
-import { SLIDER_TOUCH_OPTIONS } from '@/lib/shop/slider-touch';
+import { SLIDER_AUTOPLAY_OPTIONS, SLIDER_TOUCH_OPTIONS } from '@/lib/shop/slider-touch';
 import type { StrapiCategory } from '@/lib/types/strapi';
 import { useLocaleStore } from '@/stores/locale-store';
 
@@ -55,11 +55,7 @@ function PopularCategoriesCarouselInner({
       modules={[Autoplay]}
       {...SLIDER_TOUCH_OPTIONS}
       {...sliderDragProps}
-      autoplay={{
-        delay: 3000,
-        disableOnInteraction: false,
-        pauseOnMouseEnter: true,
-      }}
+      autoplay={SLIDER_AUTOPLAY_OPTIONS}
       loop
       loopAdditionalSlides={MAX_SLIDES_PER_VIEW}
       watchSlidesProgress
