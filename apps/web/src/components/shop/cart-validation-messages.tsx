@@ -148,7 +148,7 @@ export function CheckoutBlockedNotice({
     return (
       <div
         id="checkout-cart-validation"
-        className="mt-6 rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-600"
+        className="pb-checkout-alert pb-checkout-alert--loading"
       >
         {submitRecheck
           ? t.checkout.cartValidation.submitRechecking
@@ -161,7 +161,7 @@ export function CheckoutBlockedNotice({
     return (
       <div
         id="checkout-cart-validation"
-        className="mt-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+        className="pb-checkout-alert pb-checkout-alert--error"
       >
         {t.checkout.cartValidation.failed}
       </div>
@@ -175,12 +175,12 @@ export function CheckoutBlockedNotice({
   return (
     <div
       id="checkout-cart-validation"
-      className="mt-6 rounded-xl border border-amber-300 bg-amber-50 px-4 py-4"
+      className="pb-checkout-alert pb-checkout-alert--warning"
     >
-      <p className="text-sm font-semibold text-amber-900">
+      <p className="pb-checkout-alert__title">
         {t.checkout.cartValidation.blockedTitle}
       </p>
-      <p className="mt-1 text-sm text-amber-800">
+      <p className="pb-checkout-alert__message">
         {submitRecheck
           ? t.checkout.cartValidation.submitRecheckFailed
           : t.checkout.cartValidation.blockedMessage}
