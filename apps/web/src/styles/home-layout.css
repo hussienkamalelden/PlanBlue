@@ -1965,14 +1965,14 @@ html[dir='rtl'] .planblue-site {
 
 .pb-product-details__alert {
   margin-top: 14px;
-  border-radius: 12px;
-  border: 2px solid #f97316;
-  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
-  padding: 14px 18px;
-  font-size: 0.9375rem;
-  font-weight: 700;
-  color: #c2410c;
-  box-shadow: 0 4px 14px rgba(249, 115, 22, 0.18);
+  border-radius: 10px;
+  border: 1px dashed #fde68a;
+  background: #fffbeb;
+  padding: 12px 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.5;
+  color: #b45309;
 }
 
 .pb-product-details__feedback {
