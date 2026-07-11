@@ -58,7 +58,7 @@ export function ShopProductCard({ item, locale }: ShopProductCardProps) {
             />
 
             {outOfStock && (
-              <span className="absolute inset-x-0 bottom-0 z-10 bg-gray-800/90 px-3 py-2 text-center text-sm font-semibold text-white rounded-b-2xl">
+              <span className="absolute inset-x-0 bottom-0 z-10 rounded-b-2xl bg-gray-800/90 px-2 py-2 text-center text-xs font-semibold leading-tight text-white sm:text-sm">
                 {t.shopItem.outOfStock}
               </span>
             )}

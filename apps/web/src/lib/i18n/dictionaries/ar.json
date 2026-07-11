@@ -100,7 +100,7 @@
     "views": "مشاهدة",
     "sale": "تخفيض",
     "freeBattery": "بطاريات مجانية",
-    "outOfStock": "غير متوفر"
+    "outOfStock": "غير متوفر - يعود قريباً"
   },
   "shopItemDetail": {
     "backToShop": "العودة إلى المتجر",
@@ -115,7 +115,7 @@
     "category": "التصنيف",
     "availability": "التوفر",
     "availableNow": "متوفر",
-    "notInStock": "غير متوفر",
+    "notInStock": "غير متوفر - يعود قريباً",
     "categories": "التصنيفات",
     "inStock": "{stock} متوفر في المخزون",
     "quantityUnavailable": "هذه الكمية غير متاحة.",

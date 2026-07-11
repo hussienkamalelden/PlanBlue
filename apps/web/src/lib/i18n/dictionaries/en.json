@@ -100,7 +100,7 @@
     "views": "views",
     "sale": "Sale",
     "freeBattery": "Free Battery",
-    "outOfStock": "Out of stock"
+    "outOfStock": "Out of stock - coming soon"
   },
   "shopItemDetail": {
     "backToShop": "Back to shop",
@@ -115,7 +115,7 @@
     "category": "Category",
     "availability": "Availability",
     "availableNow": "In Stock",
-    "notInStock": "Out of Stock",
+    "notInStock": "Out of stock - coming soon",
     "categories": "Categories",
     "inStock": "{stock} in stock",
     "quantityUnavailable": "This quantity is not available.",
