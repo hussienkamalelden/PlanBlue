@@ -8,6 +8,8 @@ import { ShoppingCart } from 'lucide-react';
 import { useCartStore } from '@/lib/cart/cart-store';
 import { useTranslations } from '@/lib/i18n/use-translations';
 
+const HIDDEN_PATHS = ['/cart', '/checkout', '/affiliates'];
+
 export function FloatingCartButton() {
   const t = useTranslations();
   const pathname = usePathname();
@@ -23,7 +25,7 @@ export function FloatingCartButton() {
     setMounted(true);
   }, []);
 
-  if (!mounted || itemCount === 0 || pathname === '/cart') {
+  if (!mounted || itemCount === 0 || HIDDEN_PATHS.includes(pathname)) {
     return null;
   }
 
