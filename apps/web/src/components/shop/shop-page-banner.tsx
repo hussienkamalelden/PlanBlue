@@ -1,19 +1,25 @@
 import type { ReactNode } from 'react';
 
+const DEFAULT_BANNER_SRC = '/images/shop/shop_banner.png';
+
 type ShopPageBannerProps = {
+  bannerSrc?: string;
   children?: ReactNode;
 };
 
-export function ShopPageBanner({ children }: ShopPageBannerProps) {
+export function ShopPageBanner({
+  bannerSrc = DEFAULT_BANNER_SRC,
+  children,
+}: ShopPageBannerProps) {
   return (
     <div className="pb-shop-banner relative h-20 w-full md:h-40">
       <div
         className="absolute inset-0 bg-brand-primary opacity-80"
         aria-hidden="true"
         style={{
-          backgroundImage: 'url(/images/shop/shop_banner.png)',
+          backgroundImage: `url(${bannerSrc})`,
           backgroundSize: 'cover',
-          backgroundPosition: 'top',
+          backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
         }}
       />

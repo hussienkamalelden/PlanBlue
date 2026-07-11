@@ -8,6 +8,7 @@ import {
   CartValidationBanner,
 } from '@/components/shop/cart-validation-messages';
 import { CartTopSellers } from '@/components/shop/cart-top-sellers';
+import { ShopPageShell } from '@/components/shop/shop-page-shell';
 import { useCartValidation } from '@/lib/cart/use-cart-validation';
 import { useCartStore } from '@/lib/cart/cart-store';
 import { getItemValidation } from '@/lib/cart/validate-cart';
@@ -45,7 +46,7 @@ export default function Cart() {
   }
 
   return (
-    <main className="pb-large-container py-10">
+    <ShopPageShell bannerSrc="/images/cart/banner.png">
       <h1 className="mb-8 text-3xl font-bold text-neutral-900">
         {t.cart.title}
       </h1>
@@ -227,6 +228,6 @@ export default function Cart() {
       )}
 
       <CartTopSellers />
-    </main>
+    </ShopPageShell>
   );
 }

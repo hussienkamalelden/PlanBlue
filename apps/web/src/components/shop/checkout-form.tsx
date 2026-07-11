@@ -7,6 +7,7 @@ import {
   CartItemValidationMessages,
   CheckoutBlockedNotice,
 } from "@/components/shop/cart-validation-messages";
+import { ShopPageShell } from "@/components/shop/shop-page-shell";
 import { createOrder, calculateTotal, validatePromoCode } from "@/lib/api/orders";
 import { formatPrice } from "@/lib/api/strapi";
 import { useCartStore } from "@/lib/cart/cart-store";
@@ -177,7 +178,10 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
 
   if (items.length === 0 && status !== "success") {
     return (
-      <main className="pb-large-container flex min-h-[50vh] flex-col items-center justify-center py-16 text-center">
+      <ShopPageShell
+        bannerSrc="/images/checkout/banner.png"
+        mainClassName="relative pb-large-container flex min-h-[50vh] flex-col items-center justify-center py-16 text-center"
+      >
         <p className="text-neutral-600">{t.checkout.emptyCart}</p>
         <Link
           href="/cart"
@@ -185,13 +189,16 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
         >
           {t.checkout.backToCart}
         </Link>
-      </main>
+      </ShopPageShell>
     );
   }
 
   if (status === "success") {
     return (
-      <main className="pb-large-container flex min-h-[50vh] flex-col items-center justify-center py-16 text-center">
+      <ShopPageShell
+        bannerSrc="/images/checkout/banner.png"
+        mainClassName="relative pb-large-container flex min-h-[50vh] flex-col items-center justify-center py-16 text-center"
+      >
         <div className="rounded-2xl border border-green-200 bg-green-50 p-8">
           <h1 className="text-2xl font-bold text-green-800">
             {t.checkout.success.title}
@@ -209,7 +216,7 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
             {t.checkout.success.backToHome}
           </Link>
         </div>
-      </main>
+      </ShopPageShell>
     );
   }
 
@@ -217,7 +224,7 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
   const isPlacingOrder = status === "submitting";
 
   return (
-    <main className="pb-large-container py-10">
+    <ShopPageShell bannerSrc="/images/checkout/banner.png">
       <h1 className="text-3xl font-bold text-neutral-900">{t.checkout.title}</h1>
       <p className="mt-1 text-sm text-neutral-500">{t.checkout.subtitle}</p>
 
@@ -538,7 +545,7 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
           </div>
         </aside>
       </form>
-    </main>
+    </ShopPageShell>
   );
 }
 
