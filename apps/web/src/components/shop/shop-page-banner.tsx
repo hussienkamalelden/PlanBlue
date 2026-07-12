@@ -19,7 +19,7 @@ export function ShopPageBanner({
         style={{
           backgroundImage: `url(${bannerSrc})`,
           backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          backgroundPosition: 'center 29%',
           backgroundRepeat: 'no-repeat',
         }}
       />
