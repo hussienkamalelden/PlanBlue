@@ -40,6 +40,7 @@ export async function POST(request: Request) {
           description_ar: item.description_ar ?? '',
           sku: item.sku ?? null,
           discount_percentage: item.discount_percentage,
+          need_batteries: item.need_batteries,
         },
       ]),
     );

@@ -9,12 +9,14 @@ function itemNeedsEnrichment(item: {
   description?: string;
   description_ar?: string;
   sku?: string | null;
+  need_batteries?: boolean;
 }): boolean {
   return (
     !item.imageUrl ||
     item.description === undefined ||
     item.description_ar === undefined ||
-    item.sku === undefined
+    item.sku === undefined ||
+    item.need_batteries === undefined
   );
 }
 
@@ -59,6 +61,7 @@ export function useCartItemImages() {
               description_ar: string;
               sku: string | null;
               discount_percentage: number;
+              need_batteries: boolean;
             }
           >;
         };
@@ -75,6 +78,7 @@ export function useCartItemImages() {
             description_ar: detail.description_ar,
             sku: detail.sku,
             discount_percentage: detail.discount_percentage,
+            need_batteries: detail.need_batteries,
           })),
         );
       } catch {

@@ -28,8 +28,6 @@ type CheckoutConfirmModalProps = {
   discountAmount: number;
   shippingCost: number;
   shippingName: string;
-  giftWrapping: boolean;
-  giftWrappingCost: number;
   subtotal: number;
   total: number;
 };
@@ -52,8 +50,6 @@ export function CheckoutConfirmModal({
   discountAmount,
   shippingCost,
   shippingName,
-  giftWrapping,
-  giftWrappingCost,
   subtotal,
   total,
 }: CheckoutConfirmModalProps) {
@@ -220,16 +216,6 @@ export function CheckoutConfirmModal({
                   {formatPrice(shippingCost, locale)}
                 </dd>
               </div>
-              {giftWrapping && (
-                <div className="pb-checkout-modal__row">
-                  <dt className="pb-checkout-modal__row-label--strong">
-                    {t.checkout.giftWrapping}
-                  </dt>
-                  <dd className="pb-checkout-modal__price">
-                    {formatPrice(giftWrappingCost, locale)}
-                  </dd>
-                </div>
-              )}
             </dl>
 
             <div className="pb-checkout-modal__grand-total">

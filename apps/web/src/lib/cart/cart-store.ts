@@ -19,6 +19,7 @@ export type CartLineItem = {
   description_ar?: string;
   sku?: string | null;
   discount_percentage?: number;
+  need_batteries?: boolean;
 };
 
 type CartState = {
@@ -42,6 +43,7 @@ type CartState = {
       description_ar?: string;
       sku?: string | null;
       discount_percentage?: number;
+      need_batteries?: boolean;
     }>,
   ) => void;
 };
@@ -70,6 +72,7 @@ export const useCartStore = create<CartState>()(
                     sku: item.sku ?? line.sku ?? null,
                     discount_percentage:
                       item.discount_percentage ?? line.discount_percentage,
+                    need_batteries: item.need_batteries ?? line.need_batteries,
                   }
                 : line,
             ),
@@ -168,6 +171,9 @@ export const useCartStore = create<CartState>()(
               ...(detail.sku !== undefined ? { sku: detail.sku } : {}),
               ...(detail.discount_percentage !== undefined
                 ? { discount_percentage: detail.discount_percentage }
+                : {}),
+              ...(detail.need_batteries !== undefined
+                ? { need_batteries: detail.need_batteries }
                 : {}),
             };
           }),

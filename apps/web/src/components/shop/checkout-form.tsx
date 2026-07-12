@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { Battery, Gift } from "lucide-react";
 
 import {
   CartItemValidationMessages,
@@ -13,10 +14,11 @@ import { ShopPageShell } from "@/components/shop/shop-page-shell";
 import { createOrder, calculateTotal, validatePromoCode } from "@/lib/api/orders";
 import { formatPrice } from "@/lib/api/strapi";
 import { useCartStore } from "@/lib/cart/cart-store";
+import { useCartItemImages } from "@/lib/cart/use-cart-item-images";
 import { useCartValidation } from "@/lib/cart/use-cart-validation";
 import { getItemValidation } from "@/lib/cart/validate-cart";
 import { useTranslations } from "@/lib/i18n/use-translations";
-import type { StrapiExtra, StrapiShipping } from "@/lib/types/strapi";
+import type { StrapiShipping } from "@/lib/types/strapi";
 import { useLocaleStore } from "@/stores/locale-store";
 
 type FormErrors = {
@@ -31,14 +33,15 @@ type OrderStatus = "idle" | "submitting" | "success" | "error";
 
 type CheckoutFormProps = {
   shippingOptions: StrapiShipping[];
-  giftWrapping: StrapiExtra | null;
 };
 
-export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProps) {
+export function CheckoutForm({ shippingOptions }: CheckoutFormProps) {
   const t = useTranslations();
   const locale = useLocaleStore((state) => state.locale);
   const items = useCartStore((state) => state.items);
   const clearCart = useCartStore((state) => state.clearCart);
+  useCartItemImages();
+  const hasBatteryItems = items.some((item) => item.need_batteries === true);
   const {
     status: cartValidationStatus,
     validation,
@@ -59,7 +62,6 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
   const [errors, setErrors] = useState<FormErrors>({});
   const [status, setStatus] = useState<OrderStatus>("idle");
   const [orderId, setOrderId] = useState("");
-  const [giftWrappingChecked, setGiftWrappingChecked] = useState(false);
 
   const [promoStatus, setPromoStatus] = useState<
     "idle" | "validating" | "valid" | "invalid"
@@ -77,11 +79,7 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
     (option) => option.documentId === form.shippingId,
   );
   const shippingCost = Number(selectedShipping?.cost ?? 0);
-  const giftWrappingCost =
-    giftWrappingChecked && giftWrapping
-      ? Number(giftWrapping.cost ?? 0)
-      : 0;
-  const total = subtotal - discountAmount + shippingCost + giftWrappingCost;
+  const total = subtotal - discountAmount + shippingCost;
 
   function updateField(field: keyof typeof form, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -189,8 +187,8 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
           phone: form.phone,
           governorate: selectedShipping.name,
           shipping_cost: shippingCost,
-          gift_wrapping: giftWrappingChecked,
-          gift_wrapping_cost: giftWrappingCost,
+          gift_wrapping: false,
+          gift_wrapping_cost: 0,
           address: form.address,
           promo_code: promoStatus === "valid" ? form.promo_code.trim() : "",
           promo_discount_percentage: promoStatus === "valid" ? promoDiscount : 0,
@@ -295,8 +293,6 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
         discountAmount={discountAmount}
         shippingCost={shippingCost}
         shippingName={selectedShipping?.name ?? ""}
-        giftWrapping={giftWrappingChecked}
-        giftWrappingCost={giftWrappingCost}
         subtotal={subtotal}
         total={total}
       />
@@ -397,27 +393,6 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
                     placeholder={t.checkout.form.extraNotesPlaceholder}
                   />
                 </div>
-                {giftWrapping && (
-                  <div className="pb-checkout-field pb-checkout-field--wide">
-                    <p className="pb-checkout-gift">{t.checkout.giftWrappingNote}</p>
-                    <label className="pb-checkout-gift-option">
-                      <input
-                        type="checkbox"
-                        checked={giftWrappingChecked}
-                        onChange={(e) => setGiftWrappingChecked(e.target.checked)}
-                      />
-                      <span>
-                        <span className="pb-checkout-gift-option__title">
-                          {t.checkout.giftWrapping}
-                        </span>
-                        <span className="pb-checkout-gift-option__desc">
-                          {t.checkout.giftWrappingDesc}{" "}
-                          {formatPrice(Number(giftWrapping.cost), locale)}
-                        </span>
-                      </span>
-                    </label>
-                  </div>
-                )}
               </div>
             </section>
           </div>
@@ -475,6 +450,22 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
                 );
               })}
             </ul>
+
+            <div className="pb-checkout-perks">
+              <div className="pb-checkout-perks__item">
+                <Gift className="pb-checkout-perks__icon" aria-hidden="true" />
+                <p>{t.checkout.giftWrappingNote}</p>
+              </div>
+              {hasBatteryItems && (
+                <div className="pb-checkout-perks__item pb-checkout-perks__item--highlight">
+                  <Battery
+                    className="pb-checkout-perks__icon pb-checkout-perks__icon--battery"
+                    aria-hidden="true"
+                  />
+                  <p>{t.checkout.freeBatteriesPerk}</p>
+                </div>
+              )}
+            </div>
 
             <div className="pb-checkout-promo">
               <label>{t.checkout.form.promoCode}</label>
@@ -549,16 +540,6 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
                   </span>
                   <span className="pb-checkout-totals__value">
                     {formatPrice(shippingCost, locale)}
-                  </span>
-                </div>
-              )}
-              {giftWrappingChecked && giftWrappingCost > 0 && (
-                <div className="pb-checkout-totals__row">
-                  <span className="pb-checkout-totals__label">
-                    {t.checkout.giftWrapping}
-                  </span>
-                  <span className="pb-checkout-totals__value">
-                    {formatPrice(giftWrappingCost, locale)}
                   </span>
                 </div>
               )}

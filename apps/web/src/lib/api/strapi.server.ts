@@ -256,6 +256,7 @@ export async function fetchShopItemsByDocumentIds(
     params['fields[8]'] = 'description';
     params['fields[9]'] = 'description_ar';
     params['fields[10]'] = 'sku';
+    params['fields[11]'] = 'need_batteries';
   }
 
   documentIds.forEach((documentId, index) => {

@@ -2866,49 +2866,50 @@ html[dir='rtl'] .planblue-site {
   color: #dc2626;
 }
 
-.pb-checkout-gift {
-  margin: 0 0 10px;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--pb-title);
+.pb-checkout-perks {
+  margin-top: 1rem;
+  padding: 14px 16px;
+  border: 1px dashed #86efac;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+  box-shadow: 0 8px 20px rgba(22, 163, 74, 0.08);
 }
 
-.pb-checkout-gift-option {
+.pb-checkout-perks__item {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
-  padding: 14px 16px;
-  border: 1px dashed #d8d8d8;
-  border-radius: 10px;
-  background: #f4f8ff;
-  cursor: pointer;
-  transition: border-color 0.2s ease;
+  gap: 10px;
 }
 
-.pb-checkout-gift-option:hover {
-  border-color: var(--pb-theme);
+.pb-checkout-perks__item + .pb-checkout-perks__item {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(22, 163, 74, 0.22);
 }
 
-.pb-checkout-gift-option input {
-  margin-top: 3px;
-  width: 16px;
-  height: 16px;
-  accent-color: var(--pb-theme);
+.pb-checkout-perks__icon {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  color: #16a34a;
 }
 
-.pb-checkout-gift-option__title {
-  display: block;
+.pb-checkout-perks__icon--battery {
+  transform: rotate(-90deg);
+}
+
+.pb-checkout-perks__item p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #166534;
+}
+
+.pb-checkout-perks__item--highlight p {
   font-size: 14px;
   font-weight: 700;
-  color: var(--pb-title);
-}
-
-.pb-checkout-gift-option__desc {
-  display: block;
-  margin-top: 4px;
-  font-size: 13px;
-  line-height: 1.45;
-  color: #64748b;
+  color: #15803d;
 }
 
 .pb-checkout-summary__title {
