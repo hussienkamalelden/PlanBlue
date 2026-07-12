@@ -291,7 +291,6 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
           extraNotes: form.extra_notes,
         }}
         items={items}
-        promoCode={promoStatus === "valid" ? form.promo_code.trim() : ""}
         promoDiscount={promoDiscount}
         discountAmount={discountAmount}
         shippingCost={shippingCost}

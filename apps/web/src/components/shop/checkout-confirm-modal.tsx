@@ -24,7 +24,6 @@ type CheckoutConfirmModalProps = {
     extraNotes: string;
   };
   items: CartLineItem[];
-  promoCode: string;
   promoDiscount: number;
   discountAmount: number;
   shippingCost: number;
@@ -49,7 +48,6 @@ export function CheckoutConfirmModal({
   t,
   customer,
   items,
-  promoCode,
   promoDiscount,
   discountAmount,
   shippingCost,
@@ -132,7 +130,7 @@ export function CheckoutConfirmModal({
 
         <div className="pb-checkout-modal__body">
           <section className="pb-checkout-modal__card pb-checkout-modal__card--details">
-            <div className="pb-checkout-modal__section">
+            <div className="pb-checkout-modal__section pb-checkout-modal__section--last">
               <h3 className="pb-checkout-modal__card-title">
                 {t.checkout.confirmModal.customerDetails}
               </h3>
@@ -149,96 +147,96 @@ export function CheckoutConfirmModal({
                   <dt>{t.checkout.form.phone}</dt>
                   <dd>{customer.phone}</dd>
                 </div>
-              </dl>
-            </div>
-
-            <div className="pb-checkout-modal__section">
-              <h3 className="pb-checkout-modal__card-title">
-                {t.checkout.confirmModal.deliveryDetails}
-              </h3>
-              <dl className="pb-checkout-modal__rows">
                 <div className="pb-checkout-modal__row">
                   <dt>{t.checkout.form.governorate}</dt>
                   <dd>{customer.governorate}</dd>
                 </div>
-                <div className="pb-checkout-modal__row pb-checkout-modal__row--stack">
+                <div className="pb-checkout-modal__row">
                   <dt>{t.checkout.form.address}</dt>
-                  <dd>{customer.address}</dd>
+                  <dd className="pb-checkout-modal__row-value--wrap">
+                    {customer.address}
+                  </dd>
                 </div>
-                <div className="pb-checkout-modal__row pb-checkout-modal__row--stack">
+                <div className="pb-checkout-modal__row">
                   <dt>{t.checkout.form.extraNotes}</dt>
-                  <dd>
+                  <dd className="pb-checkout-modal__row-value--wrap">
                     {formatDisplayValue(customer.extraNotes, noneLabel)}
                   </dd>
                 </div>
               </dl>
             </div>
-
-            <div className="pb-checkout-modal__section pb-checkout-modal__section--last">
-              <h3 className="pb-checkout-modal__card-title">
-                {t.checkout.confirmModal.orderItems}
-              </h3>
-              <ul className="pb-checkout-modal__items">
-                {items.map((item) => {
-                  const unitPrice =
-                    item.has_sale && item.discountPrice !== null
-                      ? item.discountPrice
-                      : item.price;
-
-                  return (
-                    <li key={item.documentId} className="pb-checkout-modal__item">
-                      <span className="pb-checkout-modal__item-name">
-                        {item.title}
-                      </span>
-                      <span className="pb-checkout-modal__item-meta">
-                        {item.quantity} × {formatPrice(unitPrice, locale)}
-                      </span>
-                      <span className="pb-checkout-modal__item-total">
-                        {formatPrice(unitPrice * item.quantity, locale)}
-                      </span>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
           </section>
 
           <section className="pb-checkout-modal__card pb-checkout-modal__card--totals">
+            <h3 className="pb-checkout-modal__card-title">
+              {t.checkout.orderDetails}
+            </h3>
+
+            <ul className="pb-checkout-modal__items pb-checkout-modal__items--order">
+              {items.map((item) => {
+                const unitPrice =
+                  item.has_sale && item.discountPrice !== null
+                    ? item.discountPrice
+                    : item.price;
+
+                return (
+                  <li key={item.documentId} className="pb-checkout-modal__item">
+                    <span className="pb-checkout-modal__item-name">
+                      {item.title}
+                    </span>
+                    <span className="pb-checkout-modal__item-meta">
+                      {item.quantity} × {formatPrice(unitPrice, locale)}
+                    </span>
+                    <span className="pb-checkout-modal__item-total pb-checkout-modal__price">
+                      {formatPrice(unitPrice * item.quantity, locale)}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+
             <dl className="pb-checkout-modal__rows">
               <div className="pb-checkout-modal__row">
-                <dt>{t.checkout.form.promoCode}</dt>
-                <dd>{formatDisplayValue(promoCode, noneLabel)}</dd>
-              </div>
-              <div className="pb-checkout-modal__row">
-                <dt>
+                <dt className="pb-checkout-modal__row-label--strong">
                   {t.checkout.subtotal} ({items.length} {t.checkout.items})
                 </dt>
-                <dd>{formatPrice(subtotal, locale)}</dd>
+                <dd className="pb-checkout-modal__price">
+                  {formatPrice(subtotal, locale)}
+                </dd>
               </div>
               {discountAmount > 0 && (
                 <div className="pb-checkout-modal__row pb-checkout-modal__row--discount">
-                  <dt>
+                  <dt className="pb-checkout-modal__row-label--strong">
                     {t.checkout.discount} ({promoDiscount}%)
                   </dt>
                   <dd>-{formatPrice(discountAmount, locale)}</dd>
                 </div>
               )}
               <div className="pb-checkout-modal__row">
-                <dt>
+                <dt className="pb-checkout-modal__row-label--strong">
                   {t.checkout.shipping} ({shippingName})
                 </dt>
-                <dd>{formatPrice(shippingCost, locale)}</dd>
+                <dd className="pb-checkout-modal__price">
+                  {formatPrice(shippingCost, locale)}
+                </dd>
               </div>
               {giftWrapping && (
                 <div className="pb-checkout-modal__row">
-                  <dt>{t.checkout.giftWrapping}</dt>
-                  <dd>{formatPrice(giftWrappingCost, locale)}</dd>
+                  <dt className="pb-checkout-modal__row-label--strong">
+                    {t.checkout.giftWrapping}
+                  </dt>
+                  <dd className="pb-checkout-modal__price">
+                    {formatPrice(giftWrappingCost, locale)}
+                  </dd>
                 </div>
               )}
             </dl>
+
             <div className="pb-checkout-modal__grand-total">
               <span>{t.checkout.total}</span>
-              <span>{formatPrice(total, locale)}</span>
+              <span className="pb-checkout-modal__grand-total-value">
+                {formatPrice(total, locale)}
+              </span>
             </div>
           </section>
         </div>
@@ -246,15 +244,7 @@ export function CheckoutConfirmModal({
         <div className="pb-checkout-modal__footer">
           <button
             type="button"
-            className="pb-cart-summary__btn pb-cart-summary__btn--secondary"
-            onClick={onClose}
-            disabled={isConfirming}
-          >
-            {t.checkout.confirmModal.close}
-          </button>
-          <button
-            type="button"
-            className={`pb-cart-summary__btn pb-cart-summary__btn--primary${
+            className={`pb-cart-summary__btn pb-cart-summary__btn--primary pb-checkout-modal__submit${
               isConfirming ? ' pb-cart-summary__btn--disabled' : ''
             }`}
             onClick={onConfirm}
