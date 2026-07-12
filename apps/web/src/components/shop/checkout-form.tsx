@@ -28,6 +28,28 @@ type FormErrors = {
   address?: string;
 };
 
+const CHECKOUT_FIELD_ORDER: (keyof FormErrors)[] = [
+  "name",
+  "email",
+  "phone",
+  "governorate",
+  "address",
+];
+
+function scrollToFirstCheckoutError(errors: FormErrors) {
+  const firstField = CHECKOUT_FIELD_ORDER.find((field) => errors[field]);
+  if (!firstField) {
+    return;
+  }
+
+  requestAnimationFrame(() => {
+    document.getElementById(`checkout-field-${firstField}`)?.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+  });
+}
+
 type OrderStatus = "idle" | "submitting" | "success" | "error";
 
 type CheckoutFormProps = {
@@ -113,7 +135,7 @@ export function CheckoutForm({ shippingOptions }: CheckoutFormProps) {
     }
   }
 
-  function validate(): boolean {
+  function getValidationErrors(): FormErrors {
     const newErrors: FormErrors = {};
 
     if (!form.name.trim()) newErrors.name = t.checkout.validation.nameRequired;
@@ -128,14 +150,21 @@ export function CheckoutForm({ shippingOptions }: CheckoutFormProps) {
     }
     if (!form.address.trim()) newErrors.address = t.checkout.validation.addressRequired;
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return newErrors;
   }
 
   async function handleReviewOrder(e: React.FormEvent) {
     e.preventDefault();
 
-    if (!validate() || items.length === 0 || !selectedShipping) {
+    const newErrors = getValidationErrors();
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      scrollToFirstCheckoutError(newErrors);
+      return;
+    }
+
+    if (items.length === 0 || !selectedShipping) {
       return;
     }
 
@@ -318,6 +347,7 @@ export function CheckoutForm({ shippingOptions }: CheckoutFormProps) {
             <section className="pb-checkout-panel">
               <div className="pb-checkout-fields">
                 <FieldInput
+                  id="checkout-field-name"
                   label={t.checkout.form.name}
                   placeholder={t.checkout.form.namePlaceholder}
                   value={form.name}
@@ -326,6 +356,7 @@ export function CheckoutForm({ shippingOptions }: CheckoutFormProps) {
                   required
                 />
                 <FieldInput
+                  id="checkout-field-email"
                   label={t.checkout.form.email}
                   placeholder={t.checkout.form.emailPlaceholder}
                   type="email"
@@ -335,6 +366,7 @@ export function CheckoutForm({ shippingOptions }: CheckoutFormProps) {
                   required
                 />
                 <FieldInput
+                  id="checkout-field-phone"
                   label={t.checkout.form.phone}
                   placeholder={t.checkout.form.phonePlaceholder}
                   type="tel"
@@ -345,6 +377,7 @@ export function CheckoutForm({ shippingOptions }: CheckoutFormProps) {
                   required
                 />
                 <div
+                  id="checkout-field-governorate"
                   className={`pb-checkout-field${errors.governorate ? " pb-checkout-field--error" : ""}`}
                 >
                   <label>
@@ -367,6 +400,7 @@ export function CheckoutForm({ shippingOptions }: CheckoutFormProps) {
                   )}
                 </div>
                 <div
+                  id="checkout-field-address"
                   className={`pb-checkout-field pb-checkout-field--wide${errors.address ? " pb-checkout-field--error" : ""}`}
                 >
                   <label>
@@ -580,6 +614,7 @@ export function CheckoutForm({ shippingOptions }: CheckoutFormProps) {
 }
 
 function FieldInput({
+  id,
   label,
   placeholder,
   type = "text",
@@ -589,6 +624,7 @@ function FieldInput({
   error,
   required,
 }: {
+  id?: string;
   label: string;
   placeholder: string;
   type?: string;
@@ -599,7 +635,10 @@ function FieldInput({
   required?: boolean;
 }) {
   return (
-    <div className={`pb-checkout-field${error ? " pb-checkout-field--error" : ""}`}>
+    <div
+      id={id}
+      className={`pb-checkout-field${error ? " pb-checkout-field--error" : ""}`}
+    >
       <label>
         {label}{" "}
         {required && <span className="pb-checkout-field__required">*</span>}
