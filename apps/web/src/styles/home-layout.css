@@ -1926,6 +1926,126 @@ html[dir='rtl'] .planblue-site {
   font-variant-numeric: tabular-nums;
 }
 
+.pb-product-card-cart__add {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px dashed var(--pb-theme);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--pb-theme);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.pb-product-card-cart__add:hover {
+  background: var(--pb-theme);
+  color: #fff;
+}
+
+.pb-product-card-cart__qty {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 2px;
+  height: 36px;
+  padding: 0 4px;
+  border: 1px dashed #d8d8d8;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.pb-product-card-cart__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  color: #18181c;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.pb-product-card-cart__btn:hover:not(:disabled) {
+  background: #f4f8ff;
+  color: var(--pb-theme);
+}
+
+.pb-product-card-cart__btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.pb-product-card-cart__value {
+  min-width: 1.5rem;
+  padding: 0 2px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: #18181c;
+  font-variant-numeric: tabular-nums;
+}
+
+.pb-product-card__footer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  padding: 0 16px 12px;
+}
+
+.pb-product-card__prices {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.pb-product-card__price-current {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--pb-theme);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pb-product-card__price-old {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #ff0000;
+  text-decoration: line-through;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (min-width: 768px) {
+  .pb-product-card__price-current {
+    font-size: 1.125rem;
+  }
+}
+
 .pb-product-details__btn {
   position: relative;
   display: inline-flex;

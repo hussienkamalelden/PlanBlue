@@ -8,7 +8,8 @@ import { CircleCheck, CircleX, Share2 } from 'lucide-react';
 import { QuantitySelector } from '@/components/shop/quantity-selector';
 import { ShopItemMediaGallery } from '@/components/shop/shop-item-media-gallery';
 import { RelatedShopItems } from '@/components/shop/related-shop-items';
-import { formatPrice, getFirstShopItemImage, getMediaUrl, getShopItemPrices } from '@/lib/api/strapi';
+import { formatPrice, getShopItemPrices } from '@/lib/api/strapi';
+import { buildCartLineFromShopItem } from '@/lib/cart/build-cart-line';
 import { useCartStore } from '@/lib/cart/cart-store';
 import { useTranslations } from '@/lib/i18n/use-translations';
 import {
@@ -60,24 +61,7 @@ export function ShopItemDetailView({
   }
 
   function buildCartLine() {
-    const firstImage = getFirstShopItemImage(item.media);
-
-    return {
-      documentId: item.documentId,
-      slug: item.slug,
-      title: item.title,
-      quantity,
-      price: basePrice,
-      discountPrice: salePrice,
-      has_sale: item.has_sale,
-      stockQuantity,
-      imageUrl: firstImage ? getMediaUrl(firstImage.url) : null,
-      description: item.description,
-      description_ar: item.description_ar,
-      sku: item.sku ?? null,
-      discount_percentage: item.discount_percentage,
-      need_batteries: item.need_batteries,
-    };
+    return buildCartLineFromShopItem(item, quantity);
   }
 
   function handleAddToCart() {

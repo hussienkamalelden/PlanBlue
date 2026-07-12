@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { SliderLink } from '@/components/ui/slider-link';
 import { ProductCornerRibbons } from '@/components/ui/product-corner-ribbons';
+import { ProductCardCartControl } from '@/components/shop/product-card-cart-control';
 
 import {
   formatPriceWhole,
@@ -46,7 +47,7 @@ export function ShopProductCard({ item, locale }: ShopProductCardProps) {
       >
         <SliderLink
           href={`/shop/${item.slug}`}
-          className="flex h-full flex-col"
+          className="flex flex-1 flex-col"
           aria-label={title}
         >
           <div className="relative aspect-square overflow-hidden">
@@ -62,12 +63,12 @@ export function ShopProductCard({ item, locale }: ShopProductCardProps) {
                 {t.shopItem.outOfStock}
               </span>
             )}
-            <div className="flex flex-col h-full w-full items-center justify-center">
+            <div className="flex h-full w-full flex-col items-center justify-center">
               {firstImage ? (
                 <Image
                   src={getMediaUrl(firstImage.url)}
                   alt={firstImage.name || title}
-                  className="object-contain transition-transform duration-500 group-hover:scale-105 w-[90%] h-[90%] rounded-2xl"
+                  className="h-[90%] w-[90%] rounded-2xl object-contain transition-transform duration-500 group-hover:scale-105"
                   width={100}
                   height={100}
                 />
@@ -79,23 +80,26 @@ export function ShopProductCard({ item, locale }: ShopProductCardProps) {
             </div>
           </div>
 
-          <div className="flex flex-1 flex-col px-4 pt-2 pb-3 text-start">
-            <h3 className="mb-2 line-clamp-1 text-base font-bold leading-snug  capitalize text-black md:text-lg">
+          <div className="px-4 pt-2 pb-2 text-start">
+            <h3 className="line-clamp-1 text-base font-bold capitalize leading-snug text-black md:text-lg">
               {title}
             </h3>
-
-            <div className="mt-auto flex flex-wrap items-baseline gap-2">
-              <span className="text-lg font-bold text-brand-primary md:text-xl">
-                {formatPriceWhole(displayPrice, locale)}
-              </span>
-              {item.has_sale && salePrice !== null && (
-                <del className="text-sm font-semibold text-[#FF0000]">
-                  {formatPriceWhole(basePrice, locale)}
-                </del>
-              )}
-            </div>
           </div>
         </SliderLink>
+
+        <div className="pb-product-card__footer">
+          <div className="pb-product-card__prices">
+            <span className="pb-product-card__price-current">
+              {formatPriceWhole(displayPrice, locale)}
+            </span>
+            {item.has_sale && salePrice !== null && (
+              <del className="pb-product-card__price-old">
+                {formatPriceWhole(basePrice, locale)}
+              </del>
+            )}
+          </div>
+          <ProductCardCartControl item={item} />
+        </div>
       </article>
     </div>
   );
