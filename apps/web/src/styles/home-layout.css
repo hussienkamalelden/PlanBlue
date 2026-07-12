@@ -1537,6 +1537,16 @@ html[dir='rtl'] .planblue-site {
   }
 }
 
+/* Shop page banner overlays */
+.pb-shop-banner__overlay--brand {
+  /* background: var(--pb-theme); */
+  opacity: 0.8;
+}
+
+.pb-shop-banner__overlay--dark {
+  background: rgb(17 24 39 / 15%);
+}
+
 /* Shop page background pattern */
 .pb-shop-page {
   background-color: #f4f8ff;

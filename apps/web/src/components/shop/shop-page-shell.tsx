@@ -15,7 +15,7 @@ export function ShopPageShell({
 }: ShopPageShellProps) {
   return (
     <>
-      <ShopPageBanner bannerSrc={bannerSrc} />
+      <ShopPageBanner bannerSrc={bannerSrc} darkOverlay />
       <main className={mainClassName}>
         <div className="pb-shop-page" />
         {children}
