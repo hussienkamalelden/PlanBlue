@@ -226,7 +226,7 @@ export async function fetchAffiliates(): Promise<StrapiAffiliate[]> {
 
 export async function fetchShopItemsByDocumentIds(
   documentIds: string[],
-  options?: { includeMedia?: boolean },
+  options?: { includeMedia?: boolean; includeDetails?: boolean },
 ): Promise<StrapiShopItem[]> {
   if (documentIds.length === 0) {
     return [];
@@ -250,6 +250,12 @@ export async function fetchShopItemsByDocumentIds(
     params['populate[media][fields][2]'] = 'mime';
     params['populate[media][fields][3]'] = 'previewUrl';
     params['populate[media][fields][4]'] = 'formats';
+  }
+
+  if (options?.includeDetails) {
+    params['fields[8]'] = 'description';
+    params['fields[9]'] = 'description_ar';
+    params['fields[10]'] = 'sku';
   }
 
   documentIds.forEach((documentId, index) => {

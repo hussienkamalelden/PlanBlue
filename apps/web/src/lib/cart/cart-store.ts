@@ -15,6 +15,10 @@ export type CartLineItem = {
   has_sale: boolean;
   stockQuantity: number;
   imageUrl?: string | null;
+  description?: string;
+  description_ar?: string;
+  sku?: string | null;
+  discount_percentage?: number;
 };
 
 type CartState = {
@@ -29,6 +33,16 @@ type CartState = {
   ) => void;
   syncItemImages: (
     images: Array<{ documentId: string; imageUrl: string | null }>,
+  ) => void;
+  syncItemDetails: (
+    details: Array<{
+      documentId: string;
+      imageUrl?: string | null;
+      description?: string;
+      description_ar?: string;
+      sku?: string | null;
+      discount_percentage?: number;
+    }>,
   ) => void;
 };
 
@@ -51,6 +65,11 @@ export const useCartStore = create<CartState>()(
                     quantity: line.quantity + item.quantity,
                     stockQuantity: item.stockQuantity,
                     imageUrl: item.imageUrl ?? line.imageUrl ?? null,
+                    description: item.description ?? line.description,
+                    description_ar: item.description_ar ?? line.description_ar,
+                    sku: item.sku ?? line.sku ?? null,
+                    discount_percentage:
+                      item.discount_percentage ?? line.discount_percentage,
                   }
                 : line,
             ),
@@ -115,6 +134,42 @@ export const useCartStore = create<CartState>()(
             return imageUrl === undefined
               ? line
               : { ...line, imageUrl };
+          }),
+        });
+      },
+
+      syncItemDetails: (details) => {
+        if (details.length === 0) {
+          return;
+        }
+
+        const detailMap = new Map(
+          details.map((entry) => [entry.documentId, entry]),
+        );
+
+        set({
+          items: get().items.map((line) => {
+            const detail = detailMap.get(line.documentId);
+            if (!detail) {
+              return line;
+            }
+
+            return {
+              ...line,
+              ...(detail.imageUrl !== undefined
+                ? { imageUrl: detail.imageUrl }
+                : {}),
+              ...(detail.description !== undefined
+                ? { description: detail.description }
+                : {}),
+              ...(detail.description_ar !== undefined
+                ? { description_ar: detail.description_ar }
+                : {}),
+              ...(detail.sku !== undefined ? { sku: detail.sku } : {}),
+              ...(detail.discount_percentage !== undefined
+                ? { discount_percentage: detail.discount_percentage }
+                : {}),
+            };
           }),
         });
       },

@@ -17,7 +17,7 @@ import { useCartItemImages } from '@/lib/cart/use-cart-item-images';
 import { useCartValidation } from '@/lib/cart/use-cart-validation';
 import { useCartStore, type CartLineItem } from '@/lib/cart/cart-store';
 import { getItemValidation } from '@/lib/cart/validate-cart';
-import { formatPrice } from '@/lib/api/strapi';
+import { formatPriceDisplay } from '@/lib/api/strapi';
 import { useTranslations } from '@/lib/i18n/use-translations';
 import { useLocaleStore } from '@/stores/locale-store';
 
@@ -90,10 +90,12 @@ export default function Cart() {
                     <thead>
                       <tr>
                         <th>{t.cart.tableProduct}</th>
-                        <th>{t.cart.tablePrice}</th>
-                        <th>{t.cart.tableQuantity}</th>
-                        <th>{t.cart.tableTotal}</th>
-                        <th aria-hidden="true">&nbsp;</th>
+                        <th className="pb-cart-table__total-head">
+                          {t.cart.tableTotal}
+                        </th>
+                        <th className="pb-cart-table__remove-head" aria-hidden="true">
+                          &nbsp;
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -108,6 +110,18 @@ export default function Cart() {
                         const isValidating = validatingDocumentIds.includes(
                           item.documentId,
                         );
+                        const itemDescription =
+                          locale === 'ar'
+                            ? item.description_ar ?? item.description
+                            : item.description ?? item.description_ar;
+                        const salePercentage =
+                          item.discount_percentage && item.discount_percentage > 0
+                            ? Math.round(item.discount_percentage)
+                            : hasSale && item.price > 0
+                              ? Math.round(
+                                  ((item.price - unitPrice) / item.price) * 100,
+                                )
+                              : 0;
 
                         return (
                           <tr
@@ -128,8 +142,8 @@ export default function Cart() {
                                     <Image
                                       src={item.imageUrl}
                                       alt=""
-                                      width={85}
-                                      height={85}
+                                      width={150}
+                                      height={150}
                                       className="h-full w-full object-contain"
                                     />
                                   ) : (
@@ -141,13 +155,80 @@ export default function Cart() {
                                     </span>
                                   )}
                                 </div>
-                                <div className="min-w-0">
+                                <div className="pb-cart-table__details">
                                   <Link
                                     href={`/shop/${item.slug}`}
                                     className="pb-cart-table__name"
                                   >
                                     {item.title}
                                   </Link>
+
+                                  {itemDescription?.trim() && (
+                                    <p className="pb-cart-table__description">
+                                      {itemDescription.trim()}
+                                    </p>
+                                  )}
+
+                                  {item.sku && (
+                                    <p className="pb-cart-table__sku">
+                                      <strong>{t.shopItemDetail.sku}:</strong>{' '}
+                                      <span>{item.sku}</span>
+                                    </p>
+                                  )}
+
+                                  {hasSale && salePercentage > 0 && (
+                                    <p className="pb-cart-table__sale">
+                                      <strong>{t.shopItem.sale}:</strong>{' '}
+                                      <span>-{salePercentage}%</span>
+                                    </p>
+                                  )}
+
+                                  <div className="pb-cart-table__qty-row">
+                                    <div
+                                      className="pb-product-qty pb-cart-table__qty"
+                                      aria-label={t.cart.tableQuantity}
+                                    >
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          item.quantity > 1
+                                            ? setItemQuantity(
+                                                item.documentId,
+                                                item.quantity - 1,
+                                              )
+                                            : requestRemoveItem(item)
+                                        }
+                                        className="pb-product-qty__btn"
+                                        aria-label="Decrease quantity"
+                                      >
+                                        −
+                                      </button>
+                                      <span
+                                        className="pb-product-qty__value"
+                                        aria-live="polite"
+                                      >
+                                        {item.quantity}
+                                      </span>
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          setItemQuantity(
+                                            item.documentId,
+                                            item.quantity + 1,
+                                          )
+                                        }
+                                        disabled={
+                                          isBlocked ||
+                                          item.quantity >= item.stockQuantity
+                                        }
+                                        className="pb-product-qty__btn"
+                                        aria-label="Increase quantity"
+                                      >
+                                        +
+                                      </button>
+                                    </div>
+                                  </div>
+
                                   <CartItemValidationMessages
                                     documentId={item.documentId}
                                     item={item}
@@ -158,67 +239,16 @@ export default function Cart() {
                                 </div>
                               </div>
                             </td>
-                            <td data-label={t.cart.tablePrice}>
-                              <div className="pb-cart-table__price-cell">
-                                <span className="pb-cart-table__price-current">
-                                  {formatPrice(unitPrice, locale)}
-                                </span>
-                                {hasSale && (
-                                  <span className="pb-cart-table__price-old">
-                                    {formatPrice(item.price, locale)}
-                                  </span>
-                                )}
-                              </div>
+                            <td
+                              className="pb-cart-table__total-cell"
+                              data-label={t.cart.tableTotal}
+                            >
+                              {formatPriceDisplay(unitPrice * item.quantity, locale)}
                             </td>
-                            <td data-label={t.cart.tableQuantity}>
-                              <div
-                                className="pb-product-qty pb-cart-table__qty"
-                                aria-label={t.cart.tableQuantity}
-                              >
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    item.quantity > 1
-                                      ? setItemQuantity(
-                                          item.documentId,
-                                          item.quantity - 1,
-                                        )
-                                      : requestRemoveItem(item)
-                                  }
-                                  className="pb-product-qty__btn"
-                                  aria-label="Decrease quantity"
-                                >
-                                  −
-                                </button>
-                                <span
-                                  className="pb-product-qty__value"
-                                  aria-live="polite"
-                                >
-                                  {item.quantity}
-                                </span>
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    setItemQuantity(
-                                      item.documentId,
-                                      item.quantity + 1,
-                                    )
-                                  }
-                                  disabled={
-                                    isBlocked ||
-                                    item.quantity >= item.stockQuantity
-                                  }
-                                  className="pb-product-qty__btn"
-                                  aria-label="Increase quantity"
-                                >
-                                  +
-                                </button>
-                              </div>
-                            </td>
-                            <td data-label={t.cart.tableTotal}>
-                              {formatPrice(unitPrice * item.quantity, locale)}
-                            </td>
-                            <td className="pb-cart-table__remove-cell">
+                            <td
+                              className="pb-cart-table__remove-cell"
+                              data-label={t.cart.remove}
+                            >
                               <button
                                 type="button"
                                 onClick={() => requestRemoveItem(item)}
@@ -244,7 +274,7 @@ export default function Cart() {
               >
                 <div className="pb-cart-summary__total-row">
                   <h4>{t.cart.total}</h4>
-                  <h5>{formatPrice(total, locale)}</h5>
+                  <h5>{formatPriceDisplay(total, locale)}</h5>
                 </div>
 
                 <div className="pb-cart-summary__actions">

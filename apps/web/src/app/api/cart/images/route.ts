@@ -13,11 +13,12 @@ export async function POST(request: Request) {
     const documentIds = [...new Set(body.documentIds ?? [])];
 
     if (documentIds.length === 0) {
-      return NextResponse.json({ images: {} });
+      return NextResponse.json({ images: {}, details: {} });
     }
 
     const shopItems = await fetchShopItemsByDocumentIds(documentIds, {
       includeMedia: true,
+      includeDetails: true,
     });
 
     const images = Object.fromEntries(
@@ -30,7 +31,20 @@ export async function POST(request: Request) {
       }),
     );
 
-    return NextResponse.json({ images });
+    const details = Object.fromEntries(
+      shopItems.map((item) => [
+        item.documentId,
+        {
+          imageUrl: images[item.documentId] ?? null,
+          description: item.description ?? '',
+          description_ar: item.description_ar ?? '',
+          sku: item.sku ?? null,
+          discount_percentage: item.discount_percentage,
+        },
+      ]),
+    );
+
+    return NextResponse.json({ images, details });
   } catch {
     return NextResponse.json(
       { error: 'Failed to fetch cart images' },

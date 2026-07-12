@@ -4,18 +4,32 @@ import { useEffect } from 'react';
 
 import { useCartStore } from '@/lib/cart/cart-store';
 
+function itemNeedsEnrichment(item: {
+  imageUrl?: string | null;
+  description?: string;
+  description_ar?: string;
+  sku?: string | null;
+}): boolean {
+  return (
+    !item.imageUrl ||
+    item.description === undefined ||
+    item.description_ar === undefined ||
+    item.sku === undefined
+  );
+}
+
 export function useCartItemImages() {
   const items = useCartStore((state) => state.items);
-  const syncItemImages = useCartStore((state) => state.syncItemImages);
+  const syncItemDetails = useCartStore((state) => state.syncItemDetails);
 
-  const missingImageKey = items
-    .filter((item) => !item.imageUrl)
+  const enrichmentKey = items
+    .filter(itemNeedsEnrichment)
     .map((item) => item.documentId)
     .join('|');
 
   useEffect(() => {
     const missingIds = items
-      .filter((item) => !item.imageUrl)
+      .filter(itemNeedsEnrichment)
       .map((item) => item.documentId);
 
     if (missingIds.length === 0) {
@@ -24,7 +38,7 @@ export function useCartItemImages() {
 
     let cancelled = false;
 
-    async function loadImages() {
+    async function loadDetails() {
       try {
         const response = await fetch('/api/cart/images', {
           method: 'POST',
@@ -37,28 +51,41 @@ export function useCartItemImages() {
         }
 
         const data = (await response.json()) as {
-          images?: Record<string, string | null>;
+          details?: Record<
+            string,
+            {
+              imageUrl: string | null;
+              description: string;
+              description_ar: string;
+              sku: string | null;
+              discount_percentage: number;
+            }
+          >;
         };
 
-        if (cancelled || !data.images) {
+        if (cancelled || !data.details) {
           return;
         }
 
-        syncItemImages(
-          Object.entries(data.images).map(([documentId, imageUrl]) => ({
+        syncItemDetails(
+          Object.entries(data.details).map(([documentId, detail]) => ({
             documentId,
-            imageUrl,
+            imageUrl: detail.imageUrl,
+            description: detail.description,
+            description_ar: detail.description_ar,
+            sku: detail.sku,
+            discount_percentage: detail.discount_percentage,
           })),
         );
       } catch {
-        // Images are optional — keep placeholders on failure.
+        // Optional metadata — keep placeholders on failure.
       }
     }
 
-    void loadImages();
+    void loadDetails();
 
     return () => {
       cancelled = true;
     };
-  }, [missingImageKey, syncItemImages]);
+  }, [enrichmentKey, syncItemDetails]);
 }

@@ -72,6 +72,10 @@ export function ShopItemDetailView({
       has_sale: item.has_sale,
       stockQuantity,
       imageUrl: firstImage ? getMediaUrl(firstImage.url) : null,
+      description: item.description,
+      description_ar: item.description_ar,
+      sku: item.sku ?? null,
+      discount_percentage: item.discount_percentage,
     };
   }
 

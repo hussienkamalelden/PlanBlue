@@ -43,6 +43,10 @@ export function formatPriceWhole(amount: number, locale: Locale): string {
 }
 
 /** Like formatPrice, but drops ".00" when the amount is a whole number. */
+export function formatPriceDisplay(amount: number, locale: Locale): string {
+  return formatCommission(amount, locale);
+}
+
 export function formatCommission(amount: number, locale: Locale): string {
   const value = Number(amount);
   const isWhole = Math.abs(value - Math.round(value)) < 0.001;
