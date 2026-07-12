@@ -144,7 +144,7 @@ export default function Cart() {
                                       alt=""
                                       width={150}
                                       height={150}
-                                      className="h-full w-full object-contain"
+                                      className="h-full w-full object-contain rounded-md"
                                     />
                                   ) : (
                                     <span
