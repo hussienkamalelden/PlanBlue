@@ -2,18 +2,20 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { X } from 'lucide-react';
+import { useState } from 'react';
+import { Trash2 } from 'lucide-react';
 
 import {
   CartItemValidationMessages,
   CartItemValidationOverlay,
   CartValidationBanner,
 } from '@/components/shop/cart-validation-messages';
+import { CartRemoveConfirmModal } from '@/components/shop/cart-remove-confirm-modal';
 import { CartTopSellers } from '@/components/shop/cart-top-sellers';
 import { ShopPageShell } from '@/components/shop/shop-page-shell';
 import { useCartItemImages } from '@/lib/cart/use-cart-item-images';
 import { useCartValidation } from '@/lib/cart/use-cart-validation';
-import { useCartStore } from '@/lib/cart/cart-store';
+import { useCartStore, type CartLineItem } from '@/lib/cart/cart-store';
 import { getItemValidation } from '@/lib/cart/validate-cart';
 import { formatPrice } from '@/lib/api/strapi';
 import { useTranslations } from '@/lib/i18n/use-translations';
@@ -27,6 +29,7 @@ export default function Cart() {
   const removeItem = useCartStore((state) => state.removeItem);
   const { status, validation, validatingDocumentIds, isBlocked } =
     useCartValidation();
+  const [itemToRemove, setItemToRemove] = useState<CartLineItem | null>(null);
 
   useCartItemImages();
 
@@ -43,11 +46,29 @@ export default function Cart() {
     return itemValidation !== null && !itemValidation.valid;
   }
 
+  function requestRemoveItem(item: CartLineItem) {
+    setItemToRemove(item);
+  }
+
+  function confirmRemoveItem() {
+    if (!itemToRemove) {
+      return;
+    }
+
+    removeItem(itemToRemove.documentId);
+    setItemToRemove(null);
+  }
+
   return (
     <ShopPageShell bannerSrc="/images/cart/banner.png">
-      <section className="pb-cart-section mt-10">
-       
+      <CartRemoveConfirmModal
+        open={itemToRemove !== null}
+        productTitle={itemToRemove?.title ?? ''}
+        onClose={() => setItemToRemove(null)}
+        onConfirm={confirmRemoveItem}
+      />
 
+      <section className="pb-cart-section mt-10">
         {items.length === 0 ? (
           <div className="pb-cart-empty">
             <p>{t.cart.empty}</p>
@@ -69,6 +90,7 @@ export default function Cart() {
                     <thead>
                       <tr>
                         <th>{t.cart.tableProduct}</th>
+                        <th>{t.cart.tableDiscount}</th>
                         <th>{t.cart.tablePrice}</th>
                         <th>{t.cart.tableQuantity}</th>
                         <th>{t.cart.tableTotal}</th>
@@ -81,6 +103,8 @@ export default function Cart() {
                           item.has_sale && item.discountPrice !== null
                             ? item.discountPrice
                             : item.price;
+                        const hasSale =
+                          item.has_sale && item.discountPrice !== null;
                         const hasIssue = itemHasIssue(item.documentId);
                         const isValidating = validatingDocumentIds.includes(
                           item.documentId,
@@ -125,12 +149,6 @@ export default function Cart() {
                                   >
                                     {item.title}
                                   </Link>
-                                  {item.has_sale &&
-                                    item.discountPrice !== null && (
-                                      <span className="pb-cart-table__price-old">
-                                        {formatPrice(item.price, locale)}
-                                      </span>
-                                    )}
                                   <CartItemValidationMessages
                                     documentId={item.documentId}
                                     item={item}
@@ -140,6 +158,18 @@ export default function Cart() {
                                   />
                                 </div>
                               </div>
+                            </td>
+                            <td
+                              data-label={t.cart.tableDiscount}
+                              className={
+                                hasSale
+                                  ? 'pb-cart-table__discount'
+                                  : 'pb-cart-table__discount pb-cart-table__discount--empty'
+                              }
+                            >
+                              {hasSale
+                                ? formatPrice(item.price, locale)
+                                : '—'}
                             </td>
                             <td data-label={t.cart.tablePrice}>
                               {formatPrice(unitPrice, locale)}
@@ -157,7 +187,7 @@ export default function Cart() {
                                           item.documentId,
                                           item.quantity - 1,
                                         )
-                                      : removeItem(item.documentId)
+                                      : requestRemoveItem(item)
                                   }
                                   className="pb-product-qty__btn"
                                   aria-label="Decrease quantity"
@@ -195,11 +225,14 @@ export default function Cart() {
                             <td className="pb-cart-table__remove-cell">
                               <button
                                 type="button"
-                                onClick={() => removeItem(item.documentId)}
+                                onClick={() => requestRemoveItem(item)}
                                 className="pb-cart-table__remove"
                                 aria-label={t.cart.remove}
                               >
-                                <X className="h-5 w-5" aria-hidden="true" />
+                                <Trash2
+                                  className="h-5 w-5"
+                                  aria-hidden="true"
+                                />
                               </button>
                             </td>
                           </tr>

@@ -2174,7 +2174,7 @@ html[dir='rtl'] .planblue-site {
 
 .pb-cart-table {
   width: 100%;
-  min-width: 720px;
+  min-width: 820px;
   border-collapse: collapse;
 }
 
@@ -2271,6 +2271,19 @@ html[dir='rtl'] .planblue-site {
   text-decoration: line-through;
 }
 
+.pb-cart-table__discount {
+  font-size: 14px;
+  font-weight: 600;
+  color: #e42932;
+  text-decoration: line-through;
+}
+
+.pb-cart-table__discount--empty {
+  color: #94a3b8;
+  text-decoration: none;
+  font-weight: 500;
+}
+
 .pb-cart-table__qty {
   min-width: 110px;
   max-width: 130px;
@@ -2300,7 +2313,7 @@ html[dir='rtl'] .planblue-site {
   border: none;
   border-radius: 50%;
   background: transparent;
-  color: #64748b;
+  color: #f7b90c;
   cursor: pointer;
   transition:
     color 0.2s ease,
@@ -2308,7 +2321,7 @@ html[dir='rtl'] .planblue-site {
 }
 
 .pb-cart-table__remove:hover {
-  color: #dc2626;
+  color: #e42932;
   background: #fef2f2;
 }
 
@@ -2548,6 +2561,64 @@ html[dir='rtl'] .planblue-site {
   .pb-cart-table__remove-cell::before {
     display: none;
   }
+}
+
+/* Cart remove confirm modal */
+.pb-cart-remove-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 130;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.pb-cart-remove-modal__dialog {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+  overflow: hidden;
+  border: 1px dashed #d8d8d8;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 24px 60px rgb(15 23 42 / 18%);
+}
+
+.pb-cart-remove-modal__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 20px 0;
+}
+
+.pb-cart-remove-modal__title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 800;
+  line-height: 1.35;
+  color: var(--pb-title);
+}
+
+.pb-cart-remove-modal__message {
+  margin: 0;
+  padding: 14px 20px 20px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: #64748b;
+}
+
+.pb-cart-remove-modal__footer {
+  display: flex;
+  gap: 10px;
+  padding: 0 20px 20px;
+}
+
+.pb-cart-remove-modal__footer .pb-cart-summary__btn {
+  flex: 1 1 0;
+  min-width: 0;
 }
 
 /* Checkout page — matches cart PlanBlue layout */
