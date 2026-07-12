@@ -71,6 +71,12 @@ html[dir='rtl'] .planblue-site {
   margin: 0 auto;
 }
 
+.pb-medium-container {
+  max-width: 1280px;
+  padding: 0 15px;
+  margin: 0 auto;
+}
+
 /* Page loader — Kiddex letters-loading effect */
 .pb-txt-loading {
   text-align: center;

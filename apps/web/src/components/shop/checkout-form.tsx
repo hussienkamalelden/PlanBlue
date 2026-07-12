@@ -215,7 +215,7 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
     return (
       <ShopPageShell
         bannerSrc="/images/checkout/banner.png"
-        mainClassName="relative pb-large-container py-10"
+        mainClassName="relative pb-medium-container py-10"
       >
         <section className="pb-checkout-section mt-10">
           <div className="pb-cart-empty">
@@ -236,7 +236,7 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
     return (
       <ShopPageShell
         bannerSrc="/images/checkout/banner.png"
-        mainClassName="relative pb-large-container flex min-h-[50vh] flex-col items-center justify-center py-10"
+        mainClassName="relative pb-medium-container flex min-h-[50vh] flex-col items-center justify-center py-10"
       >
         <div className="pb-checkout-success">
           <h1 className="pb-checkout-success__title">

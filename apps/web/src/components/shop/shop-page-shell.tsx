@@ -10,7 +10,7 @@ type ShopPageShellProps = {
 
 export function ShopPageShell({
   children,
-  mainClassName = 'relative pb-large-container py-10',
+  mainClassName = 'relative pb-medium-container py-10',
   bannerSrc,
 }: ShopPageShellProps) {
   return (
