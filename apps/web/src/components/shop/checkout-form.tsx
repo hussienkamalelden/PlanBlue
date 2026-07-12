@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Battery, Gift } from "lucide-react";
 
 import {
   CartItemValidationMessages,
@@ -452,19 +451,21 @@ export function CheckoutForm({ shippingOptions }: CheckoutFormProps) {
             </ul>
 
             <div className="pb-checkout-perks">
-              <div className="pb-checkout-perks__item">
-                <Gift className="pb-checkout-perks__icon" aria-hidden="true" />
-                <p>{t.checkout.giftWrappingNote}</p>
-              </div>
-              {hasBatteryItems && (
-                <div className="pb-checkout-perks__item pb-checkout-perks__item--highlight">
-                  <Battery
-                    className="pb-checkout-perks__icon pb-checkout-perks__icon--battery"
-                    aria-hidden="true"
-                  />
-                  <p>{t.checkout.freeBatteriesPerk}</p>
-                </div>
-              )}
+              <p className="pb-checkout-perks__title">
+                {t.checkout.perksCongratulations}
+              </p>
+              <p className="pb-checkout-perks__message">
+                {t.checkout.perksMessagePrefix}{" "}
+                <strong>{t.checkout.perksGiftHighlight}</strong>
+                {hasBatteryItems && (
+                  <>
+                    {" "}
+                    {t.checkout.perksMessageJoin}{" "}
+                    <strong>{t.checkout.perksBatteriesHighlight}</strong>
+                  </>
+                )}{" "}
+                {t.checkout.perksMessageSuffix}
+              </p>
             </div>
 
             <div className="pb-checkout-promo">

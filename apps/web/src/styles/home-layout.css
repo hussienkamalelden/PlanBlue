@@ -2872,44 +2872,26 @@ html[dir='rtl'] .planblue-site {
   border: 1px dashed #86efac;
   border-radius: 10px;
   background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
-  box-shadow: 0 8px 20px rgba(22, 163, 74, 0.08);
+  text-align: center;
 }
 
-.pb-checkout-perks__item {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
+.pb-checkout-perks__title {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #15803d;
 }
 
-.pb-checkout-perks__item + .pb-checkout-perks__item {
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px dashed rgba(22, 163, 74, 0.22);
-}
-
-.pb-checkout-perks__icon {
-  flex-shrink: 0;
-  width: 18px;
-  height: 18px;
-  margin-top: 1px;
-  color: #16a34a;
-}
-
-.pb-checkout-perks__icon--battery {
-  transform: rotate(-90deg);
-}
-
-.pb-checkout-perks__item p {
+.pb-checkout-perks__message {
   margin: 0;
-  font-size: 13px;
-  line-height: 1.55;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.6;
   color: #166534;
 }
 
-.pb-checkout-perks__item--highlight p {
-  font-size: 14px;
-  font-weight: 700;
-  color: #15803d;
+.pb-checkout-perks__message strong {
+  font-weight: 600;
 }
 
 .pb-checkout-summary__title {
