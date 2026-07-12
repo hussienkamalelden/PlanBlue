@@ -90,7 +90,6 @@ export default function Cart() {
                     <thead>
                       <tr>
                         <th>{t.cart.tableProduct}</th>
-                        <th>{t.cart.tableDiscount}</th>
                         <th>{t.cart.tablePrice}</th>
                         <th>{t.cart.tableQuantity}</th>
                         <th>{t.cart.tableTotal}</th>
@@ -159,20 +158,17 @@ export default function Cart() {
                                 </div>
                               </div>
                             </td>
-                            <td
-                              data-label={t.cart.tableDiscount}
-                              className={
-                                hasSale
-                                  ? 'pb-cart-table__discount'
-                                  : 'pb-cart-table__discount pb-cart-table__discount--empty'
-                              }
-                            >
-                              {hasSale
-                                ? formatPrice(item.price, locale)
-                                : '—'}
-                            </td>
                             <td data-label={t.cart.tablePrice}>
-                              {formatPrice(unitPrice, locale)}
+                              <div className="pb-cart-table__price-cell">
+                                <span className="pb-cart-table__price-current">
+                                  {formatPrice(unitPrice, locale)}
+                                </span>
+                                {hasSale && (
+                                  <span className="pb-cart-table__price-old">
+                                    {formatPrice(item.price, locale)}
+                                  </span>
+                                )}
+                              </div>
                             </td>
                             <td data-label={t.cart.tableQuantity}>
                               <div

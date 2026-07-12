@@ -2174,7 +2174,7 @@ html[dir='rtl'] .planblue-site {
 
 .pb-cart-table {
   width: 100%;
-  min-width: 820px;
+  min-width: 720px;
   border-collapse: collapse;
 }
 
@@ -2267,21 +2267,22 @@ html[dir='rtl'] .planblue-site {
   margin-top: 4px;
   font-size: 13px;
   font-weight: 600;
-  color: #ff0000;
-  text-decoration: line-through;
-}
-
-.pb-cart-table__discount {
-  font-size: 14px;
-  font-weight: 600;
   color: #e42932;
   text-decoration: line-through;
 }
 
-.pb-cart-table__discount--empty {
-  color: #94a3b8;
-  text-decoration: none;
-  font-weight: 500;
+.pb-cart-table__price-cell {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.pb-cart-table__price-current {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--pb-theme);
+  line-height: 1.25;
 }
 
 .pb-cart-table__qty {
