@@ -1876,9 +1876,24 @@ html[dir='rtl'] .planblue-site {
 
 .pb-product-details__actions {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   gap: 14px;
+}
+
+.pb-product-details__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  align-self: stretch;
+  width: 100%;
+  gap: 10px;
+}
+
+.pb-product-details__buttons .pb-product-details__btn {
+  flex: 1 1 0;
+  min-width: 0;
+  padding-inline: 20px;
 }
 
 .pb-product-qty {
@@ -2120,17 +2135,13 @@ html[dir='rtl'] .planblue-site {
 }
 
 @media (max-width: 599px) {
-  .pb-product-details__actions {
+  .pb-product-details__buttons {
     flex-direction: column;
     align-items: stretch;
-  }
-
-  .pb-product-qty {
     width: 100%;
-    justify-content: center;
   }
 
-  .pb-product-details__btn {
+  .pb-product-details__buttons .pb-product-details__btn {
     width: 100%;
   }
 }
@@ -2392,6 +2403,7 @@ html[dir='rtl'] .planblue-site {
   line-height: 1.35;
   color: var(--pb-title);
   text-decoration: none;
+  text-transform: capitalize;
   transition: color 0.2s ease;
 }
 

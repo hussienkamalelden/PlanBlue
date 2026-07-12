@@ -202,35 +202,37 @@ export function ShopItemDetailView({
               label={t.shopItemDetail.quantity}
             />
 
-            <button
-              type="button"
-              onClick={handleAddToCart}
-              disabled={actionsDisabled}
-              aria-disabled={actionsDisabled}
-              className="pb-product-details__btn pb-product-details__btn--primary"
-            >
-              {t.shopItemDetail.addToCart}
-            </button>
+            <div className="pb-product-details__buttons">
+              <button
+                type="button"
+                onClick={handleAddToCart}
+                disabled={actionsDisabled}
+                aria-disabled={actionsDisabled}
+                className="pb-product-details__btn pb-product-details__btn--primary"
+              >
+                {t.shopItemDetail.addToCart}
+              </button>
 
-            <button
-              type="button"
-              onClick={handleBuyNow}
-              disabled={actionsDisabled}
-              aria-disabled={actionsDisabled}
-              className="pb-product-details__btn pb-product-details__btn--secondary"
-            >
-              {t.shopItemDetail.buyNow}
-            </button>
+              <button
+                type="button"
+                onClick={handleBuyNow}
+                disabled={actionsDisabled}
+                aria-disabled={actionsDisabled}
+                className="pb-product-details__btn pb-product-details__btn--secondary"
+              >
+                {t.shopItemDetail.buyNow}
+              </button>
 
-            <button
-              type="button"
-              onClick={handleShare}
-              aria-label={t.shopItemDetail.share}
-              className="pb-product-details__btn pb-product-details__btn--share"
-            >
-              <Share2 className="h-5 w-5" aria-hidden="true" />
-              <span>{t.shopItemDetail.share}</span>
-            </button>
+              <button
+                type="button"
+                onClick={handleShare}
+                aria-label={t.shopItemDetail.share}
+                className="pb-product-details__btn pb-product-details__btn--share"
+              >
+                <Share2 className="h-5 w-5" aria-hidden="true" />
+                <span>{t.shopItemDetail.share}</span>
+              </button>
+            </div>
           </div>
 
           {shareFeedback && (
