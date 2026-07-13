@@ -9,6 +9,7 @@ import {
   CheckoutFloatingSpinner,
 } from "@/components/shop/cart-validation-messages";
 import { CheckoutConfirmModal } from "@/components/shop/checkout-confirm-modal";
+import { CheckoutOrderSuccess } from "@/components/shop/checkout-order-success";
 import { ShopPageShell } from "@/components/shop/shop-page-shell";
 import { createOrder, calculateTotal, validatePromoCode } from "@/lib/api/orders";
 import { formatPrice } from "@/lib/api/strapi";
@@ -262,26 +263,9 @@ export function CheckoutForm({ shippingOptions }: CheckoutFormProps) {
     return (
       <ShopPageShell
         bannerSrc="/images/checkout/banner.png"
-        mainClassName="relative pb-medium-container flex min-h-[50vh] flex-col items-center justify-center py-10"
+        mainClassName="relative pb-medium-container flex min-h-[50vh] flex-col items-center justify-center overflow-hidden py-10"
       >
-        <div className="pb-checkout-success">
-          <h1 className="pb-checkout-success__title">
-            {t.checkout.success.title}
-          </h1>
-          <p className="pb-checkout-success__message">
-            {t.checkout.success.message}
-          </p>
-          <p className="pb-checkout-success__order">
-            {t.checkout.success.orderId}:{" "}
-            <span className="pb-checkout-success__order-id">{orderId}</span>
-          </p>
-          <Link
-            href="/"
-            className="pb-cart-summary__btn pb-cart-summary__btn--primary"
-          >
-            {t.checkout.success.backToHome}
-          </Link>
-        </div>
+        <CheckoutOrderSuccess orderId={orderId} />
       </ShopPageShell>
     );
   }

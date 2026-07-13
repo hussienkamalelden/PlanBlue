@@ -230,9 +230,11 @@
       "addressRequired": "Delivery address is required"
     },
     "success": {
-      "title": "Order Placed Successfully!",
-      "message": "Thank you for your order. You will receive a confirmation email shortly.",
-      "orderId": "Order ID",
+      "eyebrow": "Order confirmed",
+      "title": "Thank you",
+      "subtitle": "Your PlanBlue order is on its way.",
+      "message": "We've received your order and will send a confirmation email shortly.",
+      "orderId": "Order Number",
       "backToHome": "Back to Home"
     },
     "error": {
