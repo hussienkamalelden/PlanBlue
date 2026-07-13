@@ -267,7 +267,16 @@
     "allAffiliates": "All Affiliates",
     "pendingCommission": "Pending commission",
     "empty": "No affiliates yet. Check back soon!",
-    "moreComingSoon": "More affiliates joining soon — stay tuned!"
+    "moreComingSoon": "More affiliates joining soon — stay tuned!",
+    "gate": {
+      "title": "Protected Area",
+      "subtitle": "Enter the password to view the affiliate leaderboard.",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Enter password",
+      "submit": "Enter",
+      "checking": "Checking...",
+      "invalidPassword": "Incorrect password. Please try again."
+    }
   },
   "footer": {
     "about": "Quality toys for every age, delivered across Egypt with care.",

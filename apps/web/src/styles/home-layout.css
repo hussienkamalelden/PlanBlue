@@ -4151,3 +4151,117 @@ html[dir='rtl'] .planblue-site {
   border-radius: 10px;
   font-size: 20px;
 }
+
+/* Affiliate password gate */
+.pb-affiliate-gate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  padding: 2rem 0;
+}
+
+.pb-affiliate-gate--loading {
+  min-height: 40vh;
+}
+
+.pb-affiliate-gate__loading {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #64748b;
+  text-align: center;
+}
+
+.pb-affiliate-gate__card {
+  width: 100%;
+  max-width: 420px;
+  padding: 2rem 1.75rem;
+  border: 1px dashed #b8d4ff;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  text-align: center;
+  box-shadow:
+    0 12px 32px rgba(67, 137, 247, 0.1),
+    0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.pb-affiliate-gate__icon-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 1rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4389f7 0%, #2563eb 100%);
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(67, 137, 247, 0.28);
+}
+
+.pb-affiliate-gate__title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.3;
+  color: var(--pb-title);
+}
+
+.pb-affiliate-gate__subtitle {
+  margin: 0.65rem 0 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: #64748b;
+}
+
+.pb-affiliate-gate__form {
+  margin-top: 1.5rem;
+  text-align: start;
+}
+
+.pb-affiliate-gate__label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--pb-title);
+}
+
+.pb-affiliate-gate__input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px dashed #d8d8d8;
+  border-radius: 10px;
+  background: #fff;
+  font-size: 15px;
+  color: var(--pb-title);
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.pb-affiliate-gate__input:focus {
+  border-color: var(--pb-theme);
+}
+
+.pb-affiliate-gate__input:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.pb-affiliate-gate__error {
+  margin: 10px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #dc2626;
+}
+
+.pb-affiliate-gate__submit {
+  width: 100%;
+  margin-top: 1.25rem;
+}
+
+@media (max-width: 767px) {
+  .pb-affiliate-gate__card {
+    padding: 1.75rem 1.25rem;
+  }
+}

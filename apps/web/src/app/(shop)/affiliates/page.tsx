@@ -1,4 +1,5 @@
 import { AffiliateLeaderboard } from '@/components/affiliate/affiliate-leaderboard';
+import { AffiliatePasswordGate } from '@/components/affiliate/affiliate-password-gate';
 import { fetchAffiliates } from '@/lib/api/strapi.server';
 import type { Metadata } from 'next';
 
@@ -11,7 +12,9 @@ export default async function AffiliatesPage() {
 
   return (
     <main className="pb-large-container py-6 sm:py-10">
-      <AffiliateLeaderboard affiliates={affiliates} />
+      <AffiliatePasswordGate>
+        <AffiliateLeaderboard affiliates={affiliates} />
+      </AffiliatePasswordGate>
     </main>
   );
 }
