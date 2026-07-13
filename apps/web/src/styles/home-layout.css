@@ -3638,97 +3638,66 @@ html[dir='rtl'] .planblue-site {
 
 .pb-checkout-celebration__confetti {
   position: absolute;
-  top: -12px;
+  top: -16px;
   border-radius: 2px;
   opacity: 0;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.35);
   animation-name: checkout-confetti-fall;
   animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
+}
+
+.pb-checkout-celebration__confetti--v1 {
+  border-radius: 50%;
+}
+
+.pb-checkout-celebration__confetti--v2 {
+  border-radius: 1px;
 }
 
 .pb-checkout-celebration__firework {
   position: absolute;
-  width: 8px;
-  height: 8px;
+  width: 14px;
+  height: 14px;
   transform: translate(-50%, -50%);
-  animation: checkout-firework-flash 0.9s ease-out forwards;
+  animation: checkout-firework-flash 3s ease-out infinite;
   opacity: 0;
+  filter: drop-shadow(0 0 8px var(--firework-color, #4389f7));
+}
+
+.pb-checkout-celebration__firework::before {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0.85;
 }
 
 .pb-checkout-celebration__spark {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 4px;
-  height: 4px;
-  margin: -2px 0 0 -2px;
   border-radius: 50%;
   background: var(--firework-color, #4389f7);
-  animation: checkout-spark-burst 0.85s ease-out forwards;
+  box-shadow: 0 0 6px var(--firework-color, #4389f7);
+  animation: checkout-spark-burst 3s ease-out infinite;
   transform: rotate(var(--spark-angle, 0deg)) translateY(0);
 }
 
-.pb-checkout-celebration__rocket {
-  position: absolute;
-  bottom: -40px;
-  width: 28px;
-  height: 48px;
-  opacity: 0;
+.pb-checkout-celebration__spark--inner {
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  --spark-distance: -58px;
 }
 
-.pb-checkout-celebration__rocket--left {
-  inset-inline-start: 14%;
-  animation: checkout-rocket-left 1.8s cubic-bezier(0.33, 0, 0.2, 1) 0.35s forwards;
-}
-
-.pb-checkout-celebration__rocket--right {
-  inset-inline-end: 14%;
-  animation: checkout-rocket-right 1.8s cubic-bezier(0.33, 0, 0.2, 1) 0.65s forwards;
-}
-
-.pb-checkout-celebration__rocket-icon {
-  position: absolute;
-  inset: 0;
-  border-radius: 50% 50% 40% 40%;
-  background: linear-gradient(180deg, #4389f7 0%, #2563eb 100%);
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85);
-}
-
-.pb-checkout-celebration__rocket-icon::before {
-  content: '';
-  position: absolute;
-  top: 6px;
-  left: 50%;
-  width: 10px;
-  height: 10px;
-  margin-left: -5px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.92);
-}
-
-.pb-checkout-celebration__rocket-icon::after {
-  content: '';
-  position: absolute;
-  bottom: -6px;
-  left: 50%;
-  width: 0;
-  height: 0;
-  margin-left: -8px;
-  border-left: 8px solid transparent;
-  border-right: 8px solid transparent;
-  border-top: 12px solid #e0a31e;
-}
-
-.pb-checkout-celebration__rocket-trail {
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  width: 3px;
-  height: 36px;
-  margin-left: -1.5px;
-  border-radius: 999px;
-  background: linear-gradient(180deg, rgba(224, 163, 30, 0.85), transparent);
-  transform-origin: top center;
+.pb-checkout-celebration__spark--outer {
+  width: 5px;
+  height: 5px;
+  margin: -2.5px 0 0 -2.5px;
+  opacity: 0.85;
+  --spark-distance: -78px;
 }
 
 @keyframes checkout-success-enter {
@@ -3794,65 +3763,50 @@ html[dir='rtl'] .planblue-site {
 @keyframes checkout-confetti-fall {
   0% {
     opacity: 1;
-    transform: translateY(-10vh) rotate(0deg);
+    transform: translateY(-12vh) rotate(0deg) scale(1);
   }
   100% {
-    opacity: 0;
-    transform: translateY(105vh) rotate(720deg);
+    opacity: 0.75;
+    transform: translateY(110vh) rotate(720deg) scale(0.85);
   }
 }
 
 @keyframes checkout-firework-flash {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0.2);
-  }
-  12% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
+  0%,
+  52%,
   100% {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(1.2);
+    transform: translate(-50%, -50%) scale(0.25);
+  }
+  3% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.35);
+  }
+  10% {
+    opacity: 0.95;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  24% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.6);
   }
 }
 
 @keyframes checkout-spark-burst {
-  0% {
-    opacity: 1;
-    transform: rotate(var(--spark-angle, 0deg)) translateY(0);
-  }
+  0%,
+  52%,
   100% {
     opacity: 0;
-    transform: rotate(var(--spark-angle, 0deg)) translateY(-42px);
+    transform: rotate(var(--spark-angle, 0deg)) translateY(0) scale(0.4);
   }
-}
-
-@keyframes checkout-rocket-left {
-  0% {
-    opacity: 0;
-    transform: translate(0, 0) rotate(-18deg);
-  }
-  8% {
+  3% {
     opacity: 1;
+    transform: rotate(var(--spark-angle, 0deg)) translateY(0) scale(1);
   }
-  100% {
+  24% {
     opacity: 0;
-    transform: translate(28vw, -72vh) rotate(-8deg);
-  }
-}
-
-@keyframes checkout-rocket-right {
-  0% {
-    opacity: 0;
-    transform: translate(0, 0) rotate(18deg);
-  }
-  8% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-28vw, -72vh) rotate(8deg);
+    transform: rotate(var(--spark-angle, 0deg)) translateY(var(--spark-distance, -58px))
+      scale(0.5);
   }
 }
 

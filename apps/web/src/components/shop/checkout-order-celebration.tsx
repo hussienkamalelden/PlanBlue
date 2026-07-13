@@ -1,62 +1,47 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+const CONFETTI_COLORS = ['#4389f7', '#e0a31e', '#f7b90c', '#22c55e', '#16a34a'] as const;
 
-const CONFETTI = [
-  { left: '6%', delay: '0s', duration: '2.8s', color: '#4389f7', size: 7, rotate: 15 },
-  { left: '14%', delay: '0.15s', duration: '3.2s', color: '#e0a31e', size: 6, rotate: -20 },
-  { left: '22%', delay: '0.05s', duration: '2.6s', color: '#4389f7', size: 5, rotate: 35 },
-  { left: '31%', delay: '0.25s', duration: '3.4s', color: '#f7b90c', size: 7, rotate: -10 },
-  { left: '39%', delay: '0.1s', duration: '2.9s', color: '#4389f7', size: 6, rotate: 25 },
-  { left: '48%', delay: '0.35s', duration: '3.1s', color: '#e0a31e', size: 5, rotate: -30 },
-  { left: '56%', delay: '0.08s', duration: '2.7s', color: '#4389f7', size: 7, rotate: 12 },
-  { left: '64%', delay: '0.22s', duration: '3.3s', color: '#f7b90c', size: 6, rotate: -18 },
-  { left: '72%', delay: '0.12s', duration: '2.5s', color: '#4389f7', size: 5, rotate: 40 },
-  { left: '80%', delay: '0.28s', duration: '3s', color: '#e0a31e', size: 7, rotate: -25 },
-  { left: '88%', delay: '0.18s', duration: '2.8s', color: '#4389f7', size: 6, rotate: 8 },
-  { left: '94%', delay: '0.32s', duration: '3.2s', color: '#f7b90c', size: 5, rotate: -35 },
-  { left: '18%', delay: '0.45s', duration: '3.5s', color: '#4389f7', size: 6, rotate: 22 },
-  { left: '44%', delay: '0.52s', duration: '3.1s', color: '#e0a31e', size: 7, rotate: -12 },
-  { left: '68%', delay: '0.48s', duration: '2.9s', color: '#4389f7', size: 5, rotate: 30 },
-  { left: '85%', delay: '0.55s', duration: '3.3s', color: '#f7b90c', size: 6, rotate: -28 },
-] as const;
+const CONFETTI = Array.from({ length: 52 }, (_, index) => ({
+  left: `${((index * 1.92 + (index % 4) * 1.3) % 97) + 1.5}%`,
+  delay: `${((index * 0.07) % 2.8).toFixed(2)}s`,
+  duration: `${(2 + (index % 6) * 0.32).toFixed(2)}s`,
+  color: CONFETTI_COLORS[index % CONFETTI_COLORS.length],
+  size: 9 + (index % 5),
+  variant: index % 3,
+}));
 
 const FIREWORKS = [
-  { top: '18%', left: '12%', delay: '0.2s', color: '#4389f7' },
-  { top: '14%', left: '82%', delay: '0.55s', color: '#e0a31e' },
-  { top: '24%', left: '50%', delay: '0.85s', color: '#4389f7' },
-  { top: '10%', left: '35%', delay: '1.15s', color: '#f7b90c' },
-  { top: '20%', left: '68%', delay: '1.45s', color: '#4389f7' },
+  { top: '12%', left: '8%', delay: '0s', color: '#4389f7' },
+  { top: '8%', left: '28%', delay: '0.45s', color: '#22c55e' },
+  { top: '16%', left: '48%', delay: '0.9s', color: '#e0a31e' },
+  { top: '10%', left: '68%', delay: '1.35s', color: '#4389f7' },
+  { top: '14%', left: '88%', delay: '1.8s', color: '#f7b90c' },
+  { top: '22%', left: '18%', delay: '2.25s', color: '#16a34a' },
+  { top: '20%', left: '38%', delay: '2.7s', color: '#4389f7' },
+  { top: '18%', left: '58%', delay: '0.3s', color: '#e0a31e' },
+  { top: '24%', left: '78%', delay: '0.75s', color: '#22c55e' },
+  { top: '6%', left: '92%', delay: '1.2s', color: '#4389f7' },
+  { top: '26%', left: '5%', delay: '1.65s', color: '#f7b90c' },
+  { top: '28%', left: '92%', delay: '2.1s', color: '#16a34a' },
 ] as const;
 
-const SPARK_ANGLES = [0, 45, 90, 135, 180, 225, 270, 315];
+const SPARK_ANGLES = Array.from({ length: 16 }, (_, index) => index * 22.5);
 
 export function CheckoutOrderCelebration() {
-  const [active, setActive] = useState(true);
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => setActive(false), 5200);
-    return () => window.clearTimeout(timer);
-  }, []);
-
-  if (!active) {
-    return null;
-  }
-
   return (
     <div className="pb-checkout-celebration" aria-hidden>
       {CONFETTI.map((piece, index) => (
         <span
           key={`confetti-${index}`}
-          className="pb-checkout-celebration__confetti"
+          className={`pb-checkout-celebration__confetti pb-checkout-celebration__confetti--v${piece.variant}`}
           style={{
             left: piece.left,
             width: piece.size,
-            height: piece.size * 1.4,
+            height: piece.variant === 2 ? piece.size * 0.45 : piece.size * 1.35,
             backgroundColor: piece.color,
             animationDelay: piece.delay,
             animationDuration: piece.duration,
-            transform: `rotate(${piece.rotate}deg)`,
           }}
         />
       ))}
@@ -74,23 +59,26 @@ export function CheckoutOrderCelebration() {
         >
           {SPARK_ANGLES.map((angle) => (
             <span
-              key={angle}
-              className="pb-checkout-celebration__spark"
-              style={{ ['--spark-angle' as string]: `${angle}deg` }}
+              key={`inner-${angle}`}
+              className="pb-checkout-celebration__spark pb-checkout-celebration__spark--inner"
+              style={{
+                ['--spark-angle' as string]: `${angle}deg`,
+                animationDelay: firework.delay,
+              }}
+            />
+          ))}
+          {SPARK_ANGLES.map((angle) => (
+            <span
+              key={`outer-${angle}`}
+              className="pb-checkout-celebration__spark pb-checkout-celebration__spark--outer"
+              style={{
+                ['--spark-angle' as string]: `${angle + 11.25}deg`,
+                animationDelay: firework.delay,
+              }}
             />
           ))}
         </div>
       ))}
-
-      <div className="pb-checkout-celebration__rocket pb-checkout-celebration__rocket--left">
-        <span className="pb-checkout-celebration__rocket-icon" />
-        <span className="pb-checkout-celebration__rocket-trail" />
-      </div>
-
-      <div className="pb-checkout-celebration__rocket pb-checkout-celebration__rocket--right">
-        <span className="pb-checkout-celebration__rocket-icon" />
-        <span className="pb-checkout-celebration__rocket-trail" />
-      </div>
     </div>
   );
 }
