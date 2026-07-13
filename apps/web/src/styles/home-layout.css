@@ -78,7 +78,53 @@ html[dir='rtl'] .planblue-site {
 }
 
 /* Page loader — Kiddex letters-loading effect */
+.pb-page-loader__inner {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 26rem;
+  padding-inline: clamp(1rem, 5vw, 1.5rem);
+  text-align: center;
+}
+
+.pb-page-loader__logo-wrap {
+  position: relative;
+  width: fit-content;
+  margin-inline: auto;
+  margin-bottom: clamp(2.5rem, 9vw, 3rem);
+}
+
+.pb-page-loader__shape {
+  pointer-events: none;
+  position: absolute;
+  top: clamp(-1.5rem, -4vw, -2rem);
+  left: 50%;
+  z-index: 0;
+  height: clamp(6.5rem, 28vw, 11.875rem);
+  width: clamp(10rem, 42vw, 17.5rem);
+  transform: translateX(-50%);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.pb-page-loader__logo {
+  position: relative;
+  z-index: 10;
+  display: block;
+  width: auto;
+  height: clamp(4rem, 16vw, 8rem);
+  margin-inline: auto;
+}
+
 .pb-txt-loading {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  width: 100%;
+  padding-inline: 0.25rem;
+  white-space: nowrap;
+  line-height: 1.1;
   text-align: center;
   user-select: none;
   perspective: 400px;
@@ -88,10 +134,12 @@ html[dir='rtl'] .planblue-site {
 .pb-letters-loading {
   position: relative;
   display: inline-block;
-  font-size: clamp(30px, 8vw, 70px);
+  flex: 0 0 auto;
+  padding-inline: 0.0625rem;
+  font-size: clamp(1.125rem, 5vw, 4.375rem);
   line-height: 1;
   font-weight: 500;
-  letter-spacing: clamp(5px, 2vw, 15px);
+  letter-spacing: clamp(0.05rem, 0.7vw, 0.9375rem);
   text-transform: uppercase;
   color: transparent;
   -webkit-text-stroke-width: 1px;
