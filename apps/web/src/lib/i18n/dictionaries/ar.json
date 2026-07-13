@@ -278,6 +278,25 @@
       "invalidPassword": "كلمة المرور غير صحيحة. حاول مرة أخرى."
     }
   },
+  "report": {
+    "badge": "تقارير PlanBlue",
+    "title": "إنشاء تقرير",
+    "subtitle": "اختر تاريخاً من التقويم، ثم أنشئ تقريرك.",
+    "generateReport": "Generate Report",
+    "gate": {
+      "title": "منطقة محمية",
+      "subtitle": "أدخل كلمة المرور للوصول إلى صفحة التقارير.",
+      "passwordLabel": "كلمة المرور",
+      "passwordPlaceholder": "أدخل كلمة المرور",
+      "submit": "دخول",
+      "checking": "جاري التحقق...",
+      "invalidPassword": "كلمة المرور غير صحيحة. حاول مرة أخرى."
+    },
+    "calendar": {
+      "previousMonth": "الشهر السابق",
+      "nextMonth": "الشهر التالي"
+    }
+  },
   "footer": {
     "about": "ألعاب عالية الجودة لكل الأعمار، نوصلها في جميع أنحاء مصر بعناية.",
     "linksTitle": "روابط سريعة",

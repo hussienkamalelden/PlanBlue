@@ -278,6 +278,25 @@
       "invalidPassword": "Incorrect password. Please try again."
     }
   },
+  "report": {
+    "badge": "PlanBlue Reports",
+    "title": "Generate Report",
+    "subtitle": "Select a date from the calendar, then generate your report.",
+    "generateReport": "Generate Report",
+    "gate": {
+      "title": "Protected Area",
+      "subtitle": "Enter the password to access the report page.",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Enter password",
+      "submit": "Enter",
+      "checking": "Checking...",
+      "invalidPassword": "Incorrect password. Please try again."
+    },
+    "calendar": {
+      "previousMonth": "Previous month",
+      "nextMonth": "Next month"
+    }
+  },
   "footer": {
     "about": "Quality toys for every age, delivered across Egypt with care.",
     "linksTitle": "Quick links",

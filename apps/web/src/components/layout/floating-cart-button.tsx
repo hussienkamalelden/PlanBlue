@@ -8,7 +8,7 @@ import { ShoppingCart } from 'lucide-react';
 import { useCartStore } from '@/lib/cart/cart-store';
 import { useTranslations } from '@/lib/i18n/use-translations';
 
-const HIDDEN_PATHS = ['/cart', '/checkout', '/affiliates'];
+const HIDDEN_PATHS = ['/cart', '/checkout', '/affiliates', '/report'];
 
 export function FloatingCartButton() {
   const t = useTranslations();
