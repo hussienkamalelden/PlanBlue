@@ -243,7 +243,9 @@ export default function Cart() {
                               className="pb-cart-table__total-cell"
                               data-label={t.cart.tableTotal}
                             >
-                              {formatPriceDisplay(unitPrice * item.quantity, locale)}
+                              <span className="pb-cart-table__total-value">
+                                {formatPriceDisplay(unitPrice * item.quantity, locale)}
+                              </span>
                             </td>
                             <td
                               className="pb-cart-table__remove-cell"
