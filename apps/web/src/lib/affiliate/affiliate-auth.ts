@@ -3,9 +3,11 @@ import {
   markProtectedPageAuthenticated,
   verifyProtectedPagePassword,
 } from '@/lib/auth/protected-page-auth';
+import { decodePasswordHashFromEnv } from '@/lib/auth/decode-password-hash';
 
-export const AFFILIATE_PASSWORD_HASH =
-  process.env.NEXT_PUBLIC_AFFILIATE_PASSWORD_HASH ?? '';
+export const AFFILIATE_PASSWORD_HASH = decodePasswordHashFromEnv(
+  process.env.NEXT_PUBLIC_AFFILIATE_PASSWORD_HASH,
+);
 
 export const AFFILIATE_AUTH_STORAGE_KEY = 'planblue-affiliate-access';
 export const AFFILIATE_AUTH_STORAGE_VALUE = 'granted';

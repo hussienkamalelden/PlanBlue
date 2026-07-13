@@ -3,9 +3,11 @@ import {
   markProtectedPageAuthenticated,
   verifyProtectedPagePassword,
 } from '@/lib/auth/protected-page-auth';
+import { decodePasswordHashFromEnv } from '@/lib/auth/decode-password-hash';
 
-export const REPORT_PASSWORD_HASH =
-  process.env.NEXT_PUBLIC_REPORT_PASSWORD_HASH ?? '';
+export const REPORT_PASSWORD_HASH = decodePasswordHashFromEnv(
+  process.env.NEXT_PUBLIC_REPORT_PASSWORD_HASH,
+);
 
 export const REPORT_AUTH_STORAGE_KEY = 'planblue-report-access';
 export const REPORT_AUTH_STORAGE_VALUE = 'granted';
