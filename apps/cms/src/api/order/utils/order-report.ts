@@ -48,14 +48,26 @@ export async function generateAndSendReport(
   const fromUTC = new Date(`${fromDate}T00:00:00.000+03:00`).toISOString();
   const toUTC = new Date(`${toDate}T23:59:59.999+03:00`).toISOString();
 
-  const orders = await strapi.documents('api::order.order').findMany({
-    filters: {
-      createdAt: {
-        $gte: fromUTC,
-        $lte: toUTC,
-      },
+  // Include orders created OR updated in the range, and read published rows
+  // directly so status changes (e.g. pending → delivered) are reflected.
+  const orders = await strapi.db.query('api::order.order').findMany({
+    where: {
+      publishedAt: { $ne: null },
+      $or: [
+        {
+          createdAt: {
+            $gte: fromUTC,
+            $lte: toUTC,
+          },
+        },
+        {
+          updatedAt: {
+            $gte: fromUTC,
+            $lte: toUTC,
+          },
+        },
+      ],
     },
-    status: 'published',
   });
 
   const subtotalByStatus: StatusBreakdown[] = [];
