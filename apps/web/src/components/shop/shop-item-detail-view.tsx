@@ -86,14 +86,17 @@ export function ShopItemDetailView({
 
   async function handleShare() {
     const url = `${window.location.origin}/shop/${item.slug}`;
+    const displayPrice = salePrice ?? basePrice;
+    const priceLabel = formatPrice(displayPrice, locale);
+    const shareText = `${title} — ${priceLabel}`;
 
     try {
       if (typeof navigator.share === 'function') {
-        await navigator.share({ title, url });
+        await navigator.share({ title: shareText, text: shareText, url });
         return;
       }
 
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(`${shareText}\n${url}`);
       setShareFeedback(t.shopItemDetail.shareCopied);
       window.setTimeout(() => setShareFeedback(null), 2500);
     } catch (error) {
