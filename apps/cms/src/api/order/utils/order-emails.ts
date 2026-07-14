@@ -246,6 +246,7 @@ export async function sendOrderNotificationEmails(
 export {
   calculateOrderSubtotal,
   formatOrderItemsForEmail,
+  formatOrderItemsListForClientEmail,
   getLatestOrderItemsForStock,
   getPopulatedOrderItems,
 };

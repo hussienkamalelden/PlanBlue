@@ -4,6 +4,7 @@ import React from 'react';
 
 import {
   formatOrderItemsForEmail,
+  formatOrderItemsListForClientEmail,
   getPopulatedOrderItems,
   sendOrderNotificationEmails,
 } from '../../utils/order-emails';
@@ -328,7 +329,7 @@ async function processAffiliateCommission(result: any) {
 
     try {
       const orderItems = await getPopulatedOrderItems(strapi, result.documentId);
-      const formattedItems = formatOrderItemsForEmail(orderItems);
+      const orderItemsList = formatOrderItemsListForClientEmail(orderItems);
       const avatarUrl = getStrapiMediaUrl(matchedAffiliate.avatar);
 
       const emailHtml = await render(
@@ -342,7 +343,7 @@ async function processAffiliateCommission(result: any) {
           order_id: result.order_id,
           promo_code: promoCode,
           order_subtotal: orderSubtotal,
-          order_items: formattedItems,
+          order_items_list: orderItemsList,
         }),
       );
 
