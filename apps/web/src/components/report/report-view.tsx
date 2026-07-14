@@ -99,6 +99,16 @@ function isBetweenRange(date: Date, fromDate: Date, toDate: Date): boolean {
   return time > from.getTime() && time < to.getTime();
 }
 
+function isAfterToday(date: Date, today: Date): boolean {
+  return startOfDay(date).getTime() > startOfDay(today).getTime();
+}
+
+function isFutureMonth(year: number, month: number, today: Date): boolean {
+  const monthStart = new Date(year, month, 1);
+  const currentMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+  return monthStart.getTime() > currentMonthStart.getTime();
+}
+
 export function ReportView() {
   const t = useTranslations();
   const locale = useLocaleStore((state) => state.locale);
@@ -158,14 +168,30 @@ export function ReportView() {
   }
 
   function goToNextMonth() {
+    if (isFutureMonth(visibleMonth.year, visibleMonth.month + 1, today)) {
+      return;
+    }
+
     setVisibleMonth((current) => {
       const date = new Date(current.year, current.month + 1, 1);
       return { year: date.getFullYear(), month: date.getMonth() };
     });
   }
 
+  const canGoToNextMonth = !isFutureMonth(
+    visibleMonth.year,
+    visibleMonth.month + 1,
+    today,
+  );
+
   function handleDaySelect(date: Date) {
     const picked = startOfDay(date);
+
+    if (isAfterToday(picked, today)) {
+      return;
+    }
+
+    setReportStatus('idle');
 
     if (activeField === 'from') {
       setFromDate(picked);
@@ -282,6 +308,7 @@ export function ReportView() {
               type="button"
               className="pb-report-calendar__nav"
               onClick={goToNextMonth}
+              disabled={!canGoToNextMonth}
               aria-label={t.report.calendar.nextMonth}
             >
               <NextMonthIcon aria-hidden size={20} />
@@ -315,6 +342,7 @@ export function ReportView() {
                   ? isBetweenRange(cell.date, fromDate, toDate)
                   : false;
               const isToday = isSameDay(cell.date, today);
+              const isDisabled = isAfterToday(cell.date, today);
 
               return (
                 <button
@@ -327,10 +355,12 @@ export function ReportView() {
                     isTo ? 'pb-report-calendar__cell--to' : '',
                     isInRange ? 'pb-report-calendar__cell--in-range' : '',
                     isToday ? 'pb-report-calendar__cell--today' : '',
+                    isDisabled ? 'pb-report-calendar__cell--disabled' : '',
                   ]
                     .filter(Boolean)
                     .join(' ')}
                   onClick={() => handleDaySelect(cell.date)}
+                  disabled={isDisabled}
                   aria-pressed={isFrom || isTo}
                   aria-label={formatReportDate(cell.date, locale)}
                 >
@@ -344,7 +374,12 @@ export function ReportView() {
         <button
           type="button"
           className="pb-cart-summary__btn pb-cart-summary__btn--primary pb-report__generate"
-          disabled={!fromDate || !toDate || reportStatus === 'sending'}
+          disabled={
+            !fromDate ||
+            !toDate ||
+            reportStatus === 'sending' ||
+            reportStatus === 'success'
+          }
           onClick={handleGenerateReport}
         >
           {reportStatus === 'sending'
