@@ -25,6 +25,7 @@ type OrderIdsByStatus = {
 type ReportData = {
   fromDate: string;
   toDate: string;
+  totalOrdersCount: number;
   subtotalByStatus: StatusBreakdown[];
   shippingByStatus: StatusBreakdown[];
   affiliateDiscountDelivered: number;
@@ -148,6 +149,7 @@ export async function generateAndSendReport(
   const reportData: ReportData = {
     fromDate,
     toDate,
+    totalOrdersCount: orders.length,
     subtotalByStatus,
     shippingByStatus,
     affiliateDiscountDelivered,

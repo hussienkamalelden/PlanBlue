@@ -41,6 +41,7 @@ type OrderIdsByStatus = {
 interface AdminReportEmailProps {
   fromDate: string;
   toDate: string;
+  totalOrdersCount: number;
   subtotalByStatus: StatusBreakdown[];
   shippingByStatus: StatusBreakdown[];
   affiliateDiscountDelivered: number;
@@ -69,6 +70,7 @@ function formatCurrency(value: number): string {
 const AdminReportEmail = ({
   fromDate,
   toDate,
+  totalOrdersCount,
   subtotalByStatus,
   shippingByStatus,
   affiliateDiscountDelivered,
@@ -93,9 +95,13 @@ const AdminReportEmail = ({
           </Section>
 
           <Section style={contentSection}>
-            {/* 1. Subtotal by status */}
+            <Section style={totalOrdersBanner}>
+              <Text style={totalOrdersLabel}>إجمالي عدد الطلبات</Text>
+              <Text style={totalOrdersValue}>{totalOrdersCount}</Text>
+            </Section>
+
             <Section style={card}>
-              <Text style={cardTitle}>١. إجمالي المبيعات (Subtotal) حسب الحالة</Text>
+              <Text style={cardTitle}>إجمالي المبيعات حسب الحالة</Text>
               {subtotalByStatus.map((item, i) => (
                 <Row key={`sub-${i}`} style={dataRow}>
                   <Text style={statusLabel}>{getStatusLabel(item.status)}</Text>
@@ -104,9 +110,8 @@ const AdminReportEmail = ({
               ))}
             </Section>
 
-            {/* 2. Shipping by status */}
             <Section style={card}>
-              <Text style={cardTitle}>٢. إجمالي الشحن حسب الحالة</Text>
+              <Text style={cardTitle}>إجمالي الشحن حسب الحالة</Text>
               {shippingByStatus.map((item, i) => (
                 <Row key={`ship-${i}`} style={dataRow}>
                   <Text style={statusLabel}>{getStatusLabel(item.status)}</Text>
@@ -115,18 +120,16 @@ const AdminReportEmail = ({
               ))}
             </Section>
 
-            {/* 3. Affiliate discount (delivered only) */}
             <Section style={card}>
-              <Text style={cardTitle}>٣. نسبة الأفلييت (الطلبات المسلّمة فقط)</Text>
+              <Text style={cardTitle}>نسبة الأفلييت (الطلبات المسلّمة فقط)</Text>
               <Row style={highlightRow}>
                 <Text style={statusLabel}>تم التوصيل</Text>
                 <Text style={highlightValue}>{formatCurrency(affiliateDiscountDelivered)}</Text>
               </Row>
             </Section>
 
-            {/* 4. Client discount by status */}
             <Section style={card}>
-              <Text style={cardTitle}>٤. نسبة خصم العميل حسب الحالة</Text>
+              <Text style={cardTitle}>نسبة خصم العميل حسب الحالة</Text>
               {clientDiscountByStatus.map((item, i) => (
                 <Row key={`disc-${i}`} style={dataRow}>
                   <Text style={statusLabel}>{getStatusLabel(item.status)}</Text>
@@ -135,9 +138,8 @@ const AdminReportEmail = ({
               ))}
             </Section>
 
-            {/* 5. Gift wrapping by status */}
             <Section style={card}>
-              <Text style={cardTitle}>٥. إجمالي التغليف المميز حسب الحالة</Text>
+              <Text style={cardTitle}>إجمالي التغليف المميز حسب الحالة</Text>
               {giftWrappingByStatus.map((item, i) => (
                 <Row key={`gift-${i}`} style={dataRow}>
                   <Text style={statusLabel}>{getStatusLabel(item.status)}</Text>
@@ -146,9 +148,8 @@ const AdminReportEmail = ({
               ))}
             </Section>
 
-            {/* 6. Order count + details by status */}
             <Section style={card}>
-              <Text style={cardTitle}>٦. عدد الطلبات وتفاصيلها حسب الحالة</Text>
+              <Text style={cardTitle}>عدد الطلبات وتفاصيلها حسب الحالة</Text>
               {orderIdsByStatus.length === 0 ? (
                 <Text style={emptyText}>لا توجد طلبات في هذه الفترة</Text>
               ) : (
@@ -231,6 +232,30 @@ const contentSection = {
   padding: '24px',
 };
 
+const totalOrdersBanner = {
+  textAlign: 'center' as const,
+  padding: '20px 16px',
+  marginBottom: '20px',
+  backgroundColor: '#eff6ff',
+  borderRadius: '12px',
+  border: '1px solid #bfdbfe',
+};
+
+const totalOrdersLabel = {
+  color: '#64748b',
+  fontWeight: '600',
+  fontSize: '14px',
+  margin: '0 0 8px 0',
+};
+
+const totalOrdersValue = {
+  color: '#0f172a',
+  fontWeight: '800',
+  fontSize: '32px',
+  margin: '0',
+  lineHeight: '1.2',
+};
+
 const card = {
   backgroundColor: '#f8fafc',
   borderRadius: '12px',
@@ -244,6 +269,7 @@ const cardTitle = {
   fontSize: '14px',
   color: '#1e293b',
   margin: '0 0 12px 0',
+  textAlign: 'center' as const,
 };
 
 const dataRow = {
