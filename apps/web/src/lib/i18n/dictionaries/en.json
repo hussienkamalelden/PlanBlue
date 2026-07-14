@@ -288,6 +288,9 @@
     "selectTo": "Select end date",
     "rangeSummary": "From {from} to {to}",
     "generateReport": "Generate Report",
+    "sending": "Sending report...",
+    "emailSent": "Report sent successfully to the admin email.",
+    "emailError": "Failed to send the report. Please try again.",
     "gate": {
       "title": "Protected Area",
       "subtitle": "Enter the password to access the report page.",

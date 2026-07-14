@@ -4491,7 +4491,31 @@ html[dir='rtl'] .planblue-site {
 
 .pb-report__generate {
   width: 100%;
-  margin-top: 1.5rem;
+  margin-top: 2rem;
+}
+
+.pb-report__success {
+  margin: 1rem 0 0;
+  padding: 12px 16px;
+  border: 1px dashed #86efac;
+  border-radius: 10px;
+  background: #f0fdf4;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  color: #15803d;
+}
+
+.pb-report__error {
+  margin: 1rem 0 0;
+  padding: 12px 16px;
+  border: 1px dashed #fca5a5;
+  border-radius: 10px;
+  background: #fef2f2;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  color: #dc2626;
 }
 
 @media (max-width: 767px) {

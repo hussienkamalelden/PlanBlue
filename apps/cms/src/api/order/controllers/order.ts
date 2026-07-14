@@ -32,5 +32,35 @@ export default factories.createCoreController(
         );
       }
     },
+
+    async generateReport(ctx) {
+      const { fromDate, toDate } = ctx.request.body as {
+        fromDate?: string;
+        toDate?: string;
+      };
+
+      if (!fromDate || !toDate) {
+        return ctx.badRequest('fromDate and toDate are required.');
+      }
+
+      try {
+        const { generateAndSendReport } = await import(
+          '../utils/order-report'
+        );
+        const result = await generateAndSendReport(strapi, fromDate, toDate);
+
+        ctx.body = {
+          data: {
+            message: 'Report email sent successfully.',
+            email: result.email,
+          },
+        };
+      } catch (error: any) {
+        strapi.log.error('[REPORT] Failed to generate report:', error);
+        return ctx.badRequest(
+          error?.message ?? 'Failed to generate report.',
+        );
+      }
+    },
   }),
 );

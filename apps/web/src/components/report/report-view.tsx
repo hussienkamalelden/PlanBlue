@@ -5,10 +5,12 @@ import { useMemo, useState } from 'react';
 
 import type { Locale } from '@/lib/i18n/config';
 import { interpolate } from '@/lib/i18n/dictionary';
+import { STRAPI_URL } from '@/lib/api/strapi';
 import { useTranslations } from '@/lib/i18n/use-translations';
 import { useLocaleStore } from '@/stores/locale-store';
 
 type SelectionField = 'from' | 'to';
+type ReportStatus = 'idle' | 'sending' | 'success' | 'error';
 
 function pad(value: number): string {
   return String(value).padStart(2, '0');
@@ -106,6 +108,7 @@ export function ReportView() {
   const [activeField, setActiveField] = useState<SelectionField>('from');
   const [fromDate, setFromDate] = useState<Date | null>(null);
   const [toDate, setToDate] = useState<Date | null>(null);
+  const [reportStatus, setReportStatus] = useState<ReportStatus>('idle');
   const [visibleMonth, setVisibleMonth] = useState(() => ({
     year: today.getFullYear(),
     month: today.getMonth(),
@@ -179,6 +182,37 @@ export function ReportView() {
 
     if (fromDate && picked.getTime() < startOfDay(fromDate).getTime()) {
       setFromDate(picked);
+    }
+  }
+
+  async function handleGenerateReport() {
+    if (!fromDate || !toDate) {
+      return;
+    }
+
+    setReportStatus('sending');
+
+    try {
+      const { from, to } = normalizeRange(fromDate, toDate);
+      const fromKey = toDateKey(from);
+      const toKey = toDateKey(to);
+
+      const response = await fetch(
+        `${STRAPI_URL}/api/orders/generate-report`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ fromDate: fromKey, toDate: toKey }),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to generate report');
+      }
+
+      setReportStatus('success');
+    } catch {
+      setReportStatus('error');
     }
   }
 
@@ -310,9 +344,21 @@ export function ReportView() {
         <button
           type="button"
           className="pb-cart-summary__btn pb-cart-summary__btn--primary pb-report__generate"
+          disabled={!fromDate || !toDate || reportStatus === 'sending'}
+          onClick={handleGenerateReport}
         >
-          {t.report.generateReport}
+          {reportStatus === 'sending'
+            ? t.report.sending
+            : t.report.generateReport}
         </button>
+
+        {reportStatus === 'success' && (
+          <p className="pb-report__success">{t.report.emailSent}</p>
+        )}
+
+        {reportStatus === 'error' && (
+          <p className="pb-report__error">{t.report.emailError}</p>
+        )}
       </div>
     </section>
   );
