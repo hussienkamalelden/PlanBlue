@@ -1,0 +1,157 @@
+{
+  "kind": "collectionType",
+  "collectionName": "products",
+  "info": {
+    "singularName": "product",
+    "pluralName": "products",
+    "displayName": "Product"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "sku": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "title": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "title_ar": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "title",
+      "required": true
+    },
+    "description": {
+      "type": "text",
+      "required": true
+    },
+    "description_ar": {
+      "type": "text",
+      "required": true
+    },
+    "media": {
+      "type": "media",
+      "multiple": true,
+      "required": true,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "price": {
+      "type": "decimal",
+      "required": true
+    },
+    "available_stock": {
+      "type": "integer",
+      "required": true
+    },
+    "has_sale": {
+      "type": "boolean",
+      "required": true,
+      "default": false
+    },
+    "discount_percentage": {
+      "type": "decimal",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "has_sale"
+            },
+            true
+          ]
+        }
+      },
+      "required": true
+    },
+    "categories": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::category.category",
+      "mappedBy": "products"
+    },
+    "available": {
+      "type": "boolean",
+      "required": true,
+      "default": true
+    },
+    "views": {
+      "type": "integer",
+      "default": 0
+    },
+    "total_sold": {
+      "type": "integer",
+      "default": 0
+    },
+    "age": {
+      "type": "integer",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "all_ages"
+            },
+            false
+          ]
+        }
+      },
+      "required": true
+    },
+    "all_ages": {
+      "type": "boolean",
+      "default": true
+    },
+    "need_batteries": {
+      "type": "boolean",
+      "required": true,
+      "default": false
+    },
+    "batteries_size": {
+      "type": "enumeration",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "need_batteries"
+            },
+            true
+          ]
+        }
+      },
+      "enum": [
+        "Size AAA",
+        "Size AA",
+        "Size C",
+        "Size D",
+        "Others"
+      ]
+    },
+    "batteries_quantity": {
+      "type": "string",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "need_batteries"
+            },
+            true
+          ]
+        }
+      },
+      "required": false
+    }
+  }
+}

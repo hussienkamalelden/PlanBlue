@@ -1,0 +1,298 @@
+{
+  "common": {
+    "brand": "PlanBlue",
+    "tagline": "Toy Store",
+    "loading": "Loading...",
+    "error": "Something went wrong. Please try again."
+  },
+  "header": {
+    "products": "Shop",
+    "cart": "Cart",
+    "cartTotal": "Cart Total",
+    "affiliates": "Affiliates",
+    "openHours": "Open Hours: Mon - Fri 8am - 6pm",
+    "liveChat": "Live Chat",
+    "promoPrefix": "Supper Value Deals -",
+    "promoCode": "Save more with coupons 2BD30X",
+    "phone": "91 2345 678",
+    "hotline": "Call out Hotline 24/7",
+    "searchPlaceholder": "Search Shop",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "nav": {
+      "home": "Home",
+      "shop": "Shop",
+      "contact": "Contact",
+      "wishlist": "Wishlist",
+      "account": "Account"
+    }
+  },
+  "home": {
+    "title": "Welcome to PlanBlue",
+    "description": "Browse our toy collection — no account required.",
+    "cta": "Shop products",
+    "hero": {
+      "title": "A World of Fun Awaits Your Child",
+      "pricePrefix": "From",
+      "priceAmount": 42.99,
+      "cta": "View Shop",
+      "imageAlt": "Kids toys collection"
+    },
+    "popular": {
+      "title": "Today's",
+      "highlight": "popular picks"
+    },
+    "popularCategories": {
+      "title": "Popular",
+      "highlight": "Categories"
+    },
+    "topSelling": {
+      "title": "Top Selling",
+      "highlight": "products"
+    },
+    "offers": {
+      "ariaLabel": "Store offers",
+      "labels": [
+        "Competitive prices",
+        "Free special packaging",
+        "Free batteries with toys",
+        "Fast delivery",
+        "24-hour support"
+      ]
+    }
+  },
+  "shop": {
+    "title": "Shop",
+    "empty": "No products available yet.",
+    "filteredEmpty": "No products match your filters.",
+    "filtersTitle": "Filters",
+    "removeFilter": "Remove filter",
+    "sortTitle": "Sort by",
+    "topSellers": "Top Sellers",
+    "mostViewed": "Most Viewed",
+    "ageTitle": "Age",
+    "allAges": "All ages",
+    "age0to1": "0–1 years",
+    "age1to2": "1–2 years",
+    "age2to3": "2–3 years",
+    "age3to4": "3–4 years",
+    "age4to6": "4–6 years",
+    "ageAbove6": "Above 6",
+    "priceTitle": "Price",
+    "priceFrom": "From",
+    "priceTo": "To",
+    "priceReset": "Reset"
+  },
+  "category": {
+    "title": "Categories",
+    "all": "All products"
+  },
+  "shopItem": {
+    "views": "views",
+    "sale": "Sale",
+    "outOfStock": "Out of stock"
+  },
+  "shopItemDetail": {
+    "backToShop": "Back to shop",
+    "description": "Description",
+    "basePrice": "Base price",
+    "discountPrice": "Sale price",
+    "views": "Total views",
+    "quantity": "Quantity",
+    "sku": "SKU",
+    "categories": "Categories",
+    "inStock": "{stock} in stock",
+    "quantityWarning": "Only {stock} items available in stock. Please reduce the quantity.",
+    "outOfStock": "This product is currently out of stock.",
+    "addToCart": "Add to Cart",
+    "buyNow": "Buy Now",
+    "addedToCart": "Added to cart",
+    "mediaImage": "Product image {index}",
+    "mediaVideo": "Product video {index}",
+    "relatedItems": "Related Products",
+    "notFound": "Product not found",
+    "notFoundDescription": "The product you are looking for does not exist or has been removed."
+  },
+  "cart": {
+    "title": "Your Cart",
+    "empty": "Your cart is empty.",
+    "continueShopping": "Continue shopping",
+    "proceedToCheckout": "Proceed to Checkout",
+    "clearCart": "Clear Cart",
+    "clearConfirm": "Are you sure you want to clear your cart?",
+    "remove": "Remove",
+    "stockWarning": "Only {stock} available — you selected {quantity}.",
+    "subtotal": "Subtotal",
+    "total": "Total",
+    "items": "items",
+    "validation": {
+      "checking": "Checking item availability and prices...",
+      "failed": "We couldn't verify your cart right now. Please try again in a moment.",
+      "blockedTitle": "Some items need your attention",
+      "blockedMessage": "Review the messages below. Checkout is disabled until all issues are resolved.",
+      "notFound": "This product no longer exists.",
+      "unavailable": "This product is no longer available.",
+      "insufficientStock": "Only {stock} left in stock — you have {quantity} in your cart.",
+      "priceChanged": "Price changed from {oldPrice} to {newPrice}. Remove this item and add it again."
+    }
+  },
+  "checkout": {
+    "title": "Checkout",
+    "subtitle": "Complete your order",
+    "paymentMethod": "Payment Method",
+    "cashOnDelivery": "Cash on Delivery",
+    "cashOnDeliveryDesc": "Pay when you receive your order at your doorstep.",
+    "giftBanner": "Free batteries included with every toy — a special gift from PlanBlue to you!",
+    "form": {
+      "name": "Full Name",
+      "namePlaceholder": "Enter your full name",
+      "email": "Email Address",
+      "emailPlaceholder": "example@email.com",
+      "phone": "Phone Number",
+      "phonePlaceholder": "01XXXXXXXXX",
+      "governorate": "Governorate",
+      "governoratePlaceholder": "Select your governorate",
+      "address": "Delivery Address",
+      "addressPlaceholder": "Street, building, floor, apartment...",
+      "promoCode": "Promo Code (optional)",
+      "promoCodePlaceholder": "Enter promo code",
+      "extraNotes": "Extra Notes (optional)",
+      "extraNotesPlaceholder": "Any special requests or delivery instructions..."
+    },
+    "orderSummary": "Order Summary",
+    "subtotal": "Subtotal",
+    "discount": "Discount",
+    "promoApply": "Apply",
+    "promoApplied": "Promo applied!",
+    "promoOff": "off",
+    "promoInvalid": "Invalid promo code",
+    "shipping": "Shipping",
+    "giftWrapping": "Premium Packaging",
+    "giftWrappingNote": "Note: Products come with PlanBlue's special gift wrapping.",
+    "giftWrappingDesc": "Add premium packaging for",
+    "total": "Total",
+    "items": "items",
+    "placeOrder": "Place Order",
+    "placing": "Placing order...",
+    "emptyCart": "Your cart is empty. Add some products before checkout.",
+    "backToCart": "Back to Cart",
+    "validation": {
+      "nameRequired": "Full name is required",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Please enter a valid email",
+      "phoneRequired": "Phone number is required",
+      "governorateRequired": "Governorate is required",
+      "addressRequired": "Delivery address is required"
+    },
+    "success": {
+      "title": "Order Placed Successfully!",
+      "message": "Thank you for your order. You will receive a confirmation email shortly.",
+      "orderId": "Order ID",
+      "backToHome": "Back to Home"
+    },
+    "error": {
+      "title": "Order Failed",
+      "message": "Something went wrong while placing your order. Please try again."
+    },
+    "cartValidation": {
+      "checking": "Checking item availability and prices...",
+      "failed": "We couldn't verify your cart right now. Please return to the cart and try again.",
+      "blockedTitle": "Your order can't be placed yet",
+      "blockedMessage": "Some cart items are unavailable, out of stock, or have price changes. Go back to your cart to fix them.",
+      "submitRechecking": "Rechecking your cart before placing the order...",
+      "submitRecheckFailed": "We rechecked your cart and found issues. Review the messages below, then return to your cart to fix them."
+    }
+  },
+  "affiliates": {
+    "badge": "PlanBlue Partners",
+    "title": "Affiliate Leaderboard",
+    "subtitle": "Our top partners ranked by pending commission. Share, sell, and climb the board!",
+    "topThree": "Top 3 Champions",
+    "allAffiliates": "All Affiliates",
+    "pendingCommission": "Pending commission",
+    "empty": "No affiliates yet. Check back soon!",
+    "moreComingSoon": "More affiliates joining soon — stay tuned!"
+  },
+  "footer": {
+    "about": "Quality toys for every age, delivered across Egypt with care.",
+    "linksTitle": "Quick links",
+    "terms": "Terms & Conditions",
+    "socialTitle": "Follow us",
+    "socialEmpty": "Social links coming soon.",
+    "copyright": "© {year} PlanBlue. All rights reserved.",
+    "social": {
+      "facebook": "PlanBlue on Facebook",
+      "instagram": "PlanBlue on Instagram",
+      "twitter": "PlanBlue on X (Twitter)",
+      "tiktok": "PlanBlue on TikTok",
+      "whatsapp": "Contact PlanBlue on WhatsApp"
+    }
+  },
+  "terms": {
+    "title": "Terms & Conditions",
+    "metaDescription": "PlanBlue terms and conditions for orders, delivery, returns, and use of our online toy store.",
+    "lastUpdated": "Last updated: July 2026",
+    "intro": "Welcome to PlanBlue. By browsing our website or placing an order, you agree to the terms below. Please read them carefully before completing a purchase.",
+    "sections": [
+      {
+        "title": "1. General",
+        "paragraphs": [
+          "PlanBlue operates an online toy store serving customers in Egypt. These terms govern your use of our website and any purchase you make from us.",
+          "We may update these terms from time to time. Continued use of the site after changes are posted constitutes acceptance of the revised terms."
+        ]
+      },
+      {
+        "title": "2. Orders & Payment",
+        "paragraphs": [
+          "When you place an order, you confirm that the information you provide is accurate and that you are authorized to use the selected payment method.",
+          "We currently accept cash on delivery (COD). Payment is due when your order is delivered unless otherwise stated at checkout.",
+          "We reserve the right to refuse or cancel orders in cases of pricing errors, suspected fraud, or stock unavailability. If your order is cancelled after payment, any amount collected will be refunded."
+        ]
+      },
+      {
+        "title": "3. Pricing & Promotions",
+        "paragraphs": [
+          "All prices are displayed in Egyptian Pounds (EGP) unless stated otherwise. Sale prices and discounts apply only while the promotion is active.",
+          "Promo codes must be entered at checkout and are subject to validity dates, usage limits, and eligibility rules defined for each code."
+        ]
+      },
+      {
+        "title": "4. Shipping & Delivery",
+        "paragraphs": [
+          "We deliver to governorates listed at checkout. Delivery times are estimates and may vary due to location, holidays, or circumstances beyond our control.",
+          "Please ensure your delivery address and phone number are correct. We are not responsible for delays caused by incorrect contact or address details.",
+          "If you are unavailable at delivery, our courier may attempt redelivery or contact you using the phone number provided."
+        ]
+      },
+      {
+        "title": "5. Returns & Refunds",
+        "paragraphs": [
+          "If you receive a damaged, defective, or incorrect item, contact us within 48 hours of delivery with your order number and photos of the issue.",
+          "Eligible returns must be unused and in original packaging where applicable. Refunds or replacements are processed after we review the reported issue.",
+          "Change-of-mind returns may not be accepted for opened toys or items that cannot be resold for hygiene or safety reasons."
+        ]
+      },
+      {
+        "title": "6. Product Information",
+        "paragraphs": [
+          "We aim to display accurate product descriptions, images, and age recommendations. Minor variations in color or packaging may occur.",
+          "Toys may contain small parts. Please follow age labels and supervise children during play as recommended by the manufacturer."
+        ]
+      },
+      {
+        "title": "7. Privacy",
+        "paragraphs": [
+          "We collect personal information such as your name, email, phone number, and delivery address solely to process orders and communicate with you about your purchase.",
+          "We do not sell your personal data to third parties. Order-related data may be shared with delivery partners only as needed to fulfill your order."
+        ]
+      },
+      {
+        "title": "8. Contact",
+        "paragraphs": [
+          "For questions about these terms, your order, or our products, reach us through the contact channels listed on our website or social media pages.",
+          "By placing an order on PlanBlue, you acknowledge that you have read and agree to these Terms & Conditions."
+        ]
+      }
+    ]
+  }
+}

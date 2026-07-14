@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_affiliate_promos",
+  "info": {
+    "displayName": "Affiliate Promo",
+    "icon": "gift"
+  },
+  "attributes": {
+    "code": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "discount_percentage": {
+      "type": "decimal",
+      "required": true,
+      "default": 10
+    }
+  }
+}

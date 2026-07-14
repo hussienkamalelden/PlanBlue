@@ -1,0 +1,53 @@
+{
+  "kind": "collectionType",
+  "collectionName": "affiliates",
+  "info": {
+    "singularName": "affiliate",
+    "pluralName": "affiliates",
+    "displayName": "Affiliate"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "email": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "phone": {
+      "type": "string",
+      "required": true
+    },
+    "avatar": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "total_paid_commission": {
+      "type": "decimal",
+      "default": 0
+    },
+    "current_pending_commission": {
+      "type": "decimal",
+      "default": 0
+    },
+    "commission_percentage": {
+      "type": "decimal",
+      "required": true,
+      "default": 10
+    },
+    "promocodes": {
+      "type": "component",
+      "component": "affiliate.affiliate-promo",
+      "repeatable": true
+    }
+  }
+}

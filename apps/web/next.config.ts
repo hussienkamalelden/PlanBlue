@@ -1,20 +1,20 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: "http",
-        hostname: "localhost",
-        port: "1337",
-        pathname: "/uploads/**",
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '1337',
+        pathname: '/uploads/**',
       },
-      // Cloudflare R2 public URL — set when R2 is configured
-      // {
-      //   protocol: "https",
-      //   hostname: "cdn.yourdomain.com",
-      //   pathname: "/**",
-      // },
+      {
+        protocol: 'https',
+        hostname: 'pub-eb8249647a93431092ad3c6652a821b0.r2.dev',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 };

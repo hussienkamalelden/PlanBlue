@@ -1,3 +1,215 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  html.planblue-loading {
+    overflow: hidden;
+  }
+
+  html.planblue-loading .planblue-site-shell {
+    visibility: hidden;
+  }
+
+  html:not(.planblue-loading) #planblue-initial-loader {
+    display: none;
+  }
+
+  html.planblue-hydrated #planblue-initial-loader {
+    display: none;
+  }
+
+  html[lang='ar'] body,
+  html[dir='rtl'] body {
+    font-family: var(--font-arabic, 'Cairo'), var(--font-nunito, 'Nunito'), sans-serif;
+  }
+}
+
+@layer utilities {
+  @keyframes confetti-fall {
+    0% {
+      transform: translateY(-10vh) rotate(0deg);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(110vh) rotate(720deg);
+      opacity: 0.6;
+    }
+  }
+
+  @keyframes float-gentle {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-6px);
+    }
+  }
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes pulse-ring {
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 rgba(247, 185, 12, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 0 10px rgba(247, 185, 12, 0);
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: 200% center;
+    }
+    100% {
+      background-position: -200% center;
+    }
+  }
+
+  .animate-confetti-fall {
+    animation: confetti-fall linear infinite;
+  }
+
+  .animate-float-gentle {
+    animation: float-gentle 3s ease-in-out infinite;
+  }
+
+  .planblue-initial-loader {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: flex;
+    min-height: 100dvh;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    background: #4389f7;
+  }
+
+  .animate-fade-up {
+    animation: fade-up 0.6s ease-out both;
+  }
+
+  .animate-pulse-ring {
+    animation: pulse-ring 2s ease-in-out infinite;
+  }
+
+  .animate-shimmer-gold {
+    background-size: 200% auto;
+    animation: shimmer 3s linear infinite;
+  }
+
+  .price-range-thumb {
+    pointer-events: none;
+    direction: ltr;
+  }
+
+  .price-range-ltr {
+    direction: ltr;
+  }
+
+  .price-range-thumb::-webkit-slider-thumb {
+    pointer-events: auto;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 18px;
+    width: 18px;
+    border-radius: 9999px;
+    border: 2px solid #fff;
+    background: #027dda;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+  }
+
+  .price-range-thumb::-moz-range-thumb {
+    pointer-events: auto;
+    height: 18px;
+    width: 18px;
+    border-radius: 9999px;
+    border: 2px solid #fff;
+    background: #027dda;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+  }
+
+  .price-range-thumb::-webkit-slider-runnable-track {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+  }
+
+  .price-range-thumb::-moz-range-track {
+    background: transparent;
+    border: none;
+  }
+
+  .popular-shop-swiper {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .popular-shop-nav-wrap {
+    overflow: visible;
+  }
+
+  .popular-shop-owl-nav {
+    margin-top: -24px;
+  }
+
+  .popular-shop-nav-btn {
+    position: absolute;
+    top: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+    color: #111111;
+    transition: color 0.3s ease, opacity 0.3s ease;
+  }
+
+  .popular-shop-nav-btn .icon-20,
+  .popular-shop-nav-btn .icon-21 {
+    display: block;
+    font-size: 48px;
+    line-height: 1;
+  }
+
+  .popular-shop-nav-btn:hover {
+    color: #4389f7;
+  }
+
+  .popular-shop-nav-btn.swiper-button-disabled {
+    opacity: 0.35;
+    cursor: default;
+    pointer-events: none;
+  }
+
+  .popular-shop-nav-prev {
+    inset-inline-start: -40px;
+    inset-inline-end: auto;
+  }
+
+  .popular-shop-nav-next {
+    inset-inline-end: -40px;
+    inset-inline-start: auto;
+  }
+
+  [dir='rtl'] .popular-shop-nav-btn .icon-20,
+  [dir='rtl'] .popular-shop-nav-btn .icon-21 {
+    transform: scaleX(-1);
+  }
+}

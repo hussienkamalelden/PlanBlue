@@ -1,0 +1,394 @@
+import {
+  Html as BaseHtml,
+  Body as BaseBody,
+  Container as BaseContainer,
+  Text as BaseText,
+  Heading as BaseHeading,
+  Preview as BasePreview,
+  Head as BaseHead,
+  Section as BaseSection,
+  Row as BaseRow,
+  Img as BaseImg,
+} from '@react-email/components';
+
+const Html = BaseHtml as any;
+const Head = BaseHead as any;
+const Section = BaseSection as any;
+const Row = BaseRow as any;
+const Body = BaseBody as any;
+const Container = BaseContainer as any;
+const Text = BaseText as any;
+const Heading = BaseHeading as any;
+const Preview = BasePreview as any;
+const Img = BaseImg as any;
+
+interface EmailProps {
+  name: string;
+  order_id: string | number;
+  subtotal: number;
+  discount_amount: number;
+  promo_discount_percentage: number;
+  shipping_cost: number;
+  gift_wrapping: boolean;
+  gift_wrapping_cost: number;
+  total: number;
+  phone: string;
+  address: string;
+  extra_notes: string;
+  order_items: string;
+  governorate: string;
+  promo_code: string;
+  is_update?: boolean;
+  batteries_summary?: string;
+}
+
+const ClientOrderEmail = ({
+  name,
+  order_id,
+  subtotal,
+  discount_amount,
+  promo_discount_percentage,
+  shipping_cost,
+  gift_wrapping,
+  gift_wrapping_cost,
+  total,
+  phone,
+  address,
+  extra_notes,
+  order_items,
+  governorate,
+  promo_code,
+  is_update = false,
+  batteries_summary = '',
+}: EmailProps) => {
+  return (
+    <Html lang="ar" dir="rtl">
+      <Head />
+      <Preview>
+        {is_update
+          ? `Your PlanBlue order #${order_id} has been updated`
+          : `Thank you for your order from PlanBlue! Your order ID is #${order_id}`}
+      </Preview>
+      <Body style={main}>
+        <Container style={container}>
+          {/* Header */}
+          <Section style={headerSection}>
+            <Img
+              src="https://pub-eb8249647a93431092ad3c6652a821b0.r2.dev/logo_img_608eff4ce0.png"
+              width="90"
+              alt="PlanBlue Store"
+              style={logo}
+            />
+            <Heading style={headerTitle}>PlanBlue Store</Heading>
+            <Text style={headerSubtitle}>
+              Thank you for your trust in us and your order from our store
+            </Text>
+          </Section>
+
+          {/* Content */}
+          <Section style={contentSection}>
+            {is_update && (
+              <Section style={updateBanner}>
+                <Text style={updateBannerText}>
+                  Your order has been updated
+                </Text>
+              </Section>
+            )}
+            <Text style={welcomeText}>Hello {name} 👋</Text>
+            <Text style={paragraph}>
+              {is_update
+                ? 'Your order details have been updated. Please review the latest information below.'
+                : 'Your order has been received and is currently being processed by our team.'}
+            </Text>
+            {/* Order Details Card */}
+            <Section style={orderCard}>
+              <Text style={cardTitle}>Order Details:</Text>
+              <Row style={orderRow}>
+                <Text style={rowLabel}>Order ID</Text>
+                <Text style={rowValue}>#{order_id}</Text>
+              </Row>
+              <Row style={orderRow}>
+                <Text style={rowLabel}>Phone</Text>
+                <Text style={rowValue}>{phone}</Text>
+              </Row>
+              <Row style={orderRow}>
+                <Text style={rowLabel}>Governorate</Text>
+                <Text style={rowValue}>{governorate}</Text>
+              </Row>
+              <Row style={orderRow}>
+                <Text style={rowLabel}>Address</Text>
+                <Text style={rowValue}>{address}</Text>
+              </Row>
+              <Row style={orderRow}>
+                <Text style={rowLabel}>Extra Notes</Text>
+                <Text style={rowValue}>{extra_notes}</Text>
+              </Row>
+              <Row style={orderRow}>
+                <Text style={rowLabel}>Order Items</Text>
+                <Text style={itemsValue}>{order_items}</Text>
+              </Row>
+              <Row style={orderRow}>
+                <Text style={rowLabel}>Promo Code</Text>
+                <Text style={rowValue}>{promo_code}</Text>
+              </Row>
+              <Row style={orderRow}>
+                <Text style={rowLabel}>Subtotal</Text>
+                <Text style={rowValue}>{subtotal} EGP</Text>
+              </Row>
+              {discount_amount > 0 && (
+                <Row style={orderRow}>
+                  <Text style={rowLabel}>
+                    Discount ({promo_discount_percentage}%)
+                  </Text>
+                  <Text style={{ ...rowValue, color: '#16a34a' }}>
+                    -{discount_amount} EGP
+                  </Text>
+                </Row>
+              )}
+              {batteries_summary && (
+                <Row style={batteriesRow}>
+                  <Text style={batteriesRowTitle}>🔋 Batteries (FREE)</Text>
+                  <Text style={batteriesRowList}>{batteries_summary}</Text>
+                  <Text style={batteriesRowNote}>
+                    Included for free with your order!
+                  </Text>
+                </Row>
+              )}
+              <Row style={orderRow}>
+                <Text style={rowLabel}>Shipping ({governorate})</Text>
+                <Text style={rowValue}>{shipping_cost} EGP</Text>
+              </Row>
+              {gift_wrapping && (
+                <Row style={orderRow}>
+                  <Text style={rowLabel}>Gift Wrapping</Text>
+                  <Text style={rowValue}>{gift_wrapping_cost} EGP</Text>
+                </Row>
+              )}
+              {/* Total */}
+              <Row style={totalRow}>
+                <Text style={totalLabel}>Total</Text>
+                <Text style={totalValue}>{total} EGP</Text>
+              </Row>
+            </Section>
+
+            <Text style={noticeText}>
+              If you have any questions, we are always here to serve you
+              directly through planbluestore@gmail.com
+            </Text>
+          </Section>
+
+          {/* Footer */}
+          <Section style={footerSection}>
+            <Text style={footerText}>
+              © 2026 PlanBlue Store. All rights reserved.
+            </Text>
+          </Section>
+        </Container>
+      </Body>
+    </Html>
+  );
+};
+
+export default ClientOrderEmail;
+
+const main = {
+  backgroundColor: '#f4f7fc',
+  fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+  padding: '10px 0',
+};
+
+const container = {
+  backgroundColor: '#ffffff',
+  maxWidth: '600px',
+  margin: '40px auto',
+  borderRadius: '16px',
+  overflow: 'hidden',
+  boxShadow: '0 4px 15px rgba(0,0,0,0.05)',
+  border: '1px solid #eef2f6',
+};
+
+const headerSection = {
+  background: 'linear-gradient(135deg, #0052cc 0%, #003399 100%)',
+  padding: '40px 20px',
+  textAlign: 'center' as const,
+};
+
+const logo = {
+  display: 'block',
+  margin: '0 auto 10px',
+};
+
+const headerTitle = {
+  color: '#ffffff',
+  margin: '0',
+  fontSize: '26px',
+  fontWeight: '700',
+};
+
+const headerSubtitle = {
+  color: '#ffffff',
+  margin: '10px 0 0 0',
+  fontSize: '15px',
+  opacity: '0.9',
+};
+
+const contentSection = {
+  padding: '30px',
+};
+
+const updateBanner = {
+  backgroundColor: '#fef3c7',
+  border: '1px solid #f59e0b',
+  borderRadius: '10px',
+  padding: '12px 16px',
+  marginBottom: '20px',
+};
+
+const updateBannerText = {
+  color: '#92400e',
+  fontSize: '14px',
+  fontWeight: '600',
+  margin: '0',
+  textAlign: 'center' as const,
+};
+
+const welcomeText = {
+  fontSize: '18px',
+  fontWeight: '600',
+  color: '#111111',
+  margin: '0 0 10px 0',
+};
+
+const paragraph = {
+  color: '#475569',
+  fontSize: '15px',
+  lineHeight: '1.6',
+  margin: '0 0 20px 0',
+};
+
+const orderCard = {
+  backgroundColor: '#f8fafc',
+  borderRadius: '12px',
+  padding: '20px',
+  border: '1px solid #edf2f7',
+  marginBottom: '30px',
+};
+
+const cardTitle = {
+  fontWeight: '700',
+  fontSize: '16px',
+  color: '#0f172a',
+  margin: '0 0 15px 0',
+};
+
+const orderRow = {
+  borderBottom: '1px solid #edf2f7',
+  padding: '10px 0',
+};
+
+const rowLabel = {
+  color: '#64748b',
+  fontWeight: '500',
+  fontSize: '14px',
+  margin: '0',
+  float: 'left' as const,
+};
+
+const rowValue = {
+  color: '#0f172a',
+  fontWeight: '600',
+  fontSize: '14px',
+  margin: '0',
+  float: 'right' as const,
+};
+
+const itemsValue = {
+  color: '#0f172a',
+  fontWeight: '600',
+  fontSize: '14px',
+  margin: '8px 0 0 0',
+  whiteSpace: 'pre-line' as const,
+  clear: 'both' as const,
+};
+
+const totalRow = {
+  backgroundColor: '#0052cc',
+  padding: '15px',
+  borderRadius: '8px',
+  marginTop: '15px',
+};
+
+const totalLabel = {
+  color: '#ffffff',
+  fontWeight: '700',
+  fontSize: '16px',
+  margin: '0',
+  float: 'left' as const,
+};
+
+const totalValue = {
+  color: '#ffffff',
+  fontWeight: '700',
+  fontSize: '16px',
+  float: 'right' as const,
+  margin: '0',
+};
+
+const noticeText = {
+  fontSize: '13px',
+  color: '#64748b',
+  textAlign: 'center' as const,
+  margin: '0',
+};
+
+const footerSection = {
+  textAlign: 'center' as const,
+  padding: '20px',
+  borderTop: '1px solid #eef2f6',
+  backgroundColor: '#fafafa',
+};
+
+const footerText = {
+  fontSize: '12px',
+  color: '#94a3b8',
+  margin: '0',
+};
+
+const footerSubtext = {
+  fontSize: '11px',
+  color: '#cbd5e1',
+  margin: '5px 0 0 0',
+};
+
+const batteriesRow = {
+  borderBottom: '1px solid #a7f3d0',
+  padding: '12px 0',
+  backgroundColor: '#ecfdf5',
+  borderRadius: '8px',
+  paddingLeft: '12px',
+  paddingRight: '12px',
+  marginTop: '4px',
+  marginBottom: '4px',
+};
+
+const batteriesRowTitle = {
+  fontWeight: '700',
+  fontSize: '14px',
+  color: '#065f46',
+  margin: '0 0 6px 0',
+};
+
+const batteriesRowList = {
+  fontSize: '14px',
+  fontWeight: '600',
+  color: '#065f46',
+  margin: '0 0 4px 0',
+  whiteSpace: 'pre-line' as const,
+};
+
+const batteriesRowNote = {
+  fontSize: '12px',
+  color: '#059669',
+  margin: '0',
+  fontStyle: 'italic' as const,
+};

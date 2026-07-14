@@ -1,19 +1,70 @@
-import type { Metadata } from "next";
-import "./globals.css";
+import { Cairo, Nunito } from 'next/font/google';
+
+import { Suspense } from 'react';
+
+import { LocaleProvider } from '@/components/locale/locale-provider';
+import { FloatingWhatsAppButton } from '@/components/layout/floating-whatsapp-button';
+import { PlanBlueHeader } from '@/components/layout/planblue-header';
+import { SiteFooter } from '@/components/layout/site-footer';
+import { InitialPageLoader } from '@/components/ui/initial-page-loader';
+import { NavigationLoader } from '@/components/ui/navigation-loader';
+import { RouteReadyNotifier } from '@/components/ui/route-ready-notifier';
+import { getLocaleDirection } from '@/lib/i18n/config';
+import { getLocale } from '@/lib/i18n/get-locale';
+
+import type { Metadata } from 'next';
+import './globals.css';
+import '@/styles/home-layout.css';
+const nunito = Nunito({
+  subsets: ['latin'],
+  variable: '--font-nunito',
+  display: 'swap',
+});
+
+const arabicFont = Cairo({
+  subsets: ['arabic'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-arabic',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
-  title: "PlanBlue — Toy Store",
-  description: "Online toy store powered by PlanBlue",
+  title: {
+    default: 'PlanBlue',
+    template: '%s | PlanBlue',
+  },
+  description: 'Online toy store powered by PlanBlue',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+
   return (
-    <html lang="en">
-      <body className="antialiased">{children}</body>
+    <html lang={locale} dir={getLocaleDirection(locale)} className="planblue-loading">
+      <body
+        suppressHydrationWarning
+        className={`${nunito.variable} ${arabicFont.variable} planblue-site min-h-screen bg-white text-neutral-900 antialiased`}
+      >
+        <InitialPageLoader />
+        <LocaleProvider>
+          <NavigationLoader />
+          <div className="planblue-site-shell flex min-h-screen flex-col">
+            <PlanBlueHeader />
+            <div className="flex-1">
+              <Suspense fallback={null}>
+                <RouteReadyNotifier />
+              </Suspense>
+              {children}
+            </div>
+            <SiteFooter />
+            <FloatingWhatsAppButton />
+          </div>
+        </LocaleProvider>
+      </body>
     </html>
   );
 }
