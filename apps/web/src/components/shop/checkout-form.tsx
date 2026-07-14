@@ -276,7 +276,10 @@ export function CheckoutForm({ shippingOptions }: CheckoutFormProps) {
   const isCheckoutDisabled = isBusy || (isCheckingCart && !submitRecheck);
 
   return (
-    <ShopPageShell bannerSrc="/images/checkout/banner.png">
+    <ShopPageShell
+      bannerSrc="/images/checkout/banner.png"
+      mainClassName="relative pb-medium-container pb-checkout-page-main py-10"
+    >
       {isBusy && (
         <CheckoutFloatingSpinner label={t.checkout.cartValidation.checking} />
       )}
