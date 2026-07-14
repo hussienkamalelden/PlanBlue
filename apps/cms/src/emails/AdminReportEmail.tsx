@@ -158,9 +158,18 @@ const AdminReportEmail = ({
                       {getStatusLabel(group.status)} — {group.orders.length} طلب
                     </Text>
                     {group.orders.map((order, j) => (
-                      <Text key={`o-${i}-${j}`} style={orderDetailLine}>
-                        #{order.orderId} → Subtotal: {formatCurrency(order.subtotal)} | شحن: {formatCurrency(order.shipping)} | خصم عميل: {formatCurrency(order.discount)}{group.status === 'delivered' ? ` | أفلييت: ${formatCurrency(order.discount)}` : ''} | تغليف: {formatCurrency(order.giftWrapping)}
-                      </Text>
+                      <Section key={`o-${i}-${j}`} style={orderDetailBlock}>
+                        <Text style={orderIdLine}>#{order.orderId}</Text>
+                        <Text style={orderMetaLine}>
+                          مبيعات: {formatCurrency(order.subtotal)} | شحن:{' '}
+                          {formatCurrency(order.shipping)} | خصم عميل:{' '}
+                          {formatCurrency(order.discount)}
+                          {group.status === 'delivered'
+                            ? ` | أفلييت: ${formatCurrency(order.discount)}`
+                            : ''}{' '}
+                          | تغليف: {formatCurrency(order.giftWrapping)}
+                        </Text>
+                      </Section>
                     ))}
                   </Section>
                 ))
@@ -297,16 +306,32 @@ const orderIdsStatusLabel = {
   margin: '0 0 6px 0',
 };
 
-const orderDetailLine = {
+const orderDetailBlock = {
+  margin: '8px 0',
+  padding: '8px 10px',
+  backgroundColor: '#f1f5f9',
+  borderRadius: '6px',
+  borderRight: '3px solid #94a3b8',
+};
+
+const orderIdLine = {
   color: '#0f172a',
+  fontWeight: '700',
+  fontSize: '14px',
+  lineHeight: '1.4',
+  margin: '0 0 4px 0',
+  direction: 'ltr' as const,
+  textAlign: 'right' as const,
+};
+
+const orderMetaLine = {
+  color: '#334155',
   fontWeight: '500',
   fontSize: '12px',
-  lineHeight: '1.5',
-  margin: '4px 0',
-  padding: '6px 8px',
-  backgroundColor: '#f1f5f9',
-  borderRadius: '4px',
-  borderRight: '3px solid #94a3b8',
+  lineHeight: '1.6',
+  margin: '0',
+  direction: 'ltr' as const,
+  textAlign: 'right' as const,
   wordBreak: 'break-word' as const,
 };
 
