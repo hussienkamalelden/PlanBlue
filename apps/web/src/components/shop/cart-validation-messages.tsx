@@ -25,11 +25,7 @@ export function CartValidationBanner({
   const t = useTranslations();
 
   if (status === 'loading') {
-    return (
-      <div className="mb-6 rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-600">
-        {t.cart.validation.checking}
-      </div>
-    );
+    return null;
   }
 
   if (status === 'error') {
@@ -61,15 +57,33 @@ type CartItemValidationMessagesProps = {
   item: CartLineItem;
   validation: CartValidationResult | null;
   locale: Locale;
+  isValidating?: boolean;
 };
+
+export function CartItemValidationOverlay({ label }: { label: string }) {
+  return (
+    <div className="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-white/75">
+      <div
+        className="h-7 w-7 animate-spin rounded-full border-[3px] border-neutral-200 border-t-brand-primary"
+        role="status"
+        aria-label={label}
+      />
+    </div>
+  );
+}
 
 export function CartItemValidationMessages({
   documentId,
   item,
   validation,
   locale,
+  isValidating = false,
 }: CartItemValidationMessagesProps) {
   const t = useTranslations();
+
+  if (isValidating) {
+    return null;
+  }
   const itemValidation = getItemValidation(validation, documentId);
 
   if (!itemValidation || itemValidation.valid) {
@@ -123,6 +137,14 @@ function renderIssueMessage(
   }
 }
 
+export function CheckoutFloatingSpinner({ label }: { label: string }) {
+  return (
+    <div className="pb-checkout-spinner" role="status" aria-live="polite" aria-label={label}>
+      <div className="pb-checkout-spinner__ring" aria-hidden="true" />
+    </div>
+  );
+}
+
 export function CheckoutBlockedNotice({
   status,
   validation,
@@ -131,23 +153,14 @@ export function CheckoutBlockedNotice({
   const t = useTranslations();
 
   if (status === 'loading') {
-    return (
-      <div
-        id="checkout-cart-validation"
-        className="mt-6 rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-600"
-      >
-        {submitRecheck
-          ? t.checkout.cartValidation.submitRechecking
-          : t.checkout.cartValidation.checking}
-      </div>
-    );
+    return null;
   }
 
   if (status === 'error') {
     return (
       <div
         id="checkout-cart-validation"
-        className="mt-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+        className="pb-checkout-alert pb-checkout-alert--error"
       >
         {t.checkout.cartValidation.failed}
       </div>
@@ -161,12 +174,12 @@ export function CheckoutBlockedNotice({
   return (
     <div
       id="checkout-cart-validation"
-      className="mt-6 rounded-xl border border-amber-300 bg-amber-50 px-4 py-4"
+      className="pb-checkout-alert pb-checkout-alert--warning"
     >
-      <p className="text-sm font-semibold text-amber-900">
+      <p className="pb-checkout-alert__title">
         {t.checkout.cartValidation.blockedTitle}
       </p>
-      <p className="mt-1 text-sm text-amber-800">
+      <p className="pb-checkout-alert__message">
         {submitRecheck
           ? t.checkout.cartValidation.submitRecheckFailed
           : t.checkout.cartValidation.blockedMessage}

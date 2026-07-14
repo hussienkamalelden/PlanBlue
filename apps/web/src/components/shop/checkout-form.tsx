@@ -6,14 +6,19 @@ import { useState } from "react";
 import {
   CartItemValidationMessages,
   CheckoutBlockedNotice,
+  CheckoutFloatingSpinner,
 } from "@/components/shop/cart-validation-messages";
+import { CheckoutConfirmModal } from "@/components/shop/checkout-confirm-modal";
+import { CheckoutOrderSuccess } from "@/components/shop/checkout-order-success";
+import { ShopPageShell } from "@/components/shop/shop-page-shell";
 import { createOrder, calculateTotal, validatePromoCode } from "@/lib/api/orders";
 import { formatPrice } from "@/lib/api/strapi";
 import { useCartStore } from "@/lib/cart/cart-store";
+import { useCartItemImages } from "@/lib/cart/use-cart-item-images";
 import { useCartValidation } from "@/lib/cart/use-cart-validation";
 import { getItemValidation } from "@/lib/cart/validate-cart";
 import { useTranslations } from "@/lib/i18n/use-translations";
-import type { StrapiExtra, StrapiShipping } from "@/lib/types/strapi";
+import type { StrapiShipping } from "@/lib/types/strapi";
 import { useLocaleStore } from "@/stores/locale-store";
 
 type FormErrors = {
@@ -24,18 +29,41 @@ type FormErrors = {
   address?: string;
 };
 
+const CHECKOUT_FIELD_ORDER: (keyof FormErrors)[] = [
+  "name",
+  "email",
+  "phone",
+  "governorate",
+  "address",
+];
+
+function scrollToFirstCheckoutError(errors: FormErrors) {
+  const firstField = CHECKOUT_FIELD_ORDER.find((field) => errors[field]);
+  if (!firstField) {
+    return;
+  }
+
+  requestAnimationFrame(() => {
+    document.getElementById(`checkout-field-${firstField}`)?.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+  });
+}
+
 type OrderStatus = "idle" | "submitting" | "success" | "error";
 
 type CheckoutFormProps = {
   shippingOptions: StrapiShipping[];
-  giftWrapping: StrapiExtra | null;
 };
 
-export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProps) {
+export function CheckoutForm({ shippingOptions }: CheckoutFormProps) {
   const t = useTranslations();
   const locale = useLocaleStore((state) => state.locale);
   const items = useCartStore((state) => state.items);
   const clearCart = useCartStore((state) => state.clearCart);
+  useCartItemImages();
+  const hasBatteryItems = items.some((item) => item.need_batteries === true);
   const {
     status: cartValidationStatus,
     validation,
@@ -56,7 +84,6 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
   const [errors, setErrors] = useState<FormErrors>({});
   const [status, setStatus] = useState<OrderStatus>("idle");
   const [orderId, setOrderId] = useState("");
-  const [giftWrappingChecked, setGiftWrappingChecked] = useState(false);
 
   const [promoStatus, setPromoStatus] = useState<
     "idle" | "validating" | "valid" | "invalid"
@@ -64,6 +91,8 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
   const [promoDiscount, setPromoDiscount] = useState(0);
   const [promoError, setPromoError] = useState("");
   const [submitRecheck, setSubmitRecheck] = useState(false);
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [isValidatingCart, setIsValidatingCart] = useState(false);
 
   const subtotal = calculateTotal(items);
   const discountAmount =
@@ -72,11 +101,7 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
     (option) => option.documentId === form.shippingId,
   );
   const shippingCost = Number(selectedShipping?.cost ?? 0);
-  const giftWrappingCost =
-    giftWrappingChecked && giftWrapping
-      ? Number(giftWrapping.cost ?? 0)
-      : 0;
-  const total = subtotal - discountAmount + shippingCost + giftWrappingCost;
+  const total = subtotal - discountAmount + shippingCost;
 
   function updateField(field: keyof typeof form, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -111,7 +136,7 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
     }
   }
 
-  function validate(): boolean {
+  function getValidationErrors(): FormErrors {
     const newErrors: FormErrors = {};
 
     if (!form.name.trim()) newErrors.name = t.checkout.validation.nameRequired;
@@ -126,30 +151,64 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
     }
     if (!form.address.trim()) newErrors.address = t.checkout.validation.addressRequired;
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return newErrors;
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleReviewOrder(e: React.FormEvent) {
     e.preventDefault();
 
-    if (!validate() || items.length === 0 || !selectedShipping) {
+    const newErrors = getValidationErrors();
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      scrollToFirstCheckoutError(newErrors);
+      return;
+    }
+
+    if (items.length === 0 || !selectedShipping) {
       return;
     }
 
     setSubmitRecheck(true);
-    const cartResult = await validateNow();
+    setIsValidatingCart(true);
 
-    if (!cartResult?.valid) {
-      document
-        .getElementById("checkout-cart-validation")
-        ?.scrollIntoView({ behavior: "smooth", block: "center" });
+    try {
+      const cartResult = await validateNow();
+
+      if (!cartResult?.valid) {
+        document
+          .getElementById("checkout-cart-validation")
+          ?.scrollIntoView({ behavior: "smooth", block: "center" });
+        return;
+      }
+
+      setConfirmModalOpen(true);
+    } finally {
+      setIsValidatingCart(false);
+    }
+  }
+
+  async function handleConfirmOrder() {
+    if (!selectedShipping || items.length === 0) {
       return;
     }
 
-    setStatus("submitting");
+    setSubmitRecheck(true);
+    setIsValidatingCart(true);
 
     try {
+      const cartResult = await validateNow();
+
+      if (!cartResult?.valid) {
+        setConfirmModalOpen(false);
+        document
+          .getElementById("checkout-cart-validation")
+          ?.scrollIntoView({ behavior: "smooth", block: "center" });
+        return;
+      }
+
+      setStatus("submitting");
+
       const response = await createOrder(
         {
           name: form.name,
@@ -157,8 +216,8 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
           phone: form.phone,
           governorate: selectedShipping.name,
           shipping_cost: shippingCost,
-          gift_wrapping: giftWrappingChecked,
-          gift_wrapping_cost: giftWrappingCost,
+          gift_wrapping: false,
+          gift_wrapping_cost: 0,
           address: form.address,
           promo_code: promoStatus === "valid" ? form.promo_code.trim() : "",
           promo_discount_percentage: promoStatus === "valid" ? promoDiscount : 0,
@@ -167,225 +226,211 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
         },
         items,
       );
+      setConfirmModalOpen(false);
       setOrderId(response.data.order_id);
       clearCart();
       setStatus("success");
     } catch {
+      setConfirmModalOpen(false);
       setStatus("error");
+    } finally {
+      setIsValidatingCart(false);
     }
   }
 
   if (items.length === 0 && status !== "success") {
     return (
-      <main className="mx-auto flex min-h-[50vh] max-w-6xl flex-col items-center justify-center px-4 py-16 text-center">
-        <p className="text-neutral-600">{t.checkout.emptyCart}</p>
-        <Link
-          href="/cart"
-          className="mt-6 inline-flex rounded-lg bg-neutral-900 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-neutral-800"
-        >
-          {t.checkout.backToCart}
-        </Link>
-      </main>
+      <ShopPageShell
+        bannerSrc="/images/checkout/banner.png"
+        mainClassName="relative pb-medium-container py-10"
+      >
+        <section className="pb-checkout-section mt-10">
+          <div className="pb-cart-empty">
+            <p>{t.checkout.emptyCart}</p>
+            <Link
+              href="/cart"
+              className="pb-cart-summary__btn pb-cart-summary__btn--primary"
+            >
+              {t.checkout.backToCart}
+            </Link>
+          </div>
+        </section>
+      </ShopPageShell>
     );
   }
 
   if (status === "success") {
     return (
-      <main className="mx-auto flex min-h-[50vh] max-w-6xl flex-col items-center justify-center px-4 py-16 text-center">
-        <div className="rounded-2xl border border-green-200 bg-green-50 p-8">
-          <h1 className="text-2xl font-bold text-green-800">
-            {t.checkout.success.title}
-          </h1>
-          <p className="mt-3 text-sm text-green-700">
-            {t.checkout.success.message}
-          </p>
-          <p className="mt-4 text-sm font-medium text-green-900">
-            {t.checkout.success.orderId}: <span className="font-mono">{orderId}</span>
-          </p>
-          <Link
-            href="/"
-            className="mt-8 inline-flex rounded-lg bg-green-700 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-green-800"
-          >
-            {t.checkout.success.backToHome}
-          </Link>
-        </div>
-      </main>
+      <ShopPageShell
+        bannerSrc="/images/checkout/banner.png"
+        mainClassName="relative pb-medium-container flex min-h-[50vh] flex-col items-center justify-center overflow-hidden py-10"
+      >
+        <CheckoutOrderSuccess orderId={orderId} />
+      </ShopPageShell>
     );
   }
 
   const isCheckingCart = cartValidationStatus === "loading";
   const isPlacingOrder = status === "submitting";
+  const isBusy = isValidatingCart || isPlacingOrder;
+  const isCheckoutDisabled = isBusy || (isCheckingCart && !submitRecheck);
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-10">
-      <h1 className="text-3xl font-bold text-neutral-900">{t.checkout.title}</h1>
-      <p className="mt-1 text-sm text-neutral-500">{t.checkout.subtitle}</p>
+    <ShopPageShell bannerSrc="/images/checkout/banner.png">
+      {isBusy && (
+        <CheckoutFloatingSpinner label={t.checkout.cartValidation.checking} />
+      )}
 
-      <div className="mt-6 flex items-center gap-3 rounded-xl border border-blue-200 bg-blue-50 p-4">
-        <span className="text-2xl">🔋</span>
-        <p className="text-sm font-medium text-blue-800">
-          {t.checkout.giftBanner}
-        </p>
-      </div>
-
-      <CheckoutBlockedNotice
-        status={cartValidationStatus}
-        validation={validation}
-        submitRecheck={submitRecheck}
+      <CheckoutConfirmModal
+        open={confirmModalOpen}
+        onClose={() => {
+          if (!isBusy) {
+            setConfirmModalOpen(false);
+          }
+        }}
+        onConfirm={handleConfirmOrder}
+        isConfirming={isBusy}
+        locale={locale}
+        t={t}
+        customer={{
+          name: form.name.trim(),
+          email: form.email.trim(),
+          phone: form.phone.trim(),
+          governorate: selectedShipping?.name ?? "",
+          address: form.address.trim(),
+          extraNotes: form.extra_notes,
+        }}
+        items={items}
+        promoDiscount={promoDiscount}
+        discountAmount={discountAmount}
+        shippingCost={shippingCost}
+        shippingName={selectedShipping?.name ?? ""}
+        subtotal={subtotal}
+        total={total}
       />
 
-      {(isCartBlocked || (submitRecheck && validation && !validation.valid)) &&
-        cartValidationStatus === "ready" && (
-        <div className="mt-4">
+      <section className="pb-checkout-section mt-10">
+        <CheckoutBlockedNotice
+          status={cartValidationStatus}
+          validation={validation}
+          submitRecheck={submitRecheck}
+        />
+
+        {(isCartBlocked || (submitRecheck && validation && !validation.valid)) &&
+          cartValidationStatus === "ready" && (
           <Link
             href="/cart"
-            className="inline-flex rounded-lg border border-amber-300 bg-white px-4 py-2 text-sm font-medium text-amber-900 transition-colors hover:bg-amber-50"
+            className="pb-checkout-back-link pb-cart-summary__btn pb-cart-summary__btn--secondary"
           >
             {t.checkout.backToCart}
           </Link>
-        </div>
-      )}
+        )}
 
-      <form onSubmit={handleSubmit} className="mt-8 grid gap-8 lg:grid-cols-3">
-        <div className="space-y-6 lg:col-span-2">
-          <section className="rounded-xl border border-neutral-200 bg-white p-6">
-            <h2 className="mb-3 text-lg font-semibold text-neutral-900">
-              {t.checkout.paymentMethod}
-            </h2>
-            <div className="flex items-center gap-3 rounded-lg border-2 border-neutral-900 bg-neutral-50 p-4">
-              <div className="flex h-5 w-5 items-center justify-center rounded-full border-2 border-neutral-900">
-                <div className="h-2.5 w-2.5 rounded-full bg-neutral-900" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-neutral-900">
-                  {t.checkout.cashOnDelivery}
-                </p>
-                <p className="text-xs text-neutral-500">
-                  {t.checkout.cashOnDeliveryDesc}
-                </p>
-              </div>
-            </div>
-          </section>
-
-          <section className="rounded-xl border border-neutral-200 bg-white p-6">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <FieldInput
-                label={t.checkout.form.name}
-                placeholder={t.checkout.form.namePlaceholder}
-                value={form.name}
-                onChange={(v) => updateField("name", v)}
-                error={errors.name}
-                required
-              />
-              <FieldInput
-                label={t.checkout.form.email}
-                placeholder={t.checkout.form.emailPlaceholder}
-                type="email"
-                value={form.email}
-                onChange={(v) => updateField("email", v)}
-                error={errors.email}
-                required
-              />
-              <FieldInput
-                label={t.checkout.form.phone}
-                placeholder={t.checkout.form.phonePlaceholder}
-                type="tel"
-                inputMode="numeric"
-                value={form.phone}
-                onChange={(v) => updateField("phone", v.replace(/[^0-9]/g, ""))}
-                error={errors.phone}
-                required
-              />
-              <div>
-                <label className="mb-1 block text-sm font-medium text-neutral-700">
-                  {t.checkout.form.governorate} <span className="text-red-500">*</span>
-                </label>
-                <select
-                  value={form.shippingId}
-                  onChange={(e) => updateField("shippingId", e.target.value)}
-                  className={`w-full rounded-lg border px-3 py-2.5 text-sm transition-colors ${
-                    errors.governorate
-                      ? "border-red-400 bg-red-50"
-                      : "border-neutral-200 bg-white hover:border-neutral-300 focus:border-neutral-900"
-                  } focus:outline-none focus:ring-1 focus:ring-neutral-900`}
+        <form onSubmit={handleReviewOrder} className="pb-cart-layout">
+          <div className="pb-checkout-main">
+            <section className="pb-checkout-panel">
+              <div className="pb-checkout-fields">
+                <FieldInput
+                  id="checkout-field-name"
+                  label={t.checkout.form.name}
+                  placeholder={t.checkout.form.namePlaceholder}
+                  value={form.name}
+                  onChange={(v) => updateField("name", v)}
+                  error={errors.name}
+                  required
+                />
+                <FieldInput
+                  id="checkout-field-email"
+                  label={t.checkout.form.email}
+                  placeholder={t.checkout.form.emailPlaceholder}
+                  type="email"
+                  value={form.email}
+                  onChange={(v) => updateField("email", v)}
+                  error={errors.email}
+                  required
+                />
+                <FieldInput
+                  id="checkout-field-phone"
+                  label={t.checkout.form.phone}
+                  placeholder={t.checkout.form.phonePlaceholder}
+                  type="tel"
+                  inputMode="numeric"
+                  value={form.phone}
+                  onChange={(v) => updateField("phone", v.replace(/[^0-9]/g, ""))}
+                  error={errors.phone}
+                  required
+                />
+                <div
+                  id="checkout-field-governorate"
+                  className={`pb-checkout-field${errors.governorate ? " pb-checkout-field--error" : ""}`}
                 >
-                  <option value="">{t.checkout.form.governoratePlaceholder}</option>
-                  {shippingOptions.map((option) => (
-                    <option key={option.documentId} value={option.documentId}>
-                      {option.name}
-                    </option>
-                  ))}
-                </select>
-                {errors.governorate && (
-                  <p className="mt-1 text-xs text-red-600">{errors.governorate}</p>
-                )}
-              </div>
-              <div className="sm:col-span-2">
-                <label className="mb-1 block text-sm font-medium text-neutral-700">
-                  {t.checkout.form.address} <span className="text-red-500">*</span>
-                </label>
-                <textarea
-                  rows={2}
-                  value={form.address}
-                  onChange={(e) => updateField("address", e.target.value)}
-                  placeholder={t.checkout.form.addressPlaceholder}
-                  className={`w-full resize-none rounded-lg border px-3 py-2.5 text-sm transition-colors ${
-                    errors.address
-                      ? "border-red-400 bg-red-50"
-                      : "border-neutral-200 bg-white hover:border-neutral-300 focus:border-neutral-900"
-                  } focus:outline-none focus:ring-1 focus:ring-neutral-900`}
-                />
-                {errors.address && (
-                  <p className="mt-1 text-xs text-red-600">{errors.address}</p>
-                )}
-              </div>
-              <div className="sm:col-span-2">
-                <label className="mb-1 block text-sm font-medium text-neutral-700">
-                  {t.checkout.form.extraNotes}
-                </label>
-                <textarea
-                  rows={2}
-                  value={form.extra_notes}
-                  onChange={(e) => updateField("extra_notes", e.target.value)}
-                  placeholder={t.checkout.form.extraNotesPlaceholder}
-                  className="w-full resize-none rounded-lg border border-neutral-200 bg-white px-3 py-2.5 text-sm transition-colors hover:border-neutral-300 focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
-                />
-              </div>
-              {giftWrapping && (
-                <div className="sm:col-span-2">
-                  <p className="mb-2 text-sm font-semibold text-neutral-600">
-                    {t.checkout.giftWrappingNote}
-                  </p>
-                  <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-neutral-200 bg-neutral-50 p-4 transition-colors hover:border-neutral-300">
-                    <input
-                      type="checkbox"
-                      checked={giftWrappingChecked}
-                      onChange={(e) => setGiftWrappingChecked(e.target.checked)}
-                      className="mt-0.5 h-4 w-4 rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900"
-                    />
-                    <span className="text-sm text-neutral-700">
-                      <span className="font-medium text-neutral-900">
-                        {t.checkout.giftWrapping}
-                      </span>
-                      <span className="mt-0.5 block text-neutral-500">
-                        {t.checkout.giftWrappingDesc}{" "}
-                        {formatPrice(Number(giftWrapping.cost), locale)}
-                      </span>
-                    </span>
+                  <label>
+                    {t.checkout.form.governorate}{" "}
+                    <span className="pb-checkout-field__required">*</span>
                   </label>
+                  <select
+                    value={form.shippingId}
+                    onChange={(e) => updateField("shippingId", e.target.value)}
+                  >
+                    <option value="">{t.checkout.form.governoratePlaceholder}</option>
+                    {shippingOptions.map((option) => (
+                      <option key={option.documentId} value={option.documentId}>
+                        {option.name}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.governorate && (
+                    <p className="pb-checkout-field__error">{errors.governorate}</p>
+                  )}
                 </div>
-              )}
-            </div>
-          </section>
-        </div>
+                <div
+                  id="checkout-field-address"
+                  className={`pb-checkout-field pb-checkout-field--wide${errors.address ? " pb-checkout-field--error" : ""}`}
+                >
+                  <label>
+                    {t.checkout.form.address}{" "}
+                    <span className="pb-checkout-field__required">*</span>
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={form.address}
+                    onChange={(e) => updateField("address", e.target.value)}
+                    placeholder={t.checkout.form.addressPlaceholder}
+                  />
+                  {errors.address && (
+                    <p className="pb-checkout-field__error">{errors.address}</p>
+                  )}
+                </div>
+                <div className="pb-checkout-field pb-checkout-field--wide">
+                  <label>{t.checkout.form.extraNotes}</label>
+                  <textarea
+                    rows={2}
+                    value={form.extra_notes}
+                    onChange={(e) => updateField("extra_notes", e.target.value)}
+                    placeholder={t.checkout.form.extraNotesPlaceholder}
+                  />
+                </div>
+              </div>
+            </section>
+          </div>
 
-        <aside className="lg:col-span-1">
-          <div className="sticky top-6 rounded-xl border border-neutral-200 bg-white p-6">
-            <h2 className="text-lg font-semibold text-neutral-900">
-              {t.checkout.orderSummary}
+          <aside
+            className={`pb-cart-summary${isCartBlocked ? " pb-cart-summary--blocked" : ""}`}
+          >
+            <h2 className="pb-checkout-summary__title">
+              {t.checkout.orderDetails}
             </h2>
 
-            <ul className="mt-4 divide-y divide-neutral-100">
+            <div className="pb-checkout-summary__payment">
+              <span className="pb-checkout-summary__payment-label">
+                {t.checkout.paymentMethod}
+              </span>
+              <span className="pb-checkout-summary__payment-value">
+                {t.checkout.cashOnDelivery}
+              </span>
+            </div>
+
+            <ul className="pb-checkout-summary__items">
               {items.map((item) => {
                 const unitPrice =
                   item.has_sale && item.discountPrice !== null
@@ -397,18 +442,18 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
                 return (
                   <li
                     key={item.documentId}
-                    className={`py-3 text-sm ${
-                      hasIssue ? 'rounded-lg bg-amber-50 px-2' : ''
+                    className={`pb-checkout-summary__item${
+                      hasIssue ? " pb-checkout-summary__item--issue" : ""
                     }`}
                   >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium text-neutral-900">{item.title}</p>
-                        <p className="text-xs text-neutral-500">
+                    <div className="pb-checkout-summary__item-row">
+                      <div className="pb-checkout-summary__item-info">
+                        <p className="pb-checkout-summary__item-name">{item.title}</p>
+                        <p className="pb-checkout-summary__item-meta">
                           {item.quantity} × {formatPrice(unitPrice, locale)}
                         </p>
                       </div>
-                      <p className="font-medium text-neutral-900">
+                      <p className="pb-checkout-summary__item-price">
                         {formatPrice(unitPrice * item.quantity, locale)}
                       </p>
                     </div>
@@ -423,11 +468,27 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
               })}
             </ul>
 
-            <div className="mt-4 border-t border-neutral-200 pt-4">
-              <label className="mb-1.5 block text-sm font-medium text-neutral-700">
-                {t.checkout.form.promoCode}
-              </label>
-              <div className="flex gap-2">
+            <div className="pb-checkout-perks">
+              <p className="pb-checkout-perks__title">
+                {t.checkout.perksCongratulations}
+              </p>
+              <p className="pb-checkout-perks__message">
+                {t.checkout.perksMessagePrefix}{" "}
+                <strong>{t.checkout.perksGiftHighlight}</strong>
+                {hasBatteryItems && (
+                  <>
+                    {" "}
+                    {t.checkout.perksMessageJoin}{" "}
+                    <strong>{t.checkout.perksBatteriesHighlight}</strong>
+                  </>
+                )}{" "}
+                {t.checkout.perksMessageSuffix}
+              </p>
+            </div>
+
+            <div className="pb-checkout-promo">
+              <label>{t.checkout.form.promoCode}</label>
+              <div className="pb-checkout-promo__row">
                 <input
                   type="text"
                   value={form.promo_code}
@@ -439,13 +500,13 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
                     }
                   }}
                   placeholder={t.checkout.form.promoCodePlaceholder}
-                  className={`flex-1 rounded-lg border px-3 py-2 text-sm transition-colors ${
+                  className={
                     promoStatus === "invalid"
-                      ? "border-red-400 bg-red-50"
+                      ? "pb-checkout-promo__input--invalid"
                       : promoStatus === "valid"
-                        ? "border-green-400 bg-green-50"
-                        : "border-neutral-200 bg-white hover:border-neutral-300 focus:border-neutral-900"
-                  } focus:outline-none focus:ring-1 focus:ring-neutral-900`}
+                        ? "pb-checkout-promo__input--valid"
+                        : undefined
+                  }
                 />
                 <button
                   type="button"
@@ -453,7 +514,7 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
                   disabled={
                     !form.promo_code.trim() || promoStatus === "validating"
                   }
-                  className="shrink-0 rounded-lg bg-neutral-900 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-500"
+                  className="pb-checkout-promo__apply"
                 >
                   {promoStatus === "validating"
                     ? "..."
@@ -461,88 +522,83 @@ export function CheckoutForm({ shippingOptions, giftWrapping }: CheckoutFormProp
                 </button>
               </div>
               {promoStatus === "valid" && (
-                <p className="mt-1.5 text-xs text-green-600">
+                <p className="pb-checkout-promo__hint pb-checkout-promo__hint--valid">
                   {t.checkout.promoApplied} ({promoDiscount}% {t.checkout.promoOff})
                 </p>
               )}
               {promoStatus === "invalid" && promoError && (
-                <p className="mt-1.5 text-xs text-red-600">{promoError}</p>
+                <p className="pb-checkout-promo__hint pb-checkout-promo__hint--invalid">
+                  {promoError}
+                </p>
               )}
             </div>
 
-            <div className="mt-4 border-t border-neutral-200 pt-4">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-neutral-600">
+            <div className="pb-checkout-totals">
+              <div className="pb-checkout-totals__row">
+                <span className="pb-checkout-totals__label">
                   {t.checkout.subtotal} ({items.length} {t.checkout.items})
                 </span>
-                <span className="font-medium text-neutral-900">
+                <span className="pb-checkout-totals__value">
                   {formatPrice(subtotal, locale)}
                 </span>
               </div>
               {discountAmount > 0 && (
-                <div className="mt-2 flex items-center justify-between text-sm">
-                  <span className="text-green-700">
+                <div className="pb-checkout-totals__row pb-checkout-totals__row--discount">
+                  <span className="pb-checkout-totals__label">
                     {t.checkout.discount} ({promoDiscount}%)
                   </span>
-                  <span className="font-medium text-green-700">
+                  <span className="pb-checkout-totals__value">
                     -{formatPrice(discountAmount, locale)}
                   </span>
                 </div>
               )}
               {selectedShipping && (
-                <div className="mt-2 flex items-center justify-between text-sm">
-                  <span className="text-neutral-600">
+                <div className="pb-checkout-totals__row">
+                  <span className="pb-checkout-totals__label">
                     {t.checkout.shipping} ({selectedShipping.name})
                   </span>
-                  <span className="font-medium text-neutral-900">
+                  <span className="pb-checkout-totals__value">
                     {formatPrice(shippingCost, locale)}
                   </span>
                 </div>
               )}
-              {giftWrappingChecked && giftWrappingCost > 0 && (
-                <div className="mt-2 flex items-center justify-between text-sm">
-                  <span className="text-neutral-600">{t.checkout.giftWrapping}</span>
-                  <span className="font-medium text-neutral-900">
-                    {formatPrice(giftWrappingCost, locale)}
-                  </span>
-                </div>
-              )}
-              <div className="mt-3 flex items-center justify-between text-base font-bold">
+              <div className="pb-checkout-totals__total">
                 <span>{t.checkout.total}</span>
                 <span>{formatPrice(total, locale)}</span>
               </div>
             </div>
 
             {status === "error" && (
-              <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-3">
-                <p className="text-sm font-medium text-red-800">
+              <div className="pb-checkout-error">
+                <p className="pb-checkout-error__title">
                   {t.checkout.error.title}
                 </p>
-                <p className="text-xs text-red-700">{t.checkout.error.message}</p>
+                <p className="pb-checkout-error__message">
+                  {t.checkout.error.message}
+                </p>
               </div>
             )}
 
-            <button
-              type="submit"
-              disabled={isPlacingOrder || isCheckingCart}
-              className="mt-6 w-full rounded-lg bg-neutral-900 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-500"
-            >
-              {isPlacingOrder
-                ? t.checkout.placing
-                : isCheckingCart && submitRecheck
-                  ? t.checkout.cartValidation.submitRechecking
-                  : isCheckingCart
-                    ? t.checkout.cartValidation.checking
-                    : t.checkout.placeOrder}
-            </button>
-          </div>
-        </aside>
-      </form>
-    </main>
+            <div className="pb-cart-summary__actions">
+              <button
+                type="submit"
+                disabled={isCheckoutDisabled}
+                className={`pb-cart-summary__btn pb-cart-summary__btn--primary${
+                  isCheckoutDisabled ? " pb-cart-summary__btn--disabled" : ""
+                }`}
+              >
+                {t.checkout.checkout}
+              </button>
+            </div>
+          </aside>
+        </form>
+      </section>
+    </ShopPageShell>
   );
 }
 
 function FieldInput({
+  id,
   label,
   placeholder,
   type = "text",
@@ -552,6 +608,7 @@ function FieldInput({
   error,
   required,
 }: {
+  id?: string;
   label: string;
   placeholder: string;
   type?: string;
@@ -562,9 +619,13 @@ function FieldInput({
   required?: boolean;
 }) {
   return (
-    <div>
-      <label className="mb-1 block text-sm font-medium text-neutral-700">
-        {label} {required && <span className="text-red-500">*</span>}
+    <div
+      id={id}
+      className={`pb-checkout-field${error ? " pb-checkout-field--error" : ""}`}
+    >
+      <label>
+        {label}{" "}
+        {required && <span className="pb-checkout-field__required">*</span>}
       </label>
       <input
         type={type}
@@ -572,13 +633,8 @@ function FieldInput({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className={`w-full rounded-lg border px-3 py-2.5 text-sm transition-colors ${
-          error
-            ? "border-red-400 bg-red-50"
-            : "border-neutral-200 bg-white hover:border-neutral-300 focus:border-neutral-900"
-        } focus:outline-none focus:ring-1 focus:ring-neutral-900`}
       />
-      {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
+      {error && <p className="pb-checkout-field__error">{error}</p>}
     </div>
   );
 }

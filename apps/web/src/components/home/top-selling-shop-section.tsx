@@ -2,11 +2,10 @@ import { HomeDealsBackdrop } from '@/components/home/home-deals-backdrop';
 import { PopularShopCarousel } from '@/components/home/popular-shop-carousel';
 import { TopSellingShopHeading } from '@/components/home/top-selling-shop-heading';
 import { fetchShopItems } from '@/lib/api/strapi.server';
-import { getTopSellingShopItems } from '@/lib/shop/filters';
 
 export async function TopSellingShopSection() {
-  const allItems = await fetchShopItems();
-  const topItems = getTopSellingShopItems(allItems, 12);
+  const { data: allItems } = await fetchShopItems({ pageSize: 12, sort: 'total_sold:desc' });
+  const topItems = allItems;
 
   if (topItems.length === 0) {
     return null;

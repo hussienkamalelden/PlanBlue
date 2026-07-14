@@ -3,3 +3,9 @@ export const SLIDER_TOUCH_OPTIONS = {
   preventClicksPropagation: true,
   threshold: 10,
 } as const;
+
+export const SLIDER_AUTOPLAY_OPTIONS = {
+  delay: 3000,
+  disableOnInteraction: false,
+  pauseOnMouseEnter: true,
+} as const;

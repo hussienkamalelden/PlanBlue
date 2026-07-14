@@ -65,7 +65,7 @@ export function ShopItemCard({
                 </span>
               )}
               {unavailable && (
-                <span className="rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-medium text-neutral-600">
+                <span className="max-w-[9.5rem] rounded-full bg-neutral-100 px-2.5 py-1 text-center text-[11px] font-medium leading-tight text-neutral-600">
                   {t.shopItem.outOfStock}
                 </span>
               )}

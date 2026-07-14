@@ -33,10 +33,10 @@ export function PageLoader({ visible }: PageLoaderProps) {
       aria-hidden={!visible}
       aria-live="polite"
     >
-      <div className="relative z-10 text-center" dir="ltr">
-        <div className="relative mx-auto mb-8 w-fit md:mb-10">
+      <div className="pb-page-loader__inner" dir="ltr">
+        <div className="pb-page-loader__logo-wrap">
           <div
-            className="pointer-events-none absolute -top-10 left-1/2 z-0 h-[190px] w-[280px] -translate-x-1/2 bg-contain bg-no-repeat"
+            className="pb-page-loader__shape"
             style={{ backgroundImage: `url(${HOME_ASSETS.shapes.anim7})` }}
             aria-hidden="true"
           />
@@ -46,7 +46,7 @@ export function PageLoader({ visible }: PageLoaderProps) {
             width={180}
             height={180}
             priority
-            className="relative z-10 mx-auto h-24 w-auto animate-float-gentle sm:h-28 md:h-32"
+            className="pb-page-loader__logo animate-float-gentle"
           />
         </div>
 
