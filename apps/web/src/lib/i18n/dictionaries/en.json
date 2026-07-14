@@ -281,7 +281,12 @@
   "report": {
     "badge": "PlanBlue Reports",
     "title": "Generate Report",
-    "subtitle": "Select a date from the calendar, then generate your report.",
+    "subtitle": "Select a from and to date, then generate your report.",
+    "from": "From",
+    "to": "To",
+    "selectFrom": "Select start date",
+    "selectTo": "Select end date",
+    "rangeSummary": "From {from} to {to}",
     "generateReport": "Generate Report",
     "gate": {
       "title": "Protected Area",
@@ -294,7 +299,9 @@
     },
     "calendar": {
       "previousMonth": "Previous month",
-      "nextMonth": "Next month"
+      "nextMonth": "Next month",
+      "selectingFrom": "Select the start date on the calendar",
+      "selectingTo": "Select the end date on the calendar"
     }
   },
   "footer": {

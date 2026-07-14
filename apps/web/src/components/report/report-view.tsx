@@ -4,8 +4,11 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 import type { Locale } from '@/lib/i18n/config';
+import { interpolate } from '@/lib/i18n/dictionary';
 import { useTranslations } from '@/lib/i18n/use-translations';
 import { useLocaleStore } from '@/stores/locale-store';
+
+type SelectionField = 'from' | 'to';
 
 function pad(value: number): string {
   return String(value).padStart(2, '0');
@@ -15,8 +18,21 @@ function toDateKey(date: Date): string {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 }
 
+function startOfDay(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
 function isSameDay(a: Date, b: Date): boolean {
   return toDateKey(a) === toDateKey(b);
+}
+
+function formatReportDate(date: Date, locale: Locale): string {
+  return new Intl.DateTimeFormat(locale === 'ar' ? 'ar-EG' : 'en-US', {
+    weekday: 'short',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  }).format(date);
 }
 
 function getWeekdayLabels(locale: Locale): string[] {
@@ -64,17 +80,36 @@ function buildCalendarCells(year: number, month: number): CalendarCell[] {
   return cells;
 }
 
+function normalizeRange(fromDate: Date, toDate: Date): { from: Date; to: Date } {
+  const from = startOfDay(fromDate).getTime();
+  const to = startOfDay(toDate).getTime();
+
+  if (from <= to) {
+    return { from: startOfDay(fromDate), to: startOfDay(toDate) };
+  }
+
+  return { from: startOfDay(toDate), to: startOfDay(fromDate) };
+}
+
+function isBetweenRange(date: Date, fromDate: Date, toDate: Date): boolean {
+  const { from, to } = normalizeRange(fromDate, toDate);
+  const time = startOfDay(date).getTime();
+  return time > from.getTime() && time < to.getTime();
+}
+
 export function ReportView() {
   const t = useTranslations();
   const locale = useLocaleStore((state) => state.locale);
   const PreviousMonthIcon = locale === 'ar' ? ChevronRight : ChevronLeft;
   const NextMonthIcon = locale === 'ar' ? ChevronLeft : ChevronRight;
-  const today = useMemo(() => new Date(), []);
+  const today = useMemo(() => startOfDay(new Date()), []);
+  const [activeField, setActiveField] = useState<SelectionField>('from');
+  const [fromDate, setFromDate] = useState<Date | null>(null);
+  const [toDate, setToDate] = useState<Date | null>(null);
   const [visibleMonth, setVisibleMonth] = useState(() => ({
     year: today.getFullYear(),
     month: today.getMonth(),
   }));
-  const [selectedDate, setSelectedDate] = useState<Date>(() => new Date(today));
 
   const weekdayLabels = useMemo(() => getWeekdayLabels(locale), [locale]);
   const monthLabel = getMonthLabel(
@@ -86,6 +121,31 @@ export function ReportView() {
     visibleMonth.year,
     visibleMonth.month,
   );
+
+  const rangeSummary =
+    fromDate && toDate
+      ? interpolate(t.report.rangeSummary, {
+          from: formatReportDate(fromDate, locale),
+          to: formatReportDate(toDate, locale),
+        })
+      : null;
+
+  const selectingHint =
+    activeField === 'from'
+      ? t.report.calendar.selectingFrom
+      : t.report.calendar.selectingTo;
+
+  function focusField(field: SelectionField) {
+    setActiveField(field);
+    const targetDate = field === 'from' ? fromDate : toDate;
+
+    if (targetDate) {
+      setVisibleMonth({
+        year: targetDate.getFullYear(),
+        month: targetDate.getMonth(),
+      });
+    }
+  }
 
   function goToPreviousMonth() {
     setVisibleMonth((current) => {
@@ -101,15 +161,76 @@ export function ReportView() {
     });
   }
 
+  function handleDaySelect(date: Date) {
+    const picked = startOfDay(date);
+
+    if (activeField === 'from') {
+      setFromDate(picked);
+
+      if (toDate && picked.getTime() > startOfDay(toDate).getTime()) {
+        setToDate(picked);
+      }
+
+      setActiveField('to');
+      return;
+    }
+
+    setToDate(picked);
+
+    if (fromDate && picked.getTime() < startOfDay(fromDate).getTime()) {
+      setFromDate(picked);
+    }
+  }
+
   return (
     <section className="pb-report">
       <header className="pb-report__header">
-        <p className="pb-report__badge">{t.report.badge}</p>
         <h1 className="pb-report__title">{t.report.title}</h1>
-        <p className="pb-report__subtitle">{t.report.subtitle}</p>
       </header>
 
       <div className="pb-report__panel">
+        <div className="pb-report-range">
+          <button
+            type="button"
+            className={[
+              'pb-report-range__field',
+              activeField === 'from' ? 'pb-report-range__field--active' : '',
+            ]
+              .filter(Boolean)
+              .join(' ')}
+            onClick={() => focusField('from')}
+          >
+            <span className="pb-report-range__label">{t.report.from}</span>
+            <span className="pb-report-range__value">
+              {fromDate
+                ? formatReportDate(fromDate, locale)
+                : t.report.selectFrom}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            className={[
+              'pb-report-range__field',
+              activeField === 'to' ? 'pb-report-range__field--active' : '',
+            ]
+              .filter(Boolean)
+              .join(' ')}
+            onClick={() => focusField('to')}
+          >
+            <span className="pb-report-range__label">{t.report.to}</span>
+            <span className="pb-report-range__value">
+              {toDate ? formatReportDate(toDate, locale) : t.report.selectTo}
+            </span>
+          </button>
+        </div>
+
+        {rangeSummary ? (
+          <p className="pb-report-range__summary">{rangeSummary}</p>
+        ) : (
+          <p className="pb-report-range__hint">{selectingHint}</p>
+        )}
+
         <div className="pb-report-calendar">
           <div className="pb-report-calendar__toolbar">
             <button
@@ -153,7 +274,12 @@ export function ReportView() {
                 );
               }
 
-              const isSelected = isSameDay(cell.date, selectedDate);
+              const isFrom = fromDate ? isSameDay(cell.date, fromDate) : false;
+              const isTo = toDate ? isSameDay(cell.date, toDate) : false;
+              const isInRange =
+                fromDate && toDate
+                  ? isBetweenRange(cell.date, fromDate, toDate)
+                  : false;
               const isToday = isSameDay(cell.date, today);
 
               return (
@@ -163,22 +289,16 @@ export function ReportView() {
                   className={[
                     'pb-report-calendar__cell',
                     'pb-report-calendar__cell--day',
-                    isSelected ? 'pb-report-calendar__cell--selected' : '',
+                    isFrom ? 'pb-report-calendar__cell--from' : '',
+                    isTo ? 'pb-report-calendar__cell--to' : '',
+                    isInRange ? 'pb-report-calendar__cell--in-range' : '',
                     isToday ? 'pb-report-calendar__cell--today' : '',
                   ]
                     .filter(Boolean)
                     .join(' ')}
-                  onClick={() => setSelectedDate(cell.date)}
-                  aria-pressed={isSelected}
-                  aria-label={cell.date.toLocaleDateString(
-                    locale === 'ar' ? 'ar-EG' : 'en-US',
-                    {
-                      weekday: 'long',
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    },
-                  )}
+                  onClick={() => handleDaySelect(cell.date)}
+                  aria-pressed={isFrom || isTo}
+                  aria-label={formatReportDate(cell.date, locale)}
                 >
                   {cell.day}
                 </button>

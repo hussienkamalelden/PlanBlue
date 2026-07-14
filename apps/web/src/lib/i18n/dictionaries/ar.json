@@ -281,7 +281,12 @@
   "report": {
     "badge": "تقارير PlanBlue",
     "title": "إنشاء تقرير",
-    "subtitle": "اختر تاريخاً من التقويم، ثم أنشئ تقريرك.",
+    "subtitle": "اختر تاريخ البداية والنهاية، ثم أنشئ تقريرك.",
+    "from": "من",
+    "to": "إلى",
+    "selectFrom": "اختر تاريخ البداية",
+    "selectTo": "اختر تاريخ النهاية",
+    "rangeSummary": "من تاريخ {from} إلى تاريخ {to}",
     "generateReport": "Generate Report",
     "gate": {
       "title": "منطقة محمية",
@@ -294,7 +299,9 @@
     },
     "calendar": {
       "previousMonth": "الشهر السابق",
-      "nextMonth": "الشهر التالي"
+      "nextMonth": "الشهر التالي",
+      "selectingFrom": "اختر تاريخ البداية من التقويم",
+      "selectingTo": "اختر تاريخ النهاية من التقويم"
     }
   },
   "footer": {

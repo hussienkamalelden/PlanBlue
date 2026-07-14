@@ -4273,21 +4273,8 @@ html[dir='rtl'] .planblue-site {
 }
 
 .pb-report__header {
-  margin-bottom: 1.5rem;
+  margin: 2rem 0 1.5rem;
   text-align: center;
-}
-
-.pb-report__badge {
-  display: inline-flex;
-  margin: 0 0 0.75rem;
-  padding: 6px 14px;
-  border-radius: 999px;
-  background: rgba(67, 137, 247, 0.1);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: #2563eb;
 }
 
 .pb-report__title {
@@ -4298,13 +4285,6 @@ html[dir='rtl'] .planblue-site {
   color: var(--pb-title);
 }
 
-.pb-report__subtitle {
-  margin: 0.65rem 0 0;
-  font-size: 14px;
-  line-height: 1.55;
-  color: #64748b;
-}
-
 .pb-report__panel {
   padding: 1.5rem;
   border: 1px dashed #d8d8d8;
@@ -4313,6 +4293,82 @@ html[dir='rtl'] .planblue-site {
   box-shadow:
     0 12px 32px rgba(67, 137, 247, 0.08),
     0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.pb-report-range {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.pb-report-range__field {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px dashed #d8d8d8;
+  border-radius: 12px;
+  background: #f8fbff;
+  text-align: start;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.pb-report-range__field:hover {
+  border-color: #b8d4ff;
+  background: #eef5ff;
+}
+
+.pb-report-range__field--active {
+  border-color: var(--pb-theme);
+  background: #eef5ff;
+  box-shadow: 0 0 0 2px rgba(67, 137, 247, 0.12);
+}
+
+.pb-report-range__label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.pb-report-range__value {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--pb-title);
+}
+
+.pb-report-range__summary {
+  margin: 14px 0 0;
+  padding: 12px 14px;
+  border: 1px dashed #b8d4ff;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f8fbff 0%, #eef5ff 100%);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.5;
+  text-align: center;
+  color: #2563eb;
+}
+
+.pb-report-range__hint {
+  margin: 14px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.45;
+  text-align: center;
+  color: #64748b;
+}
+
+.pb-report-calendar {
+  margin-top: 1.25rem;
 }
 
 .pb-report-calendar__toolbar {
@@ -4407,13 +4463,27 @@ html[dir='rtl'] .planblue-site {
   border-color: rgba(67, 137, 247, 0.35);
 }
 
-.pb-report-calendar__cell--selected {
+.pb-report-calendar__cell--in-range {
   border-color: var(--pb-theme);
   background: var(--pb-theme);
   color: #fff;
 }
 
-.pb-report-calendar__cell--selected:hover {
+.pb-report-calendar__cell--in-range:hover {
+  border-color: var(--pb-theme);
+  background: var(--pb-theme);
+  color: #fff;
+}
+
+.pb-report-calendar__cell--from,
+.pb-report-calendar__cell--to {
+  border-color: var(--pb-theme);
+  background: var(--pb-theme);
+  color: #fff;
+}
+
+.pb-report-calendar__cell--from:hover,
+.pb-report-calendar__cell--to:hover {
   border-color: var(--pb-theme);
   background: var(--pb-theme);
   color: #fff;
@@ -4427,6 +4497,10 @@ html[dir='rtl'] .planblue-site {
 @media (max-width: 767px) {
   .pb-report__panel {
     padding: 1.25rem;
+  }
+
+  .pb-report-range {
+    grid-template-columns: 1fr;
   }
 
   .pb-report-calendar__cell {
