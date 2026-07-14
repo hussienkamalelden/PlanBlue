@@ -18,8 +18,6 @@ export function CheckoutOrderSuccess({ orderId }: CheckoutOrderSuccessProps) {
       <CheckoutOrderCelebration />
 
       <div className="pb-checkout-success">
-        <div className="pb-checkout-success__glow" aria-hidden />
-
         <div className="pb-checkout-success__icon-wrap">
           <span className="pb-checkout-success__icon-ring" aria-hidden />
           <span className="pb-checkout-success__icon-badge">
@@ -37,11 +35,19 @@ export function CheckoutOrderSuccess({ orderId }: CheckoutOrderSuccessProps) {
           />
         </div>
 
-        <p className="pb-checkout-success__eyebrow">{t.checkout.success.eyebrow}</p>
+        <p className="pb-checkout-success__eyebrow">
+          {t.checkout.success.eyebrow}
+        </p>
 
-        <h1 className="pb-checkout-success__title">{t.checkout.success.title}</h1>
-        <p className="pb-checkout-success__subtitle">{t.checkout.success.subtitle}</p>
-        <p className="pb-checkout-success__message">{t.checkout.success.message}</p>
+        <h1 className="pb-checkout-success__title">
+          {t.checkout.success.title}
+        </h1>
+        <p className="pb-checkout-success__subtitle">
+          {t.checkout.success.subtitle}
+        </p>
+        <p className="pb-checkout-success__message">
+          {t.checkout.success.message}
+        </p>
 
         <div className="pb-checkout-success__order">
           <span className="pb-checkout-success__order-label">

@@ -3811,14 +3811,67 @@ html[dir='rtl'] .planblue-site {
 }
 
 @media (max-width: 767px) {
+  .pb-checkout-success-page {
+    justify-content: flex-start;
+    min-height: auto;
+    padding-top: 1.25rem;
+    padding-bottom: calc(
+      1.5rem + var(--pb-mobile-nav-height) + env(safe-area-inset-bottom, 0px)
+    );
+  }
+
   .pb-checkout-success {
-    margin: 2rem 0;
-    padding: 2rem 1.25rem 1.75rem;
+    margin: 0.75rem 0 0;
+    padding: 1.5rem 1rem 1.25rem;
+    border-radius: 14px;
+  }
+
+  .pb-checkout-success__icon-wrap {
+    width: 76px;
+    height: 76px;
+  }
+
+  .pb-checkout-success__icon-badge {
+    width: 62px;
+    height: 62px;
+  }
+
+  .pb-checkout-success__icon-badge svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .pb-checkout-success__sparkle {
+    display: none;
+  }
+
+  .pb-checkout-success__eyebrow {
+    margin-top: 0.75rem;
+    font-size: 12px;
+  }
+
+  .pb-checkout-success__subtitle,
+  .pb-checkout-success__message {
+    font-size: 13px;
+  }
+
+  .pb-checkout-success__order {
+    width: 100%;
+    margin-top: 1rem;
+    padding: 12px 14px;
+  }
+
+  .pb-checkout-success__order-id {
+    font-size: 0.9375rem;
+    line-height: 1.4;
   }
 
   .pb-checkout-success__btn {
     width: 100%;
     min-width: 0;
+    min-height: 48px;
+    margin-top: 1.25rem;
+    font-size: 16px;
   }
 }
 
@@ -4018,88 +4071,6 @@ html[dir='rtl'] .planblue-site {
 
   .pb-checkout-alert {
     padding: 12px 14px;
-  }
-
-  .pb-checkout-modal {
-    align-items: flex-end;
-    padding: 0;
-  }
-
-  .pb-checkout-modal__dialog {
-    width: 100%;
-    max-width: none;
-    max-height: min(92vh, 900px);
-    border-radius: 14px 14px 0 0;
-  }
-
-  .pb-checkout-modal__header {
-    gap: 10px;
-    padding: 16px 16px 12px;
-  }
-
-  .pb-checkout-modal__title {
-    font-size: 1.125rem;
-  }
-
-  .pb-checkout-modal__subtitle {
-    font-size: 13px;
-  }
-
-  .pb-checkout-modal__body {
-    padding: 14px 16px;
-  }
-
-  .pb-checkout-modal__footer {
-    padding: 12px 16px calc(14px + env(safe-area-inset-bottom, 0px));
-  }
-
-  .pb-checkout-modal__footer .pb-checkout-modal__submit {
-    min-height: 48px;
-    font-size: 17px;
-  }
-
-  .pb-checkout-modal__row {
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .pb-checkout-modal__row dd {
-    text-align: start;
-  }
-
-  .pb-checkout-modal__row dd.pb-checkout-modal__row-value--wrap {
-    max-width: none;
-  }
-
-  .pb-checkout-modal__item {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 2px 0;
-  }
-
-  .pb-checkout-modal__item-name {
-    display: -webkit-box;
-    overflow: hidden;
-    white-space: normal;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-  }
-
-  .pb-checkout-modal__item-total {
-    grid-column: 1;
-    grid-row: auto;
-    justify-self: start;
-    text-align: start;
-  }
-
-  .pb-checkout-modal__grand-total {
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 12px;
-    font-size: 15px;
-  }
-
-  .pb-checkout-modal__grand-total-value {
-    font-size: 20px;
   }
 }
 
@@ -4394,6 +4365,163 @@ html[dir='rtl'] .planblue-site {
   width: 100%;
   border-radius: 10px;
   font-size: 20px;
+}
+
+@media (max-width: 767px) {
+  .pb-checkout-modal {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .pb-checkout-modal__dialog {
+    width: 100%;
+    max-width: none;
+    min-height: 0;
+    max-height: min(94vh, 900px);
+    border-inline: none;
+    border-bottom: none;
+    border-radius: 16px 16px 0 0;
+    animation: pb-checkout-modal-sheet-in 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .pb-checkout-modal__header {
+    gap: 10px;
+    padding: calc(12px + env(safe-area-inset-top, 0px)) 16px 12px;
+  }
+
+  .pb-checkout-modal__header > div:first-child {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .pb-checkout-modal__title {
+    font-size: 1.125rem;
+  }
+
+  .pb-checkout-modal__subtitle {
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .pb-checkout-modal__close {
+    width: 40px;
+    height: 40px;
+  }
+
+  .pb-checkout-modal__body {
+    min-height: 0;
+    padding: 12px 16px 16px;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+
+  .pb-checkout-modal__card {
+    margin-bottom: 12px;
+    padding: 14px;
+  }
+
+  .pb-checkout-modal__section {
+    padding: 14px;
+  }
+
+  .pb-checkout-modal__card-title {
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+
+  .pb-checkout-modal__row {
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px 0;
+  }
+
+  .pb-checkout-modal__row dt,
+  .pb-checkout-modal__row dd {
+    width: 100%;
+    max-width: none;
+  }
+
+  .pb-checkout-modal__row dt.pb-checkout-modal__row-label--strong {
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .pb-checkout-modal__row dd {
+    text-align: start;
+    word-break: break-word;
+  }
+
+  .pb-checkout-modal__row dd.pb-checkout-modal__row-value--wrap {
+    max-width: none;
+    white-space: pre-wrap;
+  }
+
+  .pb-checkout-modal__item {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2px 0;
+    padding: 8px 0;
+  }
+
+  .pb-checkout-modal__item-name {
+    display: -webkit-box;
+    overflow: hidden;
+    white-space: normal;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .pb-checkout-modal__item-total {
+    grid-column: 1;
+    grid-row: auto;
+    justify-self: start;
+    text-align: start;
+  }
+
+  .pb-checkout-modal__grand-total {
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 12px;
+    font-size: 15px;
+  }
+
+  .pb-checkout-modal__grand-total-value {
+    font-size: 20px;
+  }
+
+  .pb-checkout-modal__footer {
+    flex-shrink: 0;
+    padding: 12px 16px calc(14px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .pb-checkout-modal__footer .pb-checkout-modal__submit {
+    min-height: 48px;
+    font-size: 17px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .pb-checkout-modal {
+    padding: 20px;
+  }
+
+  .pb-checkout-modal__dialog {
+    max-width: 580px;
+  }
+
+  .pb-checkout-modal__footer .pb-checkout-modal__submit {
+    font-size: 18px;
+  }
+}
+
+@keyframes pb-checkout-modal-sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
 }
 
 /* Protected page password gate */
