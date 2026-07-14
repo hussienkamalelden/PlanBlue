@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useId } from 'react';
+import { useEffect, useId, useRef } from 'react';
 import { X } from 'lucide-react';
 
 import { formatPrice } from '@/lib/api/strapi';
@@ -55,11 +55,15 @@ export function CheckoutConfirmModal({
 }: CheckoutConfirmModalProps) {
   const titleId = useId();
   const descriptionId = useId();
+  const bodyRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!open) {
       return;
     }
+
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    bodyRef.current?.scrollTo({ top: 0, left: 0, behavior: 'instant' });
 
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -124,7 +128,7 @@ export function CheckoutConfirmModal({
           </button>
         </div>
 
-        <div className="pb-checkout-modal__body">
+        <div ref={bodyRef} className="pb-checkout-modal__body">
           <section className="pb-checkout-modal__card pb-checkout-modal__card--details">
             <div className="pb-checkout-modal__section pb-checkout-modal__section--last">
               <h3 className="pb-checkout-modal__card-title">
