@@ -66,7 +66,7 @@ function CommissionBadge({
   if (variant === 'podium' && rank) {
     return (
       <div
-        className={`pb-affiliate-podium__commission pb-affiliate-podium__commission--${rank} ${rank === 1 ? 'animate-shimmer-gold' : ''} ${rank === 1 ? 'animate-float-gentle' : ''}`}
+        className={`pb-affiliate-podium__commission pb-affiliate-podium__commission--${rank} ${rank === 1 ? 'animate-shimmer-gold' : ''}`}
       >
         {!hasCommission && (
           <Frown className="pb-affiliate-podium__commission-icon" strokeWidth={2} aria-hidden />
@@ -102,11 +102,11 @@ function PodiumCard({
       className={`pb-affiliate-podium__card animate-fade-up ${rankClass[rank]}`}
       style={{ animationDelay: delay }}
     >
-      <div
-        className={`pb-affiliate-podium__avatar-wrap ${rank === 1 ? 'animate-float-gentle' : ''}`}
-      >
+      <div className="pb-affiliate-podium__avatar-wrap">
         {rank === 1 && <span className="animate-pulse-ring pb-affiliate-podium__pulse" />}
-        <div className="pb-affiliate-podium__avatar-inner">
+        <div
+          className={`pb-affiliate-podium__avatar-inner ${rank === 1 ? 'animate-float-gentle' : ''}`}
+        >
           {rank === 1 && (
             <Crown className="pb-affiliate-podium__crown" strokeWidth={2} aria-hidden />
           )}
@@ -122,7 +122,7 @@ function PodiumCard({
             }
           />
         </div>
-        <span className={`pb-affiliate-podium__badge pb-affiliate-podium__badge--${rank}`}>
+        <span className={`pb-affiliate-podium__rank-badge pb-affiliate-podium__rank-badge--${rank}`}>
           {rank}
         </span>
       </div>
@@ -162,11 +162,9 @@ function AffiliateListRow({
 
   return (
     <li className="pb-affiliate-list__row">
+      <span className="pb-affiliate-list__rank">{rank}</span>
       <div className="pb-affiliate-list__main">
-        <div className="pb-affiliate-list__identity">
-          <span className="pb-affiliate-list__rank">{rank}</span>
-          <span className="pb-affiliate-list__name">{affiliate.name}</span>
-        </div>
+        <span className="pb-affiliate-list__name">{affiliate.name}</span>
         {affiliate.email && (
           <a href={`mailto:${affiliate.email}`} className="pb-affiliate-list__email">
             <Mail className="pb-affiliate-list__email-icon" strokeWidth={2} aria-hidden />
@@ -222,23 +220,18 @@ export function AffiliateLeaderboard({
   return (
     <section className="pb-affiliate">
       <header className="pb-affiliate__header">
-        <div className="pb-affiliate__badge">
-          <Sparkles className="pb-affiliate__badge-icon" strokeWidth={2} aria-hidden />
-          <span>{t.affiliates.badge}</span>
-          <Sparkles className="pb-affiliate__badge-icon" strokeWidth={2} aria-hidden />
-        </div>
         <h1 className="pb-affiliate__title">{t.affiliates.title}</h1>
         <p className="pb-affiliate__subtitle">{t.affiliates.subtitle}</p>
       </header>
 
       <section className="pb-affiliate-podium">
-        <div className="pb-affiliate-podium__badge">
-          <Sparkles className="pb-affiliate-podium__badge-icon" strokeWidth={2} aria-hidden />
-          <span>{t.affiliates.topThree}</span>
-          <Sparkles className="pb-affiliate-podium__badge-icon" strokeWidth={2} aria-hidden />
-        </div>
-
         <div className="pb-affiliate-podium__panel">
+          <div className="pb-affiliate-podium__heading">
+            <Sparkles className="pb-affiliate-podium__heading-icon" strokeWidth={2} aria-hidden />
+            <span>{t.affiliates.topThree}</span>
+            <Sparkles className="pb-affiliate-podium__heading-icon" strokeWidth={2} aria-hidden />
+          </div>
+
           <div className="pb-affiliate-podium__confetti">
             <FestivalConfetti />
           </div>
