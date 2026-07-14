@@ -137,6 +137,18 @@ async function validateAndEnrichOrderData(data: any) {
       product = await resolveProductFromItem(item);
       quantity = Number(item.quantity ?? 0);
       priceAtPurchase = Number(item.price_at_purchase ?? 0);
+
+      // If product couldn't be resolved from inline data but item exists in DB,
+      // load the product from the persisted record
+      if (!product && item.id) {
+        const existing = await strapi.db.query('orders.order-item').findOne({
+          where: { id: item.id },
+          populate: ['product'],
+        });
+        if (existing?.product) {
+          product = existing.product;
+        }
+      }
     }
 
     if (!product) {
@@ -161,12 +173,30 @@ async function validateAndEnrichOrderData(data: any) {
       priceAtPurchase = Number(effectivePrice.toFixed(2));
     }
 
-    // Validate stock
+    // Stock validation:
+    // - New items: check full quantity against available stock
+    // - Existing items: only check the additional quantity (increase) against stock
+    const isExistingItem = Boolean(item.id);
     const availableStock = Number(product.available_stock ?? 0);
-    if (quantity > availableStock) {
-      throw new Error(
-        `Insufficient stock for "${productTitle}". Requested: ${quantity}, Available: ${availableStock}`,
-      );
+
+    if (!isExistingItem) {
+      if (quantity > availableStock) {
+        throw new Error(
+          `Insufficient stock for "${productTitle}". Requested: ${quantity}, Available: ${availableStock}`,
+        );
+      }
+    } else {
+      const existingRecord = await strapi.db.query('orders.order-item').findOne({
+        where: { id: item.id },
+      });
+      const previousQuantity = Number(existingRecord?.quantity ?? 0);
+      const addedQuantity = quantity - previousQuantity;
+
+      if (addedQuantity > 0 && addedQuantity > availableStock) {
+        throw new Error(
+          `Insufficient stock for "${productTitle}". Additional requested: ${addedQuantity}, Available: ${availableStock}`,
+        );
+      }
     }
 
     // Set fields on the actual item for Strapi to persist
