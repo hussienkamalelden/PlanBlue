@@ -25,6 +25,11 @@ type StatusBreakdown = {
   value: number;
 };
 
+type OrderIdsByStatus = {
+  status: string;
+  orderIds: string[];
+};
+
 interface AdminReportEmailProps {
   fromDate: string;
   toDate: string;
@@ -34,6 +39,7 @@ interface AdminReportEmailProps {
   clientDiscountByStatus: StatusBreakdown[];
   giftWrappingByStatus: StatusBreakdown[];
   orderCountByStatus: StatusBreakdown[];
+  orderIdsByStatus: OrderIdsByStatus[];
 }
 
 const STATUS_LABELS: Record<string, string> = {
@@ -61,6 +67,7 @@ const AdminReportEmail = ({
   clientDiscountByStatus,
   giftWrappingByStatus,
   orderCountByStatus,
+  orderIdsByStatus,
 }: AdminReportEmailProps) => {
   return (
     <Html lang="ar" dir="rtl">
@@ -131,15 +138,23 @@ const AdminReportEmail = ({
               ))}
             </Section>
 
-            {/* 6. Order count by status */}
+            {/* 6. Order count + IDs by status */}
             <Section style={card}>
-              <Text style={cardTitle}>٦. عدد الطلبات حسب الحالة</Text>
-              {orderCountByStatus.map((item, i) => (
-                <Row key={`count-${i}`} style={dataRow}>
-                  <Text style={statusLabel}>{getStatusLabel(item.status)}</Text>
-                  <Text style={valueText}>{item.value}</Text>
-                </Row>
-              ))}
+              <Text style={cardTitle}>٦. عدد الطلبات وأرقامها حسب الحالة</Text>
+              {orderIdsByStatus.length === 0 ? (
+                <Text style={emptyText}>لا توجد طلبات في هذه الفترة</Text>
+              ) : (
+                orderIdsByStatus.map((item, i) => (
+                  <Section key={`ids-${i}`} style={orderIdsGroup}>
+                    <Text style={orderIdsStatusLabel}>
+                      {getStatusLabel(item.status)} — {item.orderIds.length} طلب
+                    </Text>
+                    <Text style={orderIdsList}>
+                      {item.orderIds.map((id) => `#${id}`).join('\n')}
+                    </Text>
+                  </Section>
+                ))
+              )}
             </Section>
           </Section>
 
@@ -258,4 +273,33 @@ const footerText = {
   fontSize: '11px',
   color: '#94a3b8',
   margin: '0',
+};
+
+const orderIdsGroup = {
+  borderBottom: '1px solid #e2e8f0',
+  padding: '10px 0',
+};
+
+const orderIdsStatusLabel = {
+  color: '#64748b',
+  fontWeight: '700',
+  fontSize: '13px',
+  margin: '0 0 6px 0',
+};
+
+const orderIdsList = {
+  color: '#0f172a',
+  fontWeight: '600',
+  fontSize: '13px',
+  lineHeight: '2',
+  margin: '0',
+  whiteSpace: 'pre-line' as const,
+  wordBreak: 'break-word' as const,
+};
+
+const emptyText = {
+  color: '#94a3b8',
+  fontSize: '13px',
+  margin: '0',
+  textAlign: 'center' as const,
 };

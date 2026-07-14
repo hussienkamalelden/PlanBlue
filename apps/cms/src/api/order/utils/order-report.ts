@@ -9,6 +9,11 @@ type StatusBreakdown = {
   value: number;
 };
 
+type OrderIdsByStatus = {
+  status: string;
+  orderIds: string[];
+};
+
 type ReportData = {
   fromDate: string;
   toDate: string;
@@ -18,6 +23,7 @@ type ReportData = {
   clientDiscountByStatus: StatusBreakdown[];
   giftWrappingByStatus: StatusBreakdown[];
   orderCountByStatus: StatusBreakdown[];
+  orderIdsByStatus: OrderIdsByStatus[];
 };
 
 const ORDER_STATUSES = ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'];
@@ -30,11 +36,15 @@ export async function generateAndSendReport(
   fromDate: string,
   toDate: string,
 ): Promise<{ success: boolean; email: string }> {
+  // Convert local Egypt time (UTC+3) to UTC for accurate date filtering
+  const fromUTC = new Date(`${fromDate}T00:00:00.000+03:00`).toISOString();
+  const toUTC = new Date(`${toDate}T23:59:59.999+03:00`).toISOString();
+
   const orders = await strapi.documents('api::order.order').findMany({
     filters: {
       createdAt: {
-        $gte: `${fromDate}T00:00:00.000Z`,
-        $lte: `${toDate}T23:59:59.999Z`,
+        $gte: fromUTC,
+        $lte: toUTC,
       },
     },
     status: 'published',
@@ -45,6 +55,7 @@ export async function generateAndSendReport(
   const clientDiscountByStatus: StatusBreakdown[] = [];
   const giftWrappingByStatus: StatusBreakdown[] = [];
   const orderCountByStatus: StatusBreakdown[] = [];
+  const orderIdsByStatus: OrderIdsByStatus[] = [];
   let affiliateDiscountDelivered = 0;
 
   for (const status of ORDER_STATUSES) {
@@ -93,6 +104,14 @@ export async function generateAndSendReport(
       value: ordersForStatus.length,
     });
 
+    orderIdsByStatus.push({
+      status,
+      orderIds: ordersForStatus
+        .map((order: any) => String(order.order_id ?? ''))
+        .filter(Boolean)
+        .sort((a: string, b: string) => a.localeCompare(b, undefined, { numeric: true })),
+    });
+
     if (status === 'delivered') {
       affiliateDiscountDelivered = Number(discountSum.toFixed(2));
     }
@@ -107,6 +126,7 @@ export async function generateAndSendReport(
     clientDiscountByStatus,
     giftWrappingByStatus,
     orderCountByStatus,
+    orderIdsByStatus,
   };
 
   const emailHtml = await render(
