@@ -25,9 +25,17 @@ type StatusBreakdown = {
   value: number;
 };
 
+type OrderDetail = {
+  orderId: string;
+  subtotal: number;
+  shipping: number;
+  discount: number;
+  giftWrapping: number;
+};
+
 type OrderIdsByStatus = {
   status: string;
-  orderIds: string[];
+  orders: OrderDetail[];
 };
 
 interface AdminReportEmailProps {
@@ -138,20 +146,22 @@ const AdminReportEmail = ({
               ))}
             </Section>
 
-            {/* 6. Order count + IDs by status */}
+            {/* 6. Order count + details by status */}
             <Section style={card}>
-              <Text style={cardTitle}>٦. عدد الطلبات وأرقامها حسب الحالة</Text>
+              <Text style={cardTitle}>٦. عدد الطلبات وتفاصيلها حسب الحالة</Text>
               {orderIdsByStatus.length === 0 ? (
                 <Text style={emptyText}>لا توجد طلبات في هذه الفترة</Text>
               ) : (
-                orderIdsByStatus.map((item, i) => (
+                orderIdsByStatus.map((group, i) => (
                   <Section key={`ids-${i}`} style={orderIdsGroup}>
                     <Text style={orderIdsStatusLabel}>
-                      {getStatusLabel(item.status)} — {item.orderIds.length} طلب
+                      {getStatusLabel(group.status)} — {group.orders.length} طلب
                     </Text>
-                    <Text style={orderIdsList}>
-                      {item.orderIds.map((id) => `#${id}`).join('\n')}
-                    </Text>
+                    {group.orders.map((order, j) => (
+                      <Text key={`o-${i}-${j}`} style={orderDetailLine}>
+                        #{order.orderId} → Subtotal: {formatCurrency(order.subtotal)} | شحن: {formatCurrency(order.shipping)} | خصم عميل: {formatCurrency(order.discount)}{group.status === 'delivered' ? ` | أفلييت: ${formatCurrency(order.discount)}` : ''} | تغليف: {formatCurrency(order.giftWrapping)}
+                      </Text>
+                    ))}
                   </Section>
                 ))
               )}
@@ -287,13 +297,16 @@ const orderIdsStatusLabel = {
   margin: '0 0 6px 0',
 };
 
-const orderIdsList = {
+const orderDetailLine = {
   color: '#0f172a',
-  fontWeight: '600',
-  fontSize: '13px',
-  lineHeight: '2',
-  margin: '0',
-  whiteSpace: 'pre-line' as const,
+  fontWeight: '500',
+  fontSize: '12px',
+  lineHeight: '1.5',
+  margin: '4px 0',
+  padding: '6px 8px',
+  backgroundColor: '#f1f5f9',
+  borderRadius: '4px',
+  borderRight: '3px solid #94a3b8',
   wordBreak: 'break-word' as const,
 };
 

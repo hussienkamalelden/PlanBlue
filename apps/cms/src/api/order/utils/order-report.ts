@@ -9,9 +9,17 @@ type StatusBreakdown = {
   value: number;
 };
 
+type OrderDetail = {
+  orderId: string;
+  subtotal: number;
+  shipping: number;
+  discount: number;
+  giftWrapping: number;
+};
+
 type OrderIdsByStatus = {
   status: string;
-  orderIds: string[];
+  orders: OrderDetail[];
 };
 
 type ReportData = {
@@ -106,10 +114,18 @@ export async function generateAndSendReport(
 
     orderIdsByStatus.push({
       status,
-      orderIds: ordersForStatus
-        .map((order: any) => String(order.order_id ?? ''))
-        .filter(Boolean)
-        .sort((a: string, b: string) => a.localeCompare(b, undefined, { numeric: true })),
+      orders: ordersForStatus
+        .filter((order: any) => order.order_id)
+        .sort((a: any, b: any) =>
+          String(a.order_id).localeCompare(String(b.order_id), undefined, { numeric: true }),
+        )
+        .map((order: any) => ({
+          orderId: String(order.order_id),
+          subtotal: Number(order.subtotal ?? 0),
+          shipping: Number(order.shipping_cost ?? 0),
+          discount: Number(order.discount_amount ?? 0),
+          giftWrapping: Number(order.gift_wrapping_cost ?? 0),
+        })),
     });
 
     if (status === 'delivered') {
