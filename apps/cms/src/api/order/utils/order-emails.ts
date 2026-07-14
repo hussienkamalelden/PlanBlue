@@ -70,6 +70,19 @@ function formatOrderItemsForEmail(items: OrderItem[]): string {
     .join('\n');
 }
 
+function formatOrderItemsListForClientEmail(items: OrderItem[]) {
+  return items.map((item) => {
+    const title = item.product?.title ?? item.product_title ?? 'Product';
+    const sku = item.product?.sku ? ` (${item.product.sku})` : '';
+
+    return {
+      title: `${title}${sku}`,
+      quantity: item.quantity,
+      lineTotal: Number((item.price_at_purchase * item.quantity).toFixed(2)),
+    };
+  });
+}
+
 async function getPopulatedOrderItems(
   strapi: Core.Strapi,
   documentId: string,
@@ -156,6 +169,7 @@ export async function sendOrderNotificationEmails(
   }
 
   const formattedItems = formatOrderItemsForEmail(orderItems);
+  const orderItemsList = formatOrderItemsListForClientEmail(orderItems);
   const batteriesSummary = buildBatteriesSummary(orderItems);
   const batteriesText = formatBatteriesSummaryText(batteriesSummary);
   const subtotal = Number(
@@ -181,10 +195,12 @@ export async function sendOrderNotificationEmails(
     phone: String(order.phone ?? ''),
     extra_notes: order.extra_notes || '',
     order_items: formattedItems,
+    order_items_list: orderItemsList,
     governorate: String(order.governorate ?? ''),
     promo_code: order.promo_code || '',
     is_update: isUpdate,
     batteries_summary: batteriesText,
+    batteries_list: batteriesSummary,
   };
 
   const clientSubject = isUpdate
