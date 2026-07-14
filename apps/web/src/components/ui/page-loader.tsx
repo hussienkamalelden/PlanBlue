@@ -28,7 +28,9 @@ export function PageLoader({ visible }: PageLoaderProps) {
   return createPortal(
     <div
       className={`fixed inset-0 z-[99999] flex min-h-dvh w-full items-center justify-center bg-[#4389F7] transition-opacity duration-300 ${
-        visible ? 'visible opacity-100' : 'pointer-events-none invisible opacity-0'
+        visible
+          ? 'visible opacity-100'
+          : 'pointer-events-none invisible opacity-0'
       }`}
       aria-hidden={!visible}
       aria-live="polite"
