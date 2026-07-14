@@ -21,9 +21,9 @@ export function RelatedShopItems({
   }
 
   return (
-    <section className="border-t border-neutral-200 pt-10">
-      <div className="mb-6">
-        <h2 className="text-3xl font-extrabold text-neutral-900 md:text-4xl">
+    <section className="pb-product-details-related">
+      <div className="pb-product-details-related__header">
+        <h2 className="pb-product-details-related__title">
           {section.title}{' '}
           <span className="text-[#4389F7]">{section.highlight}</span>
         </h2>

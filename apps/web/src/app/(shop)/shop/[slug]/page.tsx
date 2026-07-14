@@ -66,7 +66,7 @@ export default async function ShopItemDetailPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
       />
       <ShopPageBanner />
-      <main className="relative pb-medium-container py-10">
+      <main className="relative pb-medium-container pb-product-details-page py-10">
         <div className="pb-shop-page" />
         <ShopItemDetailView
           item={item}
