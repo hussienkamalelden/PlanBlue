@@ -241,9 +241,12 @@ html[dir='rtl'] .planblue-site {
 
 @media (max-width: 767px) {
   .pb-home-section,
-  .pb-top-selling-section,
   .pb-popular-shop-section {
     padding-block: 2.5rem;
+  }
+
+  .pb-home-section.pb-top-selling-section {
+    padding-block: 6rem;
   }
 
   .pb-home-section-heading {
