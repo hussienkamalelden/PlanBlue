@@ -205,15 +205,93 @@ html[dir='rtl'] .planblue-site {
   }
 }
 
+/* Home sections — shared headings & spacing */
+.pb-home-section {
+  padding-block: 4rem;
+}
+
+.pb-home-section-heading {
+  margin-bottom: 2rem;
+}
+
+.pb-home-section-heading__title {
+  font-size: clamp(1.375rem, 4vw, 2.25rem);
+  font-weight: 800;
+  line-height: 1.25;
+  color: #171717;
+  text-wrap: balance;
+}
+
+.pb-top-selling-section {
+  padding-block: 4rem;
+}
+
+@media (min-width: 768px) {
+  .pb-home-section,
+  .pb-top-selling-section {
+    padding-block: 5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .pb-top-selling-section {
+    padding-block: 6rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .pb-home-section,
+  .pb-top-selling-section,
+  .pb-popular-shop-section {
+    padding-block: 2.5rem;
+  }
+
+  .pb-home-section-heading {
+    margin-bottom: 1.25rem;
+    padding-inline: 4px;
+  }
+}
+
+.popular-shop-carousel-wrap {
+  position: relative;
+  margin-inline: -4px;
+}
+
+@media (min-width: 1280px) {
+  .popular-shop-carousel-wrap {
+    padding-inline: 2.5rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .popular-shop-carousel-wrap {
+    margin-inline: -8px;
+    padding-inline: 4px;
+  }
+
+  .popular-shop-swiper {
+    padding-bottom: 0.25rem;
+  }
+
+  .popular-shop-swiper .swiper-slide {
+    padding-bottom: 1.25rem;
+  }
+
+  .pb-popular-shop-section__decor--corner {
+    display: none;
+  }
+}
+
 /* Popular categories — Kiddex category-style-five */
 .pb-popular-categories-swiper {
   overflow: hidden;
+  padding-inline: 2px;
 }
 
 .pb-category-block {
   position: relative;
-  max-width: 250px;
   width: 100%;
+  max-width: 250px;
   margin: 0 auto;
 }
 
@@ -226,15 +304,29 @@ html[dir='rtl'] .planblue-site {
 .pb-category-block__image-box {
   position: relative;
   display: block;
-  width: 250px;
-  height: 250px;
-  max-width: 100%;
+  width: 100%;
+  max-width: 250px;
   aspect-ratio: 1 / 1;
+  height: auto;
   margin: 0 auto 20px;
   border-radius: 50%;
   border: 2px dashed;
   background-color: #fff;
   overflow: hidden;
+}
+
+.pb-category-block__title {
+  margin: 0;
+  padding-inline: 4px;
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: #171717;
+  transition: color 0.2s ease;
+}
+
+.group:hover .pb-category-block__title {
+  color: #4389f7;
 }
 
 .pb-category-border-one .pb-category-block__image-box {
@@ -262,13 +354,37 @@ html[dir='rtl'] .planblue-site {
 }
 
 @media (max-width: 767px) {
+  .pb-category-block {
+    max-width: none;
+  }
+
+  .pb-category-block__inner {
+    margin-bottom: 12px;
+  }
+
   .pb-category-block__image-box {
-    width: min(250px, 100%);
-    height: auto;
+    max-width: min(180px, 100%);
+    margin-bottom: 12px;
+  }
+
+  .pb-category-block__title {
+    font-size: 0.9375rem;
+    line-height: 1.35;
+    word-break: break-word;
   }
 
   .pb-popular-categories {
-    padding-bottom: 40px;
+    padding-bottom: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .pb-category-block__image-box {
+    max-width: min(150px, 100%);
+  }
+
+  .pb-category-block__title {
+    font-size: 0.875rem;
   }
 }
 

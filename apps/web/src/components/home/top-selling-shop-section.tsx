@@ -12,13 +12,13 @@ export async function TopSellingShopSection() {
   }
 
   return (
-    <section className="relative overflow-hidden bg-[#4389F7]/10 py-16 text-center md:py-24 lg:py-32">
+    <section className="pb-top-selling-section pb-home-section relative overflow-hidden bg-[#4389F7]/10 text-center">
       <HomeDealsBackdrop />
 
       <div className="pb-large-container relative z-10">
         <TopSellingShopHeading />
 
-        <div className="popular-shop-carousel-wrap relative xl:px-10">
+        <div className="popular-shop-carousel-wrap">
           <PopularShopCarousel items={topItems} />
         </div>
       </div>

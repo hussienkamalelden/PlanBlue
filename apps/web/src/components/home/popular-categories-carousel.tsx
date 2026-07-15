@@ -40,9 +40,10 @@ function PopularCategoriesCarouselInner({
 
   const breakpoints = useMemo(
     () => ({
-      0: { slidesPerView: 2, spaceBetween: 16 },
-      640: { slidesPerView: 3, spaceBetween: 20 },
-      1024: { slidesPerView: 4, spaceBetween: 24 },
+      0: { slidesPerView: 2, spaceBetween: 12 },
+      480: { slidesPerView: 2.25, spaceBetween: 14 },
+      640: { slidesPerView: 3, spaceBetween: 18 },
+      1024: { slidesPerView: 4, spaceBetween: 22 },
       1280: { slidesPerView: 5, spaceBetween: 28 },
     }),
     [],
@@ -121,7 +122,7 @@ function CategoryCard({
               </div>
             )}
           </figure>
-          <h4 className="text-lg font-bold leading-6 text-neutral-900 transition-colors group-hover:text-[#4389F7] md:text-xl md:leading-6">
+          <h4 className="pb-category-block__title">
             {title}
           </h4>
         </SliderLink>

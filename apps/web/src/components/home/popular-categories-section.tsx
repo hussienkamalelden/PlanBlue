@@ -10,7 +10,7 @@ export async function PopularCategoriesSection() {
   }
 
   return (
-    <section className="pb-popular-categories relative overflow-hidden py-16 text-center md:pb-24 md:pt-20">
+    <section className="pb-popular-categories pb-home-section relative overflow-hidden text-center">
       <div className="pb-large-container relative z-10">
         <PopularCategoriesHeading />
         <PopularCategoriesCarousel categories={categories} />

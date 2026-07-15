@@ -47,12 +47,13 @@ function PopularShopCarouselInner({ items, disableLoop = false }: PopularShopCar
 
   const breakpoints = useMemo(
     () => ({
-      0: { slidesPerView: 1.1, spaceBetween: 0 },
-      640: { slidesPerView: 2, spaceBetween: 0 },
-      1024: { slidesPerView: 3, spaceBetween: 0 },
-      1280: { slidesPerView: 4, spaceBetween: 0 },
-      1440: { slidesPerView: 5, spaceBetween: 0 },
-      1920: { slidesPerView: MAX_SLIDES_PER_VIEW, spaceBetween: 0 },
+      0: { slidesPerView: 1.12, spaceBetween: 12 },
+      480: { slidesPerView: 1.35, spaceBetween: 14 },
+      640: { slidesPerView: 2, spaceBetween: 16 },
+      1024: { slidesPerView: 3, spaceBetween: 16 },
+      1280: { slidesPerView: 4, spaceBetween: 16 },
+      1440: { slidesPerView: 5, spaceBetween: 16 },
+      1920: { slidesPerView: MAX_SLIDES_PER_VIEW, spaceBetween: 16 },
     }),
     [],
   );
@@ -121,7 +122,7 @@ function PopularShopCarouselInner({ items, disableLoop = false }: PopularShopCar
         className="popular-shop-swiper"
       >
         {slides.map(({ data, slideKey }) => (
-          <SwiperSlide key={slideKey} className="!h-auto pb-9 px-2">
+          <SwiperSlide key={slideKey} className="!h-auto pb-6">
             <ShopProductCard item={data} locale={locale} />
           </SwiperSlide>
         ))}
