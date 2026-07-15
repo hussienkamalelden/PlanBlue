@@ -8,20 +8,42 @@ import {
   Head as BaseHead,
   Section as BaseSection,
   Row as BaseRow,
-  Link as BaseLink,
+  Column as BaseColumn,
 } from '@react-email/components';
 
-// Casting components to bypass strict type nesting limits if necessary
 const Html = BaseHtml as any;
 const Head = BaseHead as any;
 const Section = BaseSection as any;
 const Row = BaseRow as any;
+const Column = BaseColumn as any;
 const Body = BaseBody as any;
 const Container = BaseContainer as any;
 const Text = BaseText as any;
 const Heading = BaseHeading as any;
 const Preview = BasePreview as any;
-const Link = BaseLink as any;
+
+const BRAND = {
+  lightBlue: '#4389F7',
+  navy: '#1B3A6B',
+  amber: '#F5B82E',
+  green: '#16a34a',
+  bg: '#f0f6ff',
+  cardBg: '#ffffff',
+  cardBorder: '#dbeafe',
+  muted: '#64748b',
+  text: '#1e293b',
+};
+
+type OrderItemLine = {
+  title: string;
+  quantity: number;
+  lineTotal: number;
+};
+
+type BatteryLine = {
+  size: string;
+  quantity: number;
+};
 
 interface AdminEmailProps {
   name: string;
@@ -37,10 +59,56 @@ interface AdminEmailProps {
   address: string;
   extra_notes: string;
   order_items: string;
+  order_items_list?: OrderItemLine[];
   governorate: string;
   promo_code: string;
   is_update?: boolean;
   batteries_summary?: string;
+  batteries_list?: BatteryLine[];
+}
+
+function SplitRow({
+  left,
+  right,
+  leftStyle,
+  rightStyle,
+  isLast = false,
+}: {
+  left: string;
+  right: string;
+  leftStyle?: Record<string, string | number>;
+  rightStyle?: Record<string, string | number>;
+  isLast?: boolean;
+}) {
+  return (
+    <Row style={{ ...splitRow, ...(isLast ? splitRowLast : {}) }}>
+      <Column align="left" style={splitLeftCol}>
+        <Text style={{ ...splitLeftText, ...leftStyle }}>{left}</Text>
+      </Column>
+      <Column align="right" style={splitRightCol}>
+        <Text style={{ ...splitRightText, ...rightStyle }}>{right}</Text>
+      </Column>
+    </Row>
+  );
+}
+
+function DetailRow({
+  label,
+  value,
+  valueStyle,
+}: {
+  label: string;
+  value: string;
+  valueStyle?: Record<string, string | number>;
+}) {
+  return (
+    <SplitRow
+      left={label}
+      right={value}
+      leftStyle={detailLabelText}
+      rightStyle={{ ...detailValueText, ...valueStyle }}
+    />
+  );
 }
 
 const AdminOrderEmail = ({
@@ -56,40 +124,42 @@ const AdminOrderEmail = ({
   phone,
   address,
   extra_notes,
-  order_items,
+  order_items_list = [],
   governorate,
   promo_code,
   is_update = false,
-  batteries_summary = '',
+  batteries_list = [],
 }: AdminEmailProps) => {
   return (
     <Html lang="en" dir="ltr">
       <Head />
       <Preview>
         {is_update
-          ? `Order #${order_id} updated • Total: ${total} EGP`
-          : `🚨 New Order Received! Order #${order_id} • Total: ${total} EGP`}
+          ? `PlanBlue admin · Order #${order_id} updated · Total ${total} EGP`
+          : `PlanBlue admin · New order #${order_id} · Total ${total} EGP`}
       </Preview>
       <Body style={main}>
+        <Section style={hiddenPreheader}>
+          <Text style={hiddenPreheaderText}>
+            {`planblue-admin-${order_id}-${total}-${is_update ? 'update' : 'new'}-${name}`}
+          </Text>
+        </Section>
         <Container style={container}>
-          {/* Header Section */}
           <Section style={headerSection}>
             <Heading style={headerTitle}>PlanBlue Control Panel</Heading>
             <Text style={headerSubtitle}>
               {is_update
-                ? 'Order update notification — latest order details below'
-                : 'Automated System Alert: A new order has been logged successfully 🚀'}
+                ? 'Order update notification'
+                : 'New order notification'}
             </Text>
           </Section>
 
-          {/* Main Content Body */}
           <Section style={contentSection}>
-            {/* Urgency/Status Badge */}
-            <Section style={badgeContainer}>
-              <Text style={statusBadge}>
+            <Section style={statusBanner}>
+              <Text style={statusBannerText}>
                 {is_update
-                  ? '🔄 Order Updated — Review Latest Details'
-                  : '📦 New Order Awaiting Fulfillment'}
+                  ? 'Order Updated — Review Latest Details'
+                  : 'New Order Awaiting Fulfillment'}
               </Text>
             </Section>
 
@@ -97,99 +167,97 @@ const AdminOrderEmail = ({
               {is_update ? (
                 <>
                   Order <strong>#{order_id}</strong> for customer{' '}
-                  <strong>{name}</strong> was updated in the dashboard. The
-                  details below reflect the latest changes.
+                  <strong>{name}</strong> was updated. Review the latest details
+                  below.
                 </>
               ) : (
                 <>
-                  Customer <strong>{name}</strong> has just completed a new checkout
-                  session on the storefront. Please review the customer manifest and
-                  shipping payload below to begin processing the package.
+                  Customer <strong>{name}</strong> placed a new order. Review the
+                  details below and begin processing.
                 </>
               )}
             </Text>
 
-            {/* Order Details Manifest Card */}
             <Section style={orderCard}>
-              <Text style={cardTitle}>Customer & Shipping Manifesto:</Text>
+              <Text style={cardTitle}>Order Details</Text>
 
-              <Row style={orderRow}>
-                <Text style={rowLabel}>Order ID</Text>
-                <Text style={rowValue}>#{order_id}</Text>
-              </Row>
-              <Row style={orderRow}>
-                <Text style={rowLabel}>Customer Name</Text>
-                <Text style={rowValue}>{name}</Text>
-              </Row>
-              <Row style={orderRow}>
-                <Text style={rowLabel}>Phone Number</Text>
-                <Text style={rowValue}>{phone}</Text>
-              </Row>
-              <Row style={orderRow}>
-                <Text style={rowLabel}>Governorate</Text>
-                <Text style={rowValue}>{governorate}</Text>
-              </Row>
-              <Row style={orderRow}>
-                <Text style={rowLabel}>Destination Address</Text>
-                <Text style={rowValue}>{address}</Text>
-              </Row>
-              <Row style={orderRow}>
-                <Text style={rowLabel}>Purchased Items</Text>
-                <Text style={itemsValue}>{order_items}</Text>
-              </Row>
-              <Row style={orderRow}>
-                <Text style={rowLabel}>Promo Code</Text>
-                <Text style={rowValue}>{promo_code}</Text>
-              </Row>
-              <Row style={orderRow}>
-                <Text style={rowLabel}>Customer Notes</Text>
-                <Text style={rowValue}>
-                  {extra_notes || 'No special requirements specified'}
-                </Text>
-              </Row>
-              <Row style={orderRow}>
-                <Text style={rowLabel}>Subtotal</Text>
-                <Text style={rowValue}>{subtotal} EGP</Text>
-              </Row>
+              <DetailRow label="Order ID" value={`#${order_id}`} />
+              <DetailRow label="Customer Name" value={name} />
+              <DetailRow label="Phone" value={phone} />
+              <DetailRow label="Governorate" value={governorate} />
+              <DetailRow label="Address" value={address} />
+              <DetailRow
+                label="Extra Notes"
+                value={extra_notes || 'No special requirements specified'}
+              />
+
+              <Section style={listSection}>
+                <Text style={listSectionTitle}>Order Items</Text>
+                {order_items_list.map((item, index) => (
+                  <SplitRow
+                    key={`item-${index}`}
+                    left={`${item.title} × ${item.quantity}`}
+                    right={`${item.lineTotal} EGP`}
+                    leftStyle={listLeftText}
+                    rightStyle={itemPriceText}
+                    isLast={index === order_items_list.length - 1}
+                  />
+                ))}
+              </Section>
+
+              <DetailRow label="Promo Code" value={promo_code || '—'} />
+              <DetailRow label="Subtotal" value={`${subtotal} EGP`} />
+
               {discount_amount > 0 && (
-                <Row style={orderRow}>
-                  <Text style={rowLabel}>Discount ({promo_discount_percentage}%)</Text>
-                  <Text style={{ ...rowValue, color: '#16a34a' }}>-{discount_amount} EGP</Text>
-                </Row>
-              )}
-              {batteries_summary && (
-                <Row style={batteriesRow}>
-                  <Text style={batteriesRowTitle}>🔋 BATTERIES TO PREPARE (FREE)</Text>
-                  <Text style={batteriesRowList}>{batteries_summary}</Text>
-                  <Text style={batteriesRowNote}>
-                    Include these batteries in the package before sealing.
-                  </Text>
-                </Row>
-              )}
-              <Row style={orderRow}>
-                <Text style={rowLabel}>Shipping ({governorate})</Text>
-                <Text style={rowValue}>{shipping_cost} EGP</Text>
-              </Row>
-              {gift_wrapping && (
-                <Row style={orderRow}>
-                  <Text style={rowLabel}>Gift Wrapping</Text>
-                  <Text style={rowValue}>{gift_wrapping_cost} EGP</Text>
-                </Row>
+                <DetailRow
+                  label={`Discount (${promo_discount_percentage}%)`}
+                  value={`-${discount_amount} EGP`}
+                  valueStyle={discountValueText}
+                />
               )}
 
-              {/* Financial Capture Total */}
+              {batteries_list.length > 0 && (
+                <Section style={listSection}>
+                  <Text style={listSectionTitle}>Batteries</Text>
+                  {batteries_list.map((battery, index) => (
+                    <SplitRow
+                      key={`battery-${index}`}
+                      left={battery.size}
+                      right={`× ${battery.quantity}`}
+                      leftStyle={listLeftText}
+                      rightStyle={discountValueText}
+                      isLast={index === batteries_list.length - 1}
+                    />
+                  ))}
+                </Section>
+              )}
+
+              <DetailRow
+                label={`Shipping (${governorate})`}
+                value={`${shipping_cost} EGP`}
+              />
+
+              {gift_wrapping && (
+                <DetailRow
+                  label="Gift Wrapping"
+                  value={`${gift_wrapping_cost} EGP`}
+                />
+              )}
+
               <Row style={totalRow}>
-                <Text style={totalLabel}>Total Amount to Collect</Text>
-                <Text style={totalValue}>{total} EGP</Text>
+                <Column align="left" style={splitLeftCol}>
+                  <Text style={totalLabel}>Total Amount to Collect</Text>
+                </Column>
+                <Column align="right" style={splitRightCol}>
+                  <Text style={totalValue}>{total} EGP</Text>
+                </Column>
               </Row>
             </Section>
           </Section>
 
-          {/* Email Footer metadata */}
           <Section style={footerSection}>
             <Text style={footerText}>
-              PlanBlue Store Automation Engine • Generated programmatically via
-              Strapi Lifecycle Hooks & Resend
+              PlanBlue Store · Automated order notification
             </Text>
           </Section>
         </Container>
@@ -201,197 +269,217 @@ const AdminOrderEmail = ({
 export default AdminOrderEmail;
 
 const main = {
-  backgroundColor: '#f1f5f9',
-  fontFamily:
-    "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-  padding: '10px 0',
+  backgroundColor: BRAND.bg,
+  fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+  padding: '24px 12px',
+  direction: 'ltr' as const,
 };
 
 const container = {
-  backgroundColor: '#ffffff',
+  backgroundColor: BRAND.cardBg,
   maxWidth: '600px',
-  margin: '40px auto',
-  borderRadius: '16px',
+  margin: '0 auto',
+  borderRadius: '20px',
+  boxShadow: '0 8px 32px rgba(67, 137, 247, 0.12)',
+  border: `1px solid ${BRAND.cardBorder}`,
+};
+
+const hiddenPreheader = {
+  display: 'none',
+  maxHeight: '0px',
   overflow: 'hidden',
-  boxShadow: '0 4px 20px rgba(15, 23, 42, 0.08)',
-  border: '1px solid #e2e8f0',
+  opacity: 0,
+  fontSize: '1px',
+  lineHeight: '1px',
+  msoHide: 'all',
+};
+
+const hiddenPreheaderText = {
+  color: '#f0f6ff',
+  margin: '0',
+  padding: '0',
+  fontSize: '1px',
+  lineHeight: '1px',
 };
 
 const headerSection = {
-  background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)', // Premium corporate dark slate palette
-  padding: '40px 20px',
+  background: `linear-gradient(180deg, ${BRAND.bg} 0%, ${BRAND.cardBg} 100%)`,
+  padding: '28px 24px 22px',
   textAlign: 'center' as const,
+  borderBottom: `1px solid ${BRAND.cardBorder}`,
 };
 
 const headerTitle = {
-  color: '#f8fafc',
+  color: BRAND.navy,
   margin: '0',
-  fontSize: '24px',
+  fontSize: '22px',
   fontWeight: '700',
-  letterSpacing: '0.5px',
 };
 
 const headerSubtitle = {
-  color: '#94a3b8',
-  margin: '10px 0 0 0',
+  color: BRAND.muted,
+  margin: '8px 0 0 0',
   fontSize: '14px',
 };
 
 const contentSection = {
-  padding: '30px',
+  padding: '28px 24px 32px',
 };
 
-const badgeContainer = {
+const statusBanner = {
+  backgroundColor: '#fff8e6',
+  border: `1px solid ${BRAND.amber}`,
+  borderRadius: '12px',
+  padding: '12px 16px',
   marginBottom: '20px',
 };
 
-const statusBadge = {
-  display: 'inline-block',
-  backgroundColor: '#ffedd5',
-  color: '#ea580c', // High-contrast safety orange alert color
-  padding: '6px 14px',
-  borderRadius: '6px',
-  fontSize: '13px',
-  fontWeight: '700',
+const statusBannerText = {
+  color: '#92400e',
+  fontSize: '14px',
+  fontWeight: '600',
   margin: '0',
+  textAlign: 'center' as const,
 };
 
 const paragraph = {
-  color: '#334155',
+  color: BRAND.muted,
   fontSize: '15px',
   lineHeight: '1.6',
-  margin: '0 0 25px 0',
+  margin: '0 0 24px 0',
 };
 
 const orderCard = {
-  backgroundColor: '#f8fafc',
-  borderRadius: '12px',
+  backgroundColor: BRAND.bg,
+  borderRadius: '16px',
   padding: '20px',
-  border: '1px solid #e2e8f0',
-  marginBottom: '25px',
+  border: `1px solid ${BRAND.cardBorder}`,
+  marginBottom: '0',
 };
 
 const cardTitle = {
   fontWeight: '700',
-  fontSize: '15px',
-  color: '#1e293b',
-  margin: '0 0 15px 0',
+  fontSize: '16px',
+  color: BRAND.navy,
+  margin: '0 0 12px 0',
 };
 
-const orderRow = {
-  borderBottom: '1px solid #e2e8f0',
-  padding: '12px 0',
+const splitRow = {
+  borderBottom: `1px solid ${BRAND.cardBorder}`,
+  padding: '8px 0',
+  width: '100%',
 };
 
-const rowLabel = {
-  color: '#64748b',
+const splitRowLast = {
+  borderBottom: 'none',
+  paddingBottom: '0',
+};
+
+const splitLeftCol = {
+  width: '60%',
+  verticalAlign: 'top' as const,
+  paddingRight: '12px',
+};
+
+const splitRightCol = {
+  width: '40%',
+  verticalAlign: 'top' as const,
+  paddingLeft: '12px',
+};
+
+const splitLeftText = {
+  color: BRAND.text,
   fontWeight: '600',
-  fontSize: '13px',
+  fontSize: '14px',
   margin: '0',
-  float: 'left' as const,
+  textAlign: 'left' as const,
+  lineHeight: '1.4',
 };
 
-const rowValue = {
-  color: '#0f172a',
-  fontWeight: '500',
-  fontSize: '13px',
+const splitRightText = {
+  color: BRAND.text,
+  fontWeight: '600',
+  fontSize: '14px',
   margin: '0',
-  float: 'right' as const,
+  textAlign: 'right' as const,
+  lineHeight: '1.4',
 };
 
-const itemsValue = {
-  color: '#0f172a',
+const detailLabelText = {
+  color: BRAND.muted,
   fontWeight: '500',
-  fontSize: '13px',
-  margin: '8px 0 0 0',
-  whiteSpace: 'pre-line' as const,
-  clear: 'both' as const,
+};
+
+const detailValueText = {
+  color: BRAND.text,
+  fontWeight: '600',
+};
+
+const listSection = {
+  borderBottom: `1px solid ${BRAND.cardBorder}`,
+  padding: '0 0 8px',
+  marginBottom: '4px',
+};
+
+const listSectionTitle = {
+  color: BRAND.muted,
+  fontWeight: '600',
+  fontSize: '14px',
+  margin: '8px 0 2px 0',
+  textAlign: 'left' as const,
+};
+
+const listLeftText = {
+  color: BRAND.text,
+  fontWeight: '600',
+};
+
+const itemPriceText = {
+  color: BRAND.lightBlue,
+  fontWeight: '700',
+};
+
+const discountValueText = {
+  color: BRAND.green,
+  fontWeight: '600',
+  fontSize: '14px',
 };
 
 const totalRow = {
-  backgroundColor: '#0f172a',
-  padding: '15px',
-  borderRadius: '8px',
-  marginTop: '15px',
+  background: `linear-gradient(135deg, ${BRAND.navy} 0%, ${BRAND.lightBlue} 100%)`,
+  padding: '16px 14px',
+  borderRadius: '12px',
+  marginTop: '16px',
+  borderBottom: 'none',
 };
 
 const totalLabel = {
-  color: '#94a3b8',
-  fontWeight: '600',
-  fontSize: '14px',
-  float: 'left' as const,
+  color: '#ffffff',
+  fontWeight: '700',
+  fontSize: '20px',
   margin: '0',
+  textAlign: 'left' as const,
+  lineHeight: '1.2',
 };
 
 const totalValue = {
-  color: '#38bdf8', // Bright cyan highlight for transaction totals
-  fontWeight: '700',
-  fontSize: '16px',
-  float: 'right' as const,
-  margin: '0',
-};
-
-const button = {
-  backgroundColor: '#0284c7',
   color: '#ffffff',
-  padding: '14px 24px',
-  borderRadius: '8px',
-  fontWeight: '600',
-  fontSize: '14px',
-  textDecoration: 'none',
-  display: 'inline-block',
-  boxShadow: '0 4px 12px rgba(2, 132, 199, 0.15)',
-};
-
-const containerFooter = {
-  textAlign: 'center' as const,
-  padding: '20px',
-  borderTop: '1px solid #e2e8f0',
-  backgroundColor: '#f8fafc',
+  fontWeight: '700',
+  fontSize: '24px',
+  margin: '0',
+  textAlign: 'right' as const,
+  lineHeight: '1.2',
 };
 
 const footerSection = {
   textAlign: 'center' as const,
-  padding: '20px',
-  borderTop: '1px solid #e2e8f0',
-  backgroundColor: '#f8fafc',
+  padding: '16px 24px 20px',
+  borderTop: `1px solid ${BRAND.cardBorder}`,
+  backgroundColor: BRAND.bg,
 };
 
 const footerText = {
-  fontSize: '11px',
+  fontSize: '12px',
   color: '#94a3b8',
   margin: '0',
-};
-
-const batteriesRow = {
-  borderBottom: '1px solid #eab308',
-  padding: '12px',
-  backgroundColor: '#fef9c3',
-  borderRadius: '8px',
-  marginTop: '4px',
-  marginBottom: '4px',
-};
-
-const batteriesRowTitle = {
-  fontWeight: '700',
-  fontSize: '13px',
-  color: '#854d0e',
-  margin: '0 0 6px 0',
-  textTransform: 'uppercase' as const,
-  letterSpacing: '0.3px',
-};
-
-const batteriesRowList = {
-  fontSize: '14px',
-  fontWeight: '700',
-  color: '#854d0e',
-  margin: '0 0 6px 0',
-  whiteSpace: 'pre-line' as const,
-};
-
-const batteriesRowNote = {
-  fontSize: '12px',
-  color: '#a16207',
-  margin: '0',
-  fontWeight: '600',
 };

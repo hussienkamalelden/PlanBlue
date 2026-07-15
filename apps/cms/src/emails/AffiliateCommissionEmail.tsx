@@ -8,6 +8,7 @@ import {
   Head as BaseHead,
   Section as BaseSection,
   Row as BaseRow,
+  Column as BaseColumn,
   Img as BaseImg,
 } from '@react-email/components';
 
@@ -15,12 +16,19 @@ const Html = BaseHtml as any;
 const Head = BaseHead as any;
 const Section = BaseSection as any;
 const Row = BaseRow as any;
+const Column = BaseColumn as any;
 const Body = BaseBody as any;
 const Container = BaseContainer as any;
 const Text = BaseText as any;
 const Heading = BaseHeading as any;
 const Preview = BasePreview as any;
 const Img = BaseImg as any;
+
+type OrderItemLine = {
+  title: string;
+  quantity: number;
+  lineTotal: number;
+};
 
 export interface AffiliateCommissionEmailProps {
   name: string;
@@ -32,130 +40,8 @@ export interface AffiliateCommissionEmailProps {
   order_id: string | number;
   promo_code: string;
   order_subtotal: number;
-  order_items: string;
+  order_items_list?: OrderItemLine[];
 }
-
-const AffiliateCommissionEmail = ({
-  name,
-  avatar_url,
-  earned_commission,
-  current_pending_commission,
-  total_paid_commission,
-  commission_percentage,
-  order_id,
-  promo_code,
-  order_subtotal,
-  order_items,
-}: AffiliateCommissionEmailProps) => {
-  return (
-    <Html lang="en" dir="ltr">
-      <Head />
-      <Preview>
-        🎉 You just earned {earned_commission} EGP from order #{order_id}!
-      </Preview>
-
-      <Body style={main}>
-        <Container style={container}>
-          <Section style={headerSection}>
-            <Heading style={headerTitle}>🎉 You Got Paid!</Heading>
-            <Text style={headerSubtitle}>
-              Another order, another commission!
-            </Text>
-          </Section>
-
-          <Section style={contentSection}>
-            <Section style={profileSection}>
-              {avatar_url ? (
-                <Img
-                  src={avatar_url}
-                  alt={name}
-                  width={72}
-                  height={72}
-                  style={avatarImage}
-                />
-              ) : (
-                <Section style={avatarPlaceholder}>
-                  <Text style={avatarInitial}>
-                    {name.charAt(0).toUpperCase()}
-                  </Text>
-                </Section>
-              )}
-
-              <Text style={welcomeText}>Awesome, {name}! 🚀</Text>
-            </Section>
-
-            <Text style={paragraph}>
-              Someone used your promo code, and you just earned a new
-              commission! Your earnings have been added to your pending balance.
-              Keep sharing your code—you’re getting closer to your next payout
-              with every order!
-            </Text>
-
-            <Section style={highlightCard}>
-              <Text style={highlightLabel}>You Earned</Text>
-
-              <Text style={highlightValue}>{earned_commission} EGP 🎉</Text>
-
-              <Text style={highlightSubtext}>
-                {commission_percentage}% commission from an order worth{' '}
-                {order_subtotal} EGP
-              </Text>
-            </Section>
-
-            <Section style={statsRow}>
-              <Section style={statCard}>
-                <Text style={statLabel}>Pending Balance</Text>
-                <Text style={statValue}>{current_pending_commission} EGP</Text>
-              </Section>
-
-              <Section style={statCard}>
-                <Text style={statLabel}>Paid So Far</Text>
-                <Text style={statValue}>{total_paid_commission} EGP</Text>
-              </Section>
-            </Section>
-
-            <Section style={orderCard}>
-              <Text style={cardTitle}>Order Summary</Text>
-
-              <Row style={orderRow}>
-                <Text style={rowLabel}>Order ID</Text>
-                <Text style={rowValue}>#{order_id}</Text>
-              </Row>
-
-              <Row style={orderRow}>
-                <Text style={rowLabel}>Promo Code</Text>
-                <Text style={rowValue}>{promo_code}</Text>
-              </Row>
-
-              <Row style={orderRow}>
-                <Text style={rowLabel}>Order Total</Text>
-                <Text style={rowValue}>{order_subtotal} EGP</Text>
-              </Row>
-
-              <Row style={orderRowLast}>
-                <Text style={rowLabel}>Products</Text>
-                <Text style={itemsValue}>{order_items}</Text>
-              </Row>
-            </Section>
-
-            <Text style={motivationText}>
-              Keep the momentum going! Every order means more earnings. Thanks
-              for being part of the PlanBlue family 💚
-            </Text>
-          </Section>
-
-          <Section style={footerSection}>
-            <Text style={footerText}>
-              © 2026 PlanBlue Store. All rights reserved.
-            </Text>
-          </Section>
-        </Container>
-      </Body>
-    </Html>
-  );
-};
-
-export default AffiliateCommissionEmail;
 
 const main = {
   backgroundColor: '#f4f7fc',
@@ -310,41 +196,82 @@ const cardTitle = {
   fontWeight: '700',
   fontSize: '16px',
   color: '#0f172a',
-  margin: '0 0 15px 0',
+  margin: '0 0 12px 0',
 };
 
-const orderRow = {
+const splitRow = {
   borderBottom: '1px solid #edf2f7',
-  padding: '10px 0',
+  padding: '8px 0',
+  width: '100%',
 };
 
-const orderRowLast = {
-  padding: '10px 0 0 0',
+const splitRowLast = {
+  borderBottom: 'none',
+  paddingBottom: '0',
 };
 
-const rowLabel = {
+const splitLeftCol = {
+  width: '60%',
+  verticalAlign: 'top' as const,
+  paddingRight: '12px',
+};
+
+const splitRightCol = {
+  width: '40%',
+  verticalAlign: 'top' as const,
+  paddingLeft: '12px',
+};
+
+const splitLeftText = {
+  color: '#0f172a',
+  fontWeight: '600',
+  fontSize: '14px',
+  margin: '0',
+  textAlign: 'left' as const,
+  lineHeight: '1.4',
+};
+
+const splitRightText = {
+  color: '#0f172a',
+  fontWeight: '600',
+  fontSize: '14px',
+  margin: '0',
+  textAlign: 'right' as const,
+  lineHeight: '1.4',
+};
+
+const detailLabelText = {
   color: '#64748b',
   fontWeight: '500',
-  fontSize: '14px',
-  margin: '0',
-  float: 'left' as const,
 };
 
-const rowValue = {
+const detailValueText = {
   color: '#0f172a',
   fontWeight: '600',
-  fontSize: '14px',
-  margin: '0',
-  float: 'right' as const,
 };
 
-const itemsValue = {
-  color: '#0f172a',
+const listSection = {
+  borderTop: '1px solid #edf2f7',
+  padding: '0 0 4px',
+  marginTop: '4px',
+};
+
+const listSectionTitle = {
+  color: '#64748b',
   fontWeight: '600',
   fontSize: '14px',
-  margin: '8px 0 0 0',
-  whiteSpace: 'pre-line' as const,
-  clear: 'both' as const,
+  margin: '8px 0 2px 0',
+  textAlign: 'left' as const,
+};
+
+const productNameText = {
+  color: '#0f172a',
+  fontWeight: '600',
+};
+
+const productPriceText = {
+  color: '#059669',
+  fontWeight: '700',
 };
 
 const motivationText = {
@@ -368,3 +295,165 @@ const footerText = {
   color: '#94a3b8',
   margin: '0',
 };
+
+function SplitRow({
+  left,
+  right,
+  leftStyle,
+  rightStyle,
+  isLast = false,
+}: {
+  left: string;
+  right: string;
+  leftStyle?: Record<string, string | number>;
+  rightStyle?: Record<string, string | number>;
+  isLast?: boolean;
+}) {
+  return (
+    <Row style={{ ...splitRow, ...(isLast ? splitRowLast : {}) }}>
+      <Column align="left" style={splitLeftCol}>
+        <Text style={{ ...splitLeftText, ...leftStyle }}>{left}</Text>
+      </Column>
+      <Column align="right" style={splitRightCol}>
+        <Text style={{ ...splitRightText, ...rightStyle }}>{right}</Text>
+      </Column>
+    </Row>
+  );
+}
+
+function DetailRow({
+  label,
+  value,
+  valueStyle,
+}: {
+  label: string;
+  value: string;
+  valueStyle?: Record<string, string | number>;
+}) {
+  return (
+    <SplitRow
+      left={label}
+      right={value}
+      leftStyle={detailLabelText}
+      rightStyle={{ ...detailValueText, ...valueStyle }}
+    />
+  );
+}
+
+const AffiliateCommissionEmail = ({
+  name,
+  avatar_url,
+  earned_commission,
+  current_pending_commission,
+  total_paid_commission,
+  commission_percentage,
+  order_id,
+  promo_code,
+  order_subtotal,
+  order_items_list = [],
+}: AffiliateCommissionEmailProps) => {
+  return (
+    <Html lang="en" dir="ltr">
+      <Head />
+      <Preview>
+        🎉 You just earned {earned_commission} EGP from order #{order_id}!
+      </Preview>
+
+      <Body style={main}>
+        <Container style={container}>
+          <Section style={headerSection}>
+            <Heading style={headerTitle}>🎉 You Got Paid!</Heading>
+            <Text style={headerSubtitle}>
+              Another order, another commission!
+            </Text>
+          </Section>
+
+          <Section style={contentSection}>
+            <Section style={profileSection}>
+              {avatar_url ? (
+                <Img
+                  src={avatar_url}
+                  alt={name}
+                  width={72}
+                  height={72}
+                  style={avatarImage}
+                />
+              ) : (
+                <Section style={avatarPlaceholder}>
+                  <Text style={avatarInitial}>
+                    {name.charAt(0).toUpperCase()}
+                  </Text>
+                </Section>
+              )}
+
+              <Text style={welcomeText}>Awesome, {name}! 🚀</Text>
+            </Section>
+
+            <Text style={paragraph}>
+              Someone used your promo code, and you just earned a new
+              commission! Your earnings have been added to your pending balance.
+              Keep sharing your code—you’re getting closer to your next payout
+              with every order!
+            </Text>
+
+            <Section style={highlightCard}>
+              <Text style={highlightLabel}>You Earned</Text>
+              <Text style={highlightValue}>{earned_commission} EGP 🎉</Text>
+              <Text style={highlightSubtext}>
+                {commission_percentage}% commission from an order worth{' '}
+                {order_subtotal} EGP
+              </Text>
+            </Section>
+
+            <Section style={statsRow}>
+              <Section style={statCard}>
+                <Text style={statLabel}>Pending Balance</Text>
+                <Text style={statValue}>{current_pending_commission} EGP</Text>
+              </Section>
+
+              <Section style={statCard}>
+                <Text style={statLabel}>Paid So Far</Text>
+                <Text style={statValue}>{total_paid_commission} EGP</Text>
+              </Section>
+            </Section>
+
+            <Section style={orderCard}>
+              <Text style={cardTitle}>Order Summary</Text>
+
+              <DetailRow label="Order ID" value={`#${order_id}`} />
+              <DetailRow label="Promo Code" value={promo_code} />
+              <DetailRow label="Order Total" value={`${order_subtotal} EGP`} />
+
+              <Section style={listSection}>
+                <Text style={listSectionTitle}>Products</Text>
+                {order_items_list.map((item, index) => (
+                  <SplitRow
+                    key={`item-${index}`}
+                    left={`${item.title} × ${item.quantity}`}
+                    right={`${item.lineTotal} EGP`}
+                    leftStyle={productNameText}
+                    rightStyle={productPriceText}
+                    isLast={index === order_items_list.length - 1}
+                  />
+                ))}
+              </Section>
+            </Section>
+
+            <Text style={motivationText}>
+              Keep the momentum going! Every order means more earnings. Thanks
+              for being part of the PlanBlue family 💚
+            </Text>
+          </Section>
+
+          <Section style={footerSection}>
+            <Text style={footerText}>
+              © 2026 PlanBlue Store. All rights reserved.
+            </Text>
+          </Section>
+        </Container>
+      </Body>
+    </Html>
+  );
+};
+
+export default AffiliateCommissionEmail;

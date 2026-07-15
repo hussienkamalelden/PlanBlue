@@ -1,32 +1,36 @@
 'use client';
 
-import { ShopItemCard } from '@/components/shop/shop-item-card';
+import { PopularShopCarousel } from '@/components/home/popular-shop-carousel';
 import { useTranslations } from '@/lib/i18n/use-translations';
 import type { StrapiShopItem } from '@/lib/types/strapi';
 
 type RelatedShopItemsProps = {
   items: StrapiShopItem[];
+  titleKey?: 'relatedSection' | 'youMayAlsoLikeSection';
 };
 
-export function RelatedShopItems({ items }: RelatedShopItemsProps) {
+export function RelatedShopItems({
+  items,
+  titleKey = 'relatedSection',
+}: RelatedShopItemsProps) {
   const t = useTranslations();
+  const section = t.shopItemDetail[titleKey];
 
   if (items.length === 0) {
     return null;
   }
 
   return (
-    <section className="border-t border-neutral-200 pt-10">
-      <h2 className="mb-6 text-2xl font-bold text-neutral-900">
-        {t.shopItemDetail.relatedItems}
-      </h2>
-      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {items.map((item) => (
-          <li key={item.documentId}>
-            <ShopItemCard item={item} />
-          </li>
-        ))}
-      </ul>
+    <section className="pb-product-details-related">
+      <div className="pb-product-details-related__header">
+        <h2 className="pb-product-details-related__title">
+          {section.title}{' '}
+          <span className="text-[#4389F7]">{section.highlight}</span>
+        </h2>
+      </div>
+      <div className="popular-shop-carousel-wrap relative">
+        <PopularShopCarousel items={items} disableLoop />
+      </div>
     </section>
   );
 }

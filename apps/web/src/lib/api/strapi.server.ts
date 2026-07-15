@@ -12,11 +12,18 @@ import { STRAPI_URL } from './strapi';
 
 async function strapiFetch<T>(
   path: string,
-  searchParams: Record<string, string> = {},
+  searchParams: Record<string, string | string[]> = {},
 ): Promise<T> {
   const url = new URL(`${STRAPI_URL}/api${path}`);
 
   for (const [key, value] of Object.entries(searchParams)) {
+    if (Array.isArray(value)) {
+      for (const entry of value) {
+        url.searchParams.append(key, entry);
+      }
+      continue;
+    }
+
     url.searchParams.set(key, value);
   }
 
@@ -101,36 +108,137 @@ export async function fetchCategories(): Promise<StrapiCategory[]> {
   return json.data;
 }
 
-export async function fetchShopItems(): Promise<StrapiShopItem[]> {
+export async function fetchShopItems(options?: {
+  page?: number;
+  pageSize?: number;
+  sort?: string;
+  categoryIds?: string[];
+  ageFilters?: string[];
+  priceMin?: number;
+  priceMax?: number;
+  search?: string;
+}): Promise<{ data: StrapiShopItem[]; total: number; pageCount: number }> {
+  const { page = 1, pageSize = 12, sort = 'createdAt:desc', categoryIds, ageFilters, priceMin, priceMax, search } = options ?? {};
+
+  const params: Record<string, string> = {
+    'fields[0]': 'title',
+    'fields[1]': 'title_ar',
+    'fields[2]': 'slug',
+    'fields[3]': 'description',
+    'fields[4]': 'description_ar',
+    'fields[5]': 'price',
+    'fields[6]': 'has_sale',
+    'fields[7]': 'discount_percentage',
+    'fields[8]': 'available',
+    'fields[9]': 'available_stock',
+    'fields[10]': 'views',
+    'fields[11]': 'total_sold',
+    'fields[12]': 'all_ages',
+    'fields[13]': 'age',
+    'fields[14]': 'documentId',
+    'fields[15]': 'need_batteries',
+    'populate[categories][fields][0]': 'title',
+    'populate[categories][fields][1]': 'title_ar',
+    'populate[categories][fields][2]': 'documentId',
+    'populate[media][fields][0]': 'url',
+    'populate[media][fields][1]': 'name',
+    'populate[media][fields][2]': 'mime',
+    'populate[media][fields][3]': 'previewUrl',
+    'populate[media][fields][4]': 'formats',
+    sort,
+    'pagination[page]': String(page),
+    'pagination[pageSize]': String(pageSize),
+  };
+
+  if (categoryIds && categoryIds.length > 0) {
+    categoryIds.forEach((id, i) => {
+      params[`filters[categories][documentId][$in][${i}]`] = id;
+    });
+  }
+
+  let andIndex = 0;
+
+  if (ageFilters && ageFilters.length > 0) {
+    let orIndex = 0;
+    for (const af of ageFilters) {
+      const ageBounds = getAgeBoundsForFilter(af);
+      if (ageBounds) {
+        params[`filters[$and][${andIndex}][$or][${orIndex}][age][$gte]`] = String(ageBounds.min);
+        params[`filters[$and][${andIndex}][$or][${orIndex}][age][$lte]`] = String(ageBounds.max);
+        orIndex++;
+      }
+    }
+    params[`filters[$and][${andIndex}][$or][${orIndex}][all_ages][$eq]`] = 'true';
+    andIndex++;
+  }
+
+  if (priceMin !== undefined && priceMin > 0) {
+    params['filters[price][$gte]'] = String(priceMin);
+  }
+
+  if (priceMax !== undefined && priceMax > 0) {
+    params['filters[price][$lte]'] = String(priceMax);
+  }
+
+  const trimmedSearch = search?.trim();
+  if (trimmedSearch) {
+    const searchParams: Record<string, string | string[]> = {
+      q: trimmedSearch,
+      page: String(page),
+      pageSize: String(pageSize),
+      sort,
+    };
+
+    if (categoryIds && categoryIds.length > 0) {
+      searchParams.category = categoryIds;
+    }
+
+    if (ageFilters && ageFilters.length > 0) {
+      searchParams.age = ageFilters;
+    }
+
+    if (priceMin !== undefined && priceMin > 0) {
+      searchParams.priceMin = String(priceMin);
+    }
+
+    if (priceMax !== undefined && priceMax > 0) {
+      searchParams.priceMax = String(priceMax);
+    }
+
+    const json = await strapiFetch<StrapiListResponse<StrapiShopItem>>(
+      '/product-search',
+      searchParams,
+    );
+
+    return {
+      data: json.data,
+      total: json.meta.pagination.total,
+      pageCount: json.meta.pagination.pageCount,
+    };
+  }
+
   const json = await strapiFetch<StrapiListResponse<StrapiShopItem>>(
     '/products',
-    {
-      'fields[0]': 'title',
-      'fields[1]': 'title_ar',
-      'fields[2]': 'slug',
-      'fields[3]': 'description',
-      'fields[4]': 'description_ar',
-      'fields[5]': 'price',
-      'fields[6]': 'has_sale',
-      'fields[7]': 'discount_percentage',
-      'fields[8]': 'available',
-      'fields[9]': 'available_stock',
-      'fields[10]': 'views',
-      'fields[11]': 'total_sold',
-      'fields[12]': 'all_ages',
-      'fields[13]': 'age',
-      'fields[14]': 'documentId',
-      'populate[categories][fields][0]': 'title',
-      'populate[categories][fields][1]': 'title_ar',
-      'populate[categories][fields][2]': 'documentId',
-      'populate[media][fields][0]': 'url',
-      'populate[media][fields][1]': 'name',
-      'populate[media][fields][2]': 'mime',
-      sort: 'createdAt:desc',
-    },
+    params,
   );
 
-  return json.data;
+  return {
+    data: json.data,
+    total: json.meta.pagination.total,
+    pageCount: json.meta.pagination.pageCount,
+  };
+}
+
+function getAgeBoundsForFilter(ageFilter: string): { min: number; max: number } | null {
+  switch (ageFilter) {
+    case '0-1': return { min: 0, max: 1 };
+    case '1-2': return { min: 1, max: 2 };
+    case '2-3': return { min: 2, max: 3 };
+    case '3-4': return { min: 3, max: 4 };
+    case '4-6': return { min: 4, max: 6 };
+    case '6+': return { min: 6, max: 99 };
+    default: return null;
+  }
 }
 
 export async function fetchAffiliates(): Promise<StrapiAffiliate[]> {
@@ -154,6 +262,7 @@ export async function fetchAffiliates(): Promise<StrapiAffiliate[]> {
 
 export async function fetchShopItemsByDocumentIds(
   documentIds: string[],
+  options?: { includeMedia?: boolean; includeDetails?: boolean },
 ): Promise<StrapiShopItem[]> {
   if (documentIds.length === 0) {
     return [];
@@ -170,6 +279,21 @@ export async function fetchShopItemsByDocumentIds(
     'fields[7]': 'available_stock',
     sort: 'createdAt:desc',
   };
+
+  if (options?.includeMedia) {
+    params['populate[media][fields][0]'] = 'url';
+    params['populate[media][fields][1]'] = 'name';
+    params['populate[media][fields][2]'] = 'mime';
+    params['populate[media][fields][3]'] = 'previewUrl';
+    params['populate[media][fields][4]'] = 'formats';
+  }
+
+  if (options?.includeDetails) {
+    params['fields[8]'] = 'description';
+    params['fields[9]'] = 'description_ar';
+    params['fields[10]'] = 'sku';
+    params['fields[11]'] = 'need_batteries';
+  }
 
   documentIds.forEach((documentId, index) => {
     params[`filters[documentId][$in][${index}]`] = documentId;
@@ -201,6 +325,8 @@ export async function fetchShopItemByDocumentId(
         'populate[media][fields][0]': 'url',
         'populate[media][fields][1]': 'name',
         'populate[media][fields][2]': 'mime',
+        'populate[media][fields][3]': 'previewUrl',
+        'populate[media][fields][4]': 'formats',
       },
     );
 
@@ -232,9 +358,37 @@ export async function fetchShopItemBySlug(
   }
 }
 
+export async function fetchMostViewedShopItems(
+  item: StrapiShopItem,
+  limit = 12,
+): Promise<StrapiShopItem[]> {
+  try {
+    const json = await strapiFetch<StrapiListResponse<StrapiShopItem>>(
+      '/products',
+      {
+        'populate[categories][fields][0]': 'title',
+        'populate[categories][fields][1]': 'title_ar',
+        'populate[categories][fields][2]': 'documentId',
+        'populate[media][fields][0]': 'url',
+        'populate[media][fields][1]': 'name',
+        'populate[media][fields][2]': 'mime',
+        'populate[media][fields][3]': 'previewUrl',
+        'populate[media][fields][4]': 'formats',
+        'filters[documentId][$ne]': item.documentId,
+        'pagination[pageSize]': String(limit),
+        sort: 'views:desc',
+      },
+    );
+
+    return json.data;
+  } catch {
+    return [];
+  }
+}
+
 export async function fetchRelatedShopItems(
   item: StrapiShopItem,
-  limit = 4,
+  limit = 12,
 ): Promise<StrapiShopItem[]> {
   const categoryIds =
     item.categories?.map((category) => category.documentId) ?? [];
@@ -250,6 +404,8 @@ export async function fetchRelatedShopItems(
     'populate[media][fields][0]': 'url',
     'populate[media][fields][1]': 'name',
     'populate[media][fields][2]': 'mime',
+    'populate[media][fields][3]': 'previewUrl',
+    'populate[media][fields][4]': 'formats',
     'filters[documentId][$ne]': item.documentId,
     'pagination[pageSize]': String(limit),
     sort: 'createdAt:desc',

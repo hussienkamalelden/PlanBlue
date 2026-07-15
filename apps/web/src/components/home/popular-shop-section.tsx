@@ -2,11 +2,13 @@ import { PopularShopCarousel } from '@/components/home/popular-shop-carousel';
 import { PopularShopHeading } from '@/components/home/popular-shop-heading';
 import { HOME_ASSETS } from '@/lib/assets/home';
 import { fetchShopItems } from '@/lib/api/strapi.server';
-import { getMostViewedShopItems } from '@/lib/shop/filters';
 
 export async function PopularShopSection() {
-  const allItems = await fetchShopItems();
-  const topItems = getMostViewedShopItems(allItems, 12);
+  const { data: allItems } = await fetchShopItems({
+    pageSize: 12,
+    sort: 'views:desc',
+  });
+  const topItems = allItems;
 
   if (topItems.length === 0) {
     return null;
@@ -15,7 +17,7 @@ export async function PopularShopSection() {
   const shapes = HOME_ASSETS.shapes;
 
   return (
-    <section className="relative overflow-hidden py-16 text-center md:py-24">
+    <section className="pb-popular-shop-section pb-home-section relative overflow-hidden text-center">
       <div
         className="pointer-events-none absolute inset-0"
         dir="ltr"
@@ -26,7 +28,7 @@ export async function PopularShopSection() {
           style={{ backgroundImage: `url(${shapes.carouselPattern1})` }}
         />
         <div
-          className="absolute right-0 top-10 h-24 w-24 bg-contain bg-no-repeat opacity-70"
+          className="pb-popular-shop-section__decor pb-popular-shop-section__decor--corner absolute right-0 top-10 h-24 w-24 bg-contain bg-no-repeat opacity-70"
           style={{ backgroundImage: `url(${shapes.carouselPattern2})` }}
         />
       </div>
@@ -34,7 +36,7 @@ export async function PopularShopSection() {
       <div className="pb-large-container relative z-10">
         <PopularShopHeading />
 
-        <div className="popular-shop-carousel-wrap relative xl:px-10">
+        <div className="popular-shop-carousel-wrap">
           <PopularShopCarousel items={topItems} />
         </div>
       </div>

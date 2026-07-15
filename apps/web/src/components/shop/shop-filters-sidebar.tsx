@@ -1,52 +1,63 @@
 'use client';
 
+import {
+  Baby,
+  CircleDot,
+  LayoutGrid,
+  Tag,
+  Wallet,
+  type LucideIcon,
+} from 'lucide-react';
+import { type FormEvent } from 'react';
+
 import { PriceRangeSlider } from '@/components/shop/price-range-slider';
 import { useTranslations } from '@/lib/i18n/use-translations';
 import {
   AGE_FILTER_OPTIONS,
   type AgeFilter,
-  type ShopSort,
 } from '@/lib/shop/filters';
 import type { StrapiCategory } from '@/lib/types/strapi';
 import { useLocaleStore } from '@/stores/locale-store';
 
 type ShopFiltersSidebarProps = {
   categories: StrapiCategory[];
-  selectedCategoryId: string | null;
-  selectedSort: ShopSort;
-  selectedAgeFilter: AgeFilter;
+  selectedCategoryIds: string[];
+  selectedAgeFilters: Exclude<AgeFilter, null>[];
+  priceBounds: { min: number; max: number };
   priceMin: number;
   priceMax: number;
-  priceBounds: { min: number; max: number };
-  onSelectCategory: (categoryId: string | null) => void;
-  onSelectSort: (sort: ShopSort) => void;
-  onSelectAgeFilter: (filter: AgeFilter) => void;
+  searchQuery: string;
+  onSearchQueryChange: (value: string) => void;
+  onSearchSubmit: () => void;
+  onToggleCategory: (categoryId: string) => void;
+  onToggleAgeFilter: (filter: Exclude<AgeFilter, null>) => void;
   onPriceMinChange: (value: number) => void;
   onPriceMaxChange: (value: number) => void;
+  onPriceReset: () => void;
+  variant?: 'sidebar' | 'drawer';
+  className?: string;
 };
-
-const SORT_OPTIONS: Exclude<ShopSort, null>[] = ['top_sellers', 'most_viewed'];
 
 export function ShopFiltersSidebar({
   categories,
-  selectedCategoryId,
-  selectedSort,
-  selectedAgeFilter,
+  selectedCategoryIds,
+  selectedAgeFilters,
+  priceBounds,
   priceMin,
   priceMax,
-  priceBounds,
-  onSelectCategory,
-  onSelectSort,
-  onSelectAgeFilter,
+  searchQuery,
+  onSearchQueryChange,
+  onSearchSubmit,
+  onToggleCategory,
+  onToggleAgeFilter,
   onPriceMinChange,
   onPriceMaxChange,
+  onPriceReset,
+  variant = 'sidebar',
+  className,
 }: ShopFiltersSidebarProps) {
   const t = useTranslations();
   const locale = useLocaleStore((state) => state.locale);
-
-  function getSortLabel(sort: Exclude<ShopSort, null>): string {
-    return sort === 'top_sellers' ? t.shop.topSellers : t.shop.mostViewed;
-  }
 
   function getAgeLabel(filter: Exclude<AgeFilter, null>): string {
     const labels: Record<Exclude<AgeFilter, null>, string> = {
@@ -61,122 +72,130 @@ export function ShopFiltersSidebar({
     return labels[filter];
   }
 
+  function handleSearchSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    onSearchSubmit();
+  }
+
   return (
     <aside
       aria-label={t.shop.filtersTitle}
-      className="rounded-xl border border-neutral-200 bg-white shadow-sm lg:sticky lg:top-6 lg:self-start"
+      className={`pb-shop-sidebar${
+        variant === 'drawer' ? ' pb-shop-sidebar--drawer' : ''
+      }${
+        variant === 'sidebar' ? ' lg:sticky lg:top-6 lg:self-start' : ''
+      }${className ? ` ${className}` : ''}`}
     >
-      <div className="border-b border-neutral-100 px-4 py-3">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-neutral-700">
-          {t.shop.filtersTitle}
-        </h2>
-      </div>
-
-      <div className="max-h-[min(70vh,560px)] overflow-y-auto px-3 py-3">
-        <FilterSection title={t.shop.sortTitle}>
-          <ul className="space-y-1">
-            {SORT_OPTIONS.map((sort) => (
-              <li key={sort}>
-                <FilterOption
-                  label={getSortLabel(sort)}
-                  selected={selectedSort === sort}
-                  onClick={() =>
-                    onSelectSort(selectedSort === sort ? null : sort)
-                  }
-                />
-              </li>
-            ))}
-          </ul>
-        </FilterSection>
+      <div className="pb-shop-sidebar-widget">
+        <section className="pb-shop-sidebar-section pb-shop-sidebar-section--search">
+          <form onSubmit={handleSearchSubmit}>
+            <div className="pb-shop-sidebar-search__group">
+              <input
+                type="search"
+                value={searchQuery}
+                onChange={(event) => onSearchQueryChange(event.target.value)}
+                placeholder={t.header.searchPlaceholder}
+                aria-label={t.header.searchPlaceholder}
+              />
+              <button type="submit" aria-label={t.header.searchPlaceholder}>
+                <i className="icon-4" aria-hidden="true" />
+              </button>
+            </div>
+          </form>
+        </section>
 
         {priceBounds.max > 0 && (
-          <FilterSection title={t.shop.priceTitle}>
-            <PriceRangeSlider
-              bounds={priceBounds}
-              min={priceMin}
-              max={priceMax}
-              locale={locale}
-              fromLabel={t.shop.priceFrom}
-              toLabel={t.shop.priceTo}
-              resetLabel={t.shop.priceReset}
-              onMinChange={onPriceMinChange}
-              onMaxChange={onPriceMaxChange}
-              onReset={() => {
-                onPriceMinChange(priceBounds.min);
-                onPriceMaxChange(priceBounds.max);
-              }}
-            />
-          </FilterSection>
+          <>
+            <hr className="pb-shop-sidebar-separator" />
+            <section className="pb-shop-sidebar-section">
+              <SidebarSectionTitle icon={Wallet} title={t.shop.priceTitle} />
+              <PriceRangeSlider
+                bounds={priceBounds}
+                min={priceMin}
+                max={priceMax}
+                locale={locale}
+                fromLabel={t.shop.priceFrom}
+                toLabel={t.shop.priceTo}
+                resetLabel={t.shop.priceReset}
+                onMinChange={onPriceMinChange}
+                onMaxChange={onPriceMaxChange}
+                onReset={onPriceReset}
+              />
+            </section>
+          </>
         )}
-        <FilterSection title={t.shop.ageTitle}>
-          <ul className="space-y-1">
+
+        <hr className="pb-shop-sidebar-separator" />
+
+        <section className="pb-shop-sidebar-section">
+          <SidebarSectionTitle icon={Baby} title={t.shop.ageTitle} />
+          <ul className="pb-shop-sidebar-list">
             {AGE_FILTER_OPTIONS.map((filter) => (
               <li key={filter}>
                 <FilterOption
+                  icon={CircleDot}
                   label={getAgeLabel(filter)}
-                  selected={selectedAgeFilter === filter}
-                  onClick={() =>
-                    onSelectAgeFilter(
-                      selectedAgeFilter === filter ? null : filter,
-                    )
-                  }
+                  selected={selectedAgeFilters.includes(filter)}
+                  onClick={() => onToggleAgeFilter(filter)}
                 />
               </li>
             ))}
           </ul>
-        </FilterSection>
+        </section>
 
-        <FilterSection title={t.category.title}>
-          <ul className="space-y-1">
-            {categories.map((category) => {
-              const label =
-                locale === 'ar' ? category.title_ar : category.title;
+        <hr className="pb-shop-sidebar-separator" />
 
-              return (
-                <li key={category.documentId}>
-                  <FilterOption
-                    label={label}
-                    selected={selectedCategoryId === category.documentId}
-                    onClick={() =>
-                      onSelectCategory(
-                        selectedCategoryId === category.documentId
-                          ? null
-                          : category.documentId,
-                      )
-                    }
-                  />
-                </li>
-              );
-            })}
-          </ul>
-        </FilterSection>
+        <section className="pb-shop-sidebar-section">
+          <SidebarSectionTitle icon={LayoutGrid} title={t.category.title} />
+          <div className="pb-shop-sidebar-list-scroll">
+            <ul className="pb-shop-sidebar-list">
+              {categories.map((category) => {
+                const label =
+                  locale === 'ar' ? category.title_ar : category.title;
+
+                return (
+                  <li key={category.documentId}>
+                    <FilterOption
+                      icon={Tag}
+                      label={label}
+                      selected={selectedCategoryIds.includes(category.documentId)}
+                      onClick={() => onToggleCategory(category.documentId)}
+                    />
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </section>
       </div>
     </aside>
   );
 }
 
-function FilterSection({
+function SidebarSectionTitle({
+  icon: Icon,
   title,
-  children,
 }: {
+  icon: LucideIcon;
   title: string;
-  children: React.ReactNode;
 }) {
   return (
-    <section className="mb-4 last:mb-0">
-      <h3 className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-neutral-500">
-        {title}
-      </h3>
-      {children}
-    </section>
+    <div className="pb-shop-sidebar-widget__title">
+      <span className="pb-shop-sidebar-widget__title-icon" aria-hidden="true">
+        <Icon className="size-5" strokeWidth={2.25} />
+      </span>
+      <h4>{title}</h4>
+    </div>
   );
 }
 
 function FilterOption({
+  icon: Icon,
   label,
   selected,
   onClick,
 }: {
+  icon: LucideIcon;
   label: string;
   selected: boolean;
   onClick: () => void;
@@ -186,13 +205,12 @@ function FilterOption({
       type="button"
       onClick={onClick}
       aria-pressed={selected}
-      className={`w-full rounded-lg px-3 py-2 text-start text-sm transition-colors ${
-        selected
-          ? 'bg-neutral-900 font-medium text-white'
-          : 'text-neutral-700 hover:bg-neutral-50'
-      }`}
+      className={`pb-shop-sidebar-option${selected ? ' is-selected' : ''}`}
     >
-      {label}
+      <span className="pb-shop-sidebar-option__icon" aria-hidden="true">
+        <Icon className="size-4" strokeWidth={2.25} />
+      </span>
+      <span className="pb-shop-sidebar-option__label">{label}</span>
     </button>
   );
 }

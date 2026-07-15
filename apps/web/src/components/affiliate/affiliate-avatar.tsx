@@ -17,16 +17,16 @@ const sizeMap = {
   lg: { box: 'h-24 w-24', text: 'text-2xl', px: 96, sizes: '96px' },
   xl: { box: 'h-32 w-32', text: 'text-3xl', px: 128, sizes: '128px' },
   podium: {
-    box: 'h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24',
-    text: 'text-lg sm:text-xl md:text-2xl',
+    box: 'pb-affiliate-avatar pb-affiliate-avatar--podium',
+    text: 'pb-affiliate-avatar__initial pb-affiliate-avatar__initial--podium',
     px: 96,
-    sizes: '(max-width: 640px) 64px, (max-width: 768px) 80px, 96px',
+    sizes: '(max-width: 640px) 44px, (max-width: 768px) 80px, 96px',
   },
   'podium-first': {
-    box: 'h-20 w-20 sm:h-24 sm:w-24 md:h-32 md:w-32',
-    text: 'text-xl sm:text-2xl md:text-3xl',
+    box: 'pb-affiliate-avatar pb-affiliate-avatar--podium-first',
+    text: 'pb-affiliate-avatar__initial pb-affiliate-avatar__initial--podium-first',
     px: 128,
-    sizes: '(max-width: 640px) 80px, (max-width: 768px) 96px, 128px',
+    sizes: '(max-width: 640px) 52px, (max-width: 768px) 96px, 128px',
   },
 };
 

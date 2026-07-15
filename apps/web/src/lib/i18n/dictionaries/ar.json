@@ -5,6 +5,11 @@
     "loading": "جاري التحميل...",
     "error": "حدث خطأ. يرجى المحاولة مرة أخرى."
   },
+  "notFoundPage": {
+    "title": "الصفحة غير موجودة",
+    "description": "الصفحة التي تبحث عنها غير موجودة أو تم نقلها.",
+    "backHome": "العودة للرئيسية"
+  },
   "header": {
     "products": "المتجر",
     "cart": "السلة",
@@ -47,7 +52,7 @@
       "highlight": "الفئات"
     },
     "topSelling": {
-      "title": "منتجات",
+      "title": "المنتجات",
       "highlight": "الأكثر مبيعاً"
     },
     "offers": {
@@ -66,10 +71,14 @@
     "empty": "لا توجد منتجات متاحة حالياً.",
     "filteredEmpty": "لا توجد منتجات تطابق الفلاتر المحددة.",
     "filtersTitle": "الفلاتر",
+    "showResults": "عرض المنتجات",
     "removeFilter": "إزالة الفلتر",
+    "searchLabel": "بحث",
     "sortTitle": "ترتيب حسب",
     "topSellers": "الأكثر مبيعاً",
     "mostViewed": "الأكثر مشاهدة",
+    "priceHigh": "الأعلى سعراً",
+    "priceLow": "الأقل سعراً",
     "ageTitle": "العمر",
     "allAges": "جميع الأعمار",
     "age0to1": "0–1 سنة",
@@ -81,7 +90,8 @@
     "priceTitle": "السعر",
     "priceFrom": "من",
     "priceTo": "إلى",
-    "priceReset": "إعادة ضبط"
+    "priceReset": "إعادة ضبط",
+    "newest": "الأحدث"
   },
   "category": {
     "title": "الفئات",
@@ -90,7 +100,8 @@
   "shopItem": {
     "views": "مشاهدة",
     "sale": "تخفيض",
-    "outOfStock": "غير متوفر"
+    "freeBattery": "بطاريات مجانية",
+    "outOfStock": "غير متوفر - يعود قريباً"
   },
   "shopItemDetail": {
     "backToShop": "العودة إلى المتجر",
@@ -100,16 +111,33 @@
     "views": "إجمالي المشاهدات",
     "quantity": "الكمية",
     "sku": "رمز المنتج",
+    "freeBatteries": "بطاريات مجانية",
+    "freeBatteriesIncluded": "متوفر",
+    "category": "التصنيف",
+    "availability": "التوفر",
+    "availableNow": "متوفر",
+    "notInStock": "غير متوفر - يعود قريباً",
     "categories": "التصنيفات",
     "inStock": "{stock} متوفر في المخزون",
+    "quantityUnavailable": "هذه الكمية غير متاحة.",
     "quantityWarning": "يتوفر فقط {stock} قطعة في المخزون. يرجى تقليل الكمية.",
     "outOfStock": "هذا المنتج غير متوفر حالياً.",
     "addToCart": "أضف إلى السلة",
     "buyNow": "اشترِ الآن",
+    "share": "مشاركة",
+    "shareCopied": "تم نسخ الرابط",
+    "shareFailed": "تعذرت مشاركة هذا المنتج",
     "addedToCart": "تمت الإضافة إلى السلة",
     "mediaImage": "صورة المنتج {index}",
     "mediaVideo": "فيديو المنتج {index}",
-    "relatedItems": "منتجات ذات صلة",
+    "relatedSection": {
+      "title": "منتجات",
+      "highlight": "ذات صلة"
+    },
+    "youMayAlsoLikeSection": {
+      "title": "قد يعجبك",
+      "highlight": "أيضاً"
+    },
     "notFound": "المنتج غير موجود",
     "notFoundDescription": "المنتج الذي تبحث عنه غير موجود أو تمت إزالته."
   },
@@ -121,10 +149,19 @@
     "clearCart": "إفراغ السلة",
     "clearConfirm": "هل أنت متأكد من إفراغ السلة؟",
     "remove": "إزالة",
+    "removeConfirmTitle": "إزالة هذا المنتج؟",
+    "removeConfirmMessage": "هل أنت متأكد من إزالة \"{title}\" من السلة؟",
+    "removeConfirm": "إزالة",
+    "removeCancel": "إلغاء",
     "stockWarning": "يتوفر فقط {stock} — اخترت {quantity}.",
     "subtotal": "المجموع الفرعي",
     "total": "الإجمالي",
     "items": "عناصر",
+    "tableProduct": "المنتج",
+    "tableDiscount": "الخصم",
+    "tablePrice": "السعر",
+    "tableQuantity": "الكمية",
+    "tableTotal": "الإجمالي",
     "validation": {
       "checking": "جاري التحقق من توفر العناصر والأسعار...",
       "failed": "تعذر التحقق من السلة الآن. يرجى المحاولة مرة أخرى.",
@@ -134,7 +171,8 @@
       "unavailable": "هذا المنتج لم يعد متاحاً.",
       "insufficientStock": "يتبقى {stock} فقط في المخزون — لديك {quantity} في سلتك.",
       "priceChanged": "تغير السعر من {oldPrice} إلى {newPrice}. أزل هذا العنصر وأضفه مرة أخرى."
-    }
+    },
+    "topSellers": "قد يعجبك أيضاً"
   },
   "checkout": {
     "title": "الدفع",
@@ -160,6 +198,7 @@
       "extraNotesPlaceholder": "أي طلبات خاصة أو تعليمات للتوصيل..."
     },
     "orderSummary": "ملخص الطلب",
+    "orderDetails": "تفاصيل الطلب",
     "subtotal": "المجموع الفرعي",
     "discount": "الخصم",
     "promoApply": "تطبيق",
@@ -168,11 +207,18 @@
     "promoInvalid": "كود خصم غير صالح",
     "shipping": "الشحن",
     "giftWrapping": "تغليف مميز",
-    "giftWrappingNote": "ملاحظة: المنتجات تأتي بتغليف هدايا خاص من PlanBlue.",
+    "perksCongratulations": "تهانينا!",
+    "perksMessagePrefix": "لقد حصلت على",
+    "perksMessageJoin": "و",
+    "perksMessageSuffix": "مع طلبك.",
+    "perksGiftHighlight": "تغليف هدايا مميز مجاني",
+    "perksBatteriesHighlight": "بطاريات مجانية",
     "giftWrappingDesc": "أضف تغليفاً مميزاً مقابل",
     "total": "الإجمالي",
     "items": "عناصر",
     "placeOrder": "تأكيد الطلب",
+    "checkout": "الدفع",
+    "confirming": "جاري تأكيد الطلب...",
     "placing": "جاري تأكيد الطلب...",
     "emptyCart": "سلتك فارغة. أضف منتجات قبل الدفع.",
     "backToCart": "العودة إلى السلة",
@@ -185,8 +231,10 @@
       "addressRequired": "عنوان التوصيل مطلوب"
     },
     "success": {
-      "title": "تم تأكيد الطلب بنجاح!",
-      "message": "شكراً لطلبك. ستصلك رسالة تأكيد عبر البريد الإلكتروني قريباً.",
+      "eyebrow": "تم تأكيد الطلب",
+      "title": "شكراً",
+      "subtitle": "طلبك من PlanBlue في الطريق إليك.",
+      "message": "استلمنا طلبك وسنرسل لك تأكيداً عبر البريد الإلكتروني قريباً.",
       "orderId": "رقم الطلب",
       "backToHome": "العودة للرئيسية"
     },
@@ -201,6 +249,15 @@
       "blockedMessage": "بعض عناصر السلة غير متاحة أو نفدت أو تغير سعرها. ارجع إلى السلة لإصلاحها.",
       "submitRechecking": "جاري إعادة التحقق من السلة قبل تأكيد الطلب...",
       "submitRecheckFailed": "أعدنا التحقق من السلة ووجدنا مشكلات. راجع الرسائل أدناه ثم ارجع إلى السلة."
+    },
+    "confirmModal": {
+      "title": "راجع طلبك",
+      "subtitle": "تأكد من صحة جميع البيانات أدناه قبل تأكيد الطلب.",
+      "customerDetails": "بيانات العميل",
+      "deliveryDetails": "بيانات التوصيل",
+      "orderItems": "عناصر الطلب",
+      "none": "—",
+      "close": "رجوع للتعديل"
     }
   },
   "affiliates": {
@@ -211,7 +268,45 @@
     "allAffiliates": "جميع الشركاء",
     "pendingCommission": "عمولة معلقة",
     "empty": "لا يوجد شركاء بعد. تابعنا قريباً!",
-    "moreComingSoon": "المزيد من الشركاء قريباً — ترقبوا!"
+    "moreComingSoon": "المزيد من الشركاء قريباً — ترقبوا!",
+    "gate": {
+      "title": "منطقة محمية",
+      "subtitle": "أدخل كلمة المرور لعرض لوحة المتصدرين.",
+      "passwordLabel": "كلمة المرور",
+      "passwordPlaceholder": "أدخل كلمة المرور",
+      "submit": "دخول",
+      "checking": "جاري التحقق...",
+      "invalidPassword": "كلمة المرور غير صحيحة. حاول مرة أخرى."
+    }
+  },
+  "report": {
+    "badge": "تقارير PlanBlue",
+    "title": "إنشاء تقرير",
+    "subtitle": "اختر تاريخ البداية والنهاية، ثم أنشئ تقريرك.",
+    "from": "من",
+    "to": "إلى",
+    "selectFrom": "اختر تاريخ البداية",
+    "selectTo": "اختر تاريخ النهاية",
+    "rangeSummary": "من تاريخ {from} إلى تاريخ {to}",
+    "generateReport": "Generate Report",
+    "sending": "جاري إرسال التقرير...",
+    "emailSent": "تم إرسال التقرير بنجاح إلى بريد الأدمن.",
+    "emailError": "فشل إرسال التقرير. حاول مرة أخرى.",
+    "gate": {
+      "title": "منطقة محمية",
+      "subtitle": "أدخل كلمة المرور للوصول إلى صفحة التقارير.",
+      "passwordLabel": "كلمة المرور",
+      "passwordPlaceholder": "أدخل كلمة المرور",
+      "submit": "دخول",
+      "checking": "جاري التحقق...",
+      "invalidPassword": "كلمة المرور غير صحيحة. حاول مرة أخرى."
+    },
+    "calendar": {
+      "previousMonth": "الشهر السابق",
+      "nextMonth": "الشهر التالي",
+      "selectingFrom": "اختر تاريخ البداية من التقويم",
+      "selectingTo": "اختر تاريخ النهاية من التقويم"
+    }
   },
   "footer": {
     "about": "ألعاب عالية الجودة لكل الأعمار، نوصلها في جميع أنحاء مصر بعناية.",
@@ -252,7 +347,7 @@
       {
         "title": "3. التسعير والعروض",
         "paragraphs": [
-          "جميع الأسعار معروضة بالجنيه المصري ما لم يُذكر خلاف ذلك. تسري أسعار التخفيض والخصومات طوال فترة العرض فقط.",
+          "جميع الأسعار معروضة بالجنيه ما لم يُذكر خلاف ذلك. تسري أسعار التخفيض والخصومات طوال فترة العرض فقط.",
           "يجب إدخال أكواد الخصم عند الدفع وهي خاضعة لتواريخ الصلاحية وحدود الاستخدام وقواعد الأهلية لكل كود."
         ]
       },

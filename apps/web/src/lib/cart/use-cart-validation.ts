@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useCartStore } from '@/lib/cart/cart-store';
 import { requestCartValidation } from '@/lib/cart/request-cart-validation';
@@ -12,10 +12,37 @@ type ValidationStatus = 'idle' | 'loading' | 'ready' | 'error';
 type UseCartValidationResult = {
   status: ValidationStatus;
   validation: CartValidationResult | null;
+  validatingDocumentIds: string[];
   isBlocked: boolean;
   refresh: () => void;
   validateNow: () => Promise<CartValidationResult | null>;
 };
+
+function getChangedDocumentIds(
+  previousItems: ReturnType<typeof useCartStore.getState>['items'],
+  currentItems: ReturnType<typeof useCartStore.getState>['items'],
+): string[] {
+  const changedIds = new Set<string>();
+
+  for (const item of currentItems) {
+    const previousItem = previousItems.find(
+      (entry) => entry.documentId === item.documentId,
+    );
+
+    if (
+      !previousItem ||
+      previousItem.quantity !== item.quantity ||
+      previousItem.price !== item.price ||
+      previousItem.has_sale !== item.has_sale ||
+      previousItem.discountPrice !== item.discountPrice ||
+      previousItem.stockQuantity !== item.stockQuantity
+    ) {
+      changedIds.add(item.documentId);
+    }
+  }
+
+  return [...changedIds];
+}
 
 export function useCartValidation(): UseCartValidationResult {
   const items = useCartStore((state) => state.items);
@@ -23,7 +50,11 @@ export function useCartValidation(): UseCartValidationResult {
   const [validation, setValidation] = useState<CartValidationResult | null>(
     null,
   );
+  const [validatingDocumentIds, setValidatingDocumentIds] = useState<string[]>(
+    [],
+  );
   const [refreshToken, setRefreshToken] = useState(0);
+  const previousItemsRef = useRef(items);
 
   const cartFingerprint = useMemo(
     () =>
@@ -42,19 +73,29 @@ export function useCartValidation(): UseCartValidationResult {
     if (currentItems.length === 0) {
       setValidation(null);
       setStatus('idle');
+      setValidatingDocumentIds([]);
       return null;
     }
 
+    const pendingIds = getChangedDocumentIds(previousItemsRef.current, currentItems);
+    setValidatingDocumentIds(
+      pendingIds.length > 0
+        ? pendingIds
+        : currentItems.map((item) => item.documentId),
+    );
     setStatus('loading');
 
     try {
       const result = await requestCartValidation(currentItems);
       setValidation(result);
       setStatus('ready');
+      setValidatingDocumentIds([]);
+      previousItemsRef.current = currentItems;
       return result;
     } catch {
       setValidation(null);
       setStatus('error');
+      setValidatingDocumentIds([]);
       return null;
     }
   }, []);
@@ -65,10 +106,19 @@ export function useCartValidation(): UseCartValidationResult {
     if (currentItems.length === 0) {
       setValidation(null);
       setStatus('idle');
+      setValidatingDocumentIds([]);
+      previousItemsRef.current = [];
       return;
     }
 
     let cancelled = false;
+    const pendingIds = getChangedDocumentIds(previousItemsRef.current, currentItems);
+
+    setValidatingDocumentIds(
+      pendingIds.length > 0
+        ? pendingIds
+        : currentItems.map((item) => item.documentId),
+    );
 
     async function validateCart() {
       setStatus('loading');
@@ -82,10 +132,13 @@ export function useCartValidation(): UseCartValidationResult {
 
         setValidation(result);
         setStatus('ready');
+        setValidatingDocumentIds([]);
+        previousItemsRef.current = currentItems;
       } catch {
         if (!cancelled) {
           setValidation(null);
           setStatus('error');
+          setValidatingDocumentIds([]);
         }
       }
     }
@@ -100,6 +153,7 @@ export function useCartValidation(): UseCartValidationResult {
   return {
     status,
     validation,
+    validatingDocumentIds,
     isBlocked:
       status === 'loading' ||
       status === 'error' ||

@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
+import { ShoppingCart, Home, ToyBrick } from 'lucide-react';
 
 import { HeaderPromoBar } from '@/components/layout/header-promo-bar';
 import { LocaleSwitcher } from '@/components/locale/locale-switcher';
@@ -13,31 +14,6 @@ import { useCartStore } from '@/lib/cart/cart-store';
 import { useTranslations } from '@/lib/i18n/use-translations';
 import { showPageLoader } from '@/lib/ui/page-loader';
 import { useLocaleStore } from '@/stores/locale-store';
-
-function BagIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      width="22"
-      height="22"
-      aria-hidden="true"
-    >
-      <path
-        d="M6 7h12l-1 13H7L6 7z"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M9 7V5a3 3 0 0 1 6 0v2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
 
 function getCartLineUnitPrice(item: {
   price: number;
@@ -73,9 +49,14 @@ export function PlanBlueHeader() {
   );
 
   const navItems = [
-    { href: '/', label: t.header.nav.home },
-    { href: '/shop', label: t.header.nav.shop },
+    { href: '/', label: t.header.nav.home, icon: Home },
+    { href: '/shop', label: t.header.nav.shop, icon: ToyBrick },
   ];
+
+  function isNavActive(href: string) {
+    if (href === '/') return pathname === '/';
+    return pathname === href || pathname.startsWith(`${href}/`);
+  }
 
   useEffect(() => {
     setMobileOpen(false);
@@ -130,7 +111,7 @@ export function PlanBlueHeader() {
                 </Link>
               </figure>
 
-              <div className="pb-support-box">
+              <div className="pb-support-box !hidden lg:!flex">
                 <div className="pb-support-icon">
                   <i className="icon-2" aria-hidden="true" />
                 </div>
@@ -148,16 +129,22 @@ export function PlanBlueHeader() {
             <div className="pb-main-menu">
               <nav aria-label="Main">
                 <ul className="pb-navigation">
-                  {navItems.map((item) => (
-                    <li
-                      key={item.href}
-                      className={
-                        pathname === item.href ? 'pb-current' : undefined
-                      }
-                    >
-                      <Link href={item.href}>{item.label}</Link>
-                    </li>
-                  ))}
+                  {navItems.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <li
+                        key={item.href}
+                        className={
+                          isNavActive(item.href) ? 'pb-current' : undefined
+                        }
+                      >
+                        <Link href={item.href} className="pb-nav-link">
+                          <Icon className="pb-nav-link__icon" aria-hidden="true" />
+                          <span>{item.label}</span>
+                        </Link>
+                      </li>
+                    );
+                  })}
                 </ul>
               </nav>
             </div>
@@ -184,18 +171,22 @@ export function PlanBlueHeader() {
 
               <Link
                 href="/cart"
-                className="inline-flex items-center gap-2.5 py-1.5 text-neutral-900 transition-colors hover:text-[#4389F7]"
+                className="hidden lg:inline-flex items-center gap-2.5 py-1.5 text-neutral-900 transition-colors hover:text-[#4389F7]"
                 aria-label={t.header.cart}
               >
                 <span className="relative inline-flex shrink-0 items-center justify-center">
-                  <BagIcon />
+                  <ShoppingCart
+                    className="size-[24px] text-[#4389F7]"
+                    strokeWidth={1.8}
+                    aria-hidden="true"
+                  />
                   {cartItemCount > 0 && (
-                    <span className="absolute -right-2 -top-1.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#4389F7] px-1 text-[11px] font-bold leading-none text-white rtl:-left-2 rtl:right-auto">
+                    <span className="absolute -right-2 -top-1.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#e0a31e] px-1 text-[11px] font-bold leading-none text-white rtl:-left-2 rtl:right-auto">
                       {cartItemCount}
                     </span>
                   )}
                 </span>
-                <span className="ms-2 min-w-0 text-start leading-tight">
+                <span className="ms-1.5 min-w-0 text-start leading-tight">
                   <span className="block truncate text-sm font-bold sm:max-w-none">
                     {formatPriceWhole(cartTotal, locale)}
                   </span>
@@ -209,15 +200,16 @@ export function PlanBlueHeader() {
                 aria-expanded={mobileOpen}
                 onClick={() => setMobileOpen(true)}
               >
-                <span className="block h-0.5 w-6 rounded bg-neutral-900" />
-                <span className="block h-0.5 w-6 rounded bg-neutral-900" />
-                <span className="block h-0.5 w-6 rounded bg-neutral-900" />
+                <span className="block h-0.5 w-6 rounded bg-[#4389F7]" />
+                <span className="block h-0.5 w-6 rounded bg-[#4389F7]" />
+                <span className="block h-0.5 w-6 rounded bg-[#4389F7]" />
               </button>
             </div>
           </div>
         </div>
       </div>
 
+      {/* Mobile sidebar overlay */}
       <div
         className={`fixed inset-0 z-[70] lg:hidden ${
           mobileOpen ? 'pointer-events-auto' : 'pointer-events-none'
@@ -239,8 +231,8 @@ export function PlanBlueHeader() {
               : 'ltr:translate-x-full rtl:-translate-x-full'
           }`}
         >
-          <div className="mb-5 flex items-center justify-between gap-3">
-            <LocaleSwitcher />
+          {/* Close button */}
+          <div className="mb-4 flex items-center justify-end">
             <button
               type="button"
               className="text-3xl leading-none text-neutral-900"
@@ -251,46 +243,102 @@ export function PlanBlueHeader() {
             </button>
           </div>
 
-          <div className="pb-search-box mb-4 w-full">
-            <form className="pb-search-form" onSubmit={handleSearchSubmit}>
+          {/* Search — full width */}
+          <div className="mb-5 w-full">
+            <form
+              className="relative flex items-center"
+              onSubmit={handleSearchSubmit}
+            >
               <input
                 type="search"
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
                 placeholder={t.header.searchPlaceholder}
                 aria-label={t.header.searchPlaceholder}
+                className="w-full h-[44px] rounded-full border border-dashed border-neutral-300 bg-white px-4 pe-12 text-sm outline-none focus:border-[#4389F7]"
               />
-              <button type="submit" aria-label={t.header.searchPlaceholder}>
+              <button
+                type="submit"
+                aria-label={t.header.searchPlaceholder}
+                className="absolute end-1 top-1 flex h-9 w-9 items-center justify-center rounded-full bg-[#4389F7] text-white"
+              >
                 <i className="icon-4" aria-hidden="true" />
               </button>
             </form>
           </div>
 
+          {/* Nav links */}
           <nav aria-label="Mobile">
             <ul className="m-0 list-none p-0">
-              {navItems.map((item) => (
-                <li key={item.href} className="border-b border-neutral-100">
-                  <Link
-                    href={item.href}
-                    className="block py-3 text-base font-semibold text-neutral-900"
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
+              {navItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <li key={item.href} className="border-b border-neutral-100">
+                    <Link
+                      href={item.href}
+                      className={`flex items-center gap-2.5 py-3 text-base font-semibold transition-colors ${
+                        isNavActive(item.href)
+                          ? 'text-[#4389F7]'
+                          : 'text-neutral-900'
+                      }`}
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      <Icon className="size-[18px] shrink-0" aria-hidden="true" />
+                      {item.label}
+                    </Link>
+                  </li>
+                );
+              })}
+
               <li className="border-b border-neutral-100">
                 <Link
                   href="/cart"
-                  className="block py-3 text-base font-semibold text-neutral-900"
+                  className={`flex items-center gap-2.5 py-3 text-base font-semibold transition-colors ${
+                    isNavActive('/cart') ? 'text-[#4389F7]' : 'text-neutral-900'
+                  }`}
                   onClick={() => setMobileOpen(false)}
                 >
-                  {t.header.cartTotal}
-                  {cartItemCount > 0 ? ` (${cartItemCount})` : ''} —{' '}
-                  {formatPriceWhole(cartTotal, locale)}
+                  <ShoppingCart
+                    className="size-[18px] shrink-0"
+                    strokeWidth={2}
+                    aria-hidden="true"
+                  />
+                  <span>
+                    {t.header.cartTotal}
+                    {cartItemCount > 0 ? ` (${cartItemCount})` : ''} —{' '}
+                    {formatPriceWhole(cartTotal, locale)}
+                  </span>
                 </Link>
               </li>
             </ul>
+
+            <div className="pb-mobile-sidebar-meta">
+              <a
+                href={`tel:${t.header.phone.replace(/\s/g, '')}`}
+                className="pb-mobile-sidebar-meta__hotline"
+              >
+                <span className="pb-mobile-sidebar-meta__icon">
+                  <i className="icon-2" aria-hidden="true" />
+                </span>
+                <span className="pb-mobile-sidebar-meta__hotline-text">
+                  <span className="pb-mobile-sidebar-meta__hotline-label">
+                    {t.header.hotline}
+                  </span>
+                  <span className="pb-mobile-sidebar-meta__hotline-number">
+                    {t.header.phone}
+                  </span>
+                </span>
+              </a>
+
+              <span
+                className="pb-mobile-sidebar-meta__divider"
+                aria-hidden="true"
+              />
+
+              <div className="pb-mobile-sidebar-meta__locale">
+                <LocaleSwitcher />
+              </div>
+            </div>
           </nav>
         </div>
       </div>

@@ -5,6 +5,11 @@
     "loading": "Loading...",
     "error": "Something went wrong. Please try again."
   },
+  "notFoundPage": {
+    "title": "Page not found",
+    "description": "The page you are looking for does not exist or has been moved.",
+    "backHome": "Back to Home"
+  },
   "header": {
     "products": "Shop",
     "cart": "Cart",
@@ -66,10 +71,14 @@
     "empty": "No products available yet.",
     "filteredEmpty": "No products match your filters.",
     "filtersTitle": "Filters",
+    "showResults": "Show products",
     "removeFilter": "Remove filter",
+    "searchLabel": "Search",
     "sortTitle": "Sort by",
     "topSellers": "Top Sellers",
     "mostViewed": "Most Viewed",
+    "priceHigh": "Highest Price",
+    "priceLow": "Lowest Price",
     "ageTitle": "Age",
     "allAges": "All ages",
     "age0to1": "0–1 years",
@@ -81,7 +90,8 @@
     "priceTitle": "Price",
     "priceFrom": "From",
     "priceTo": "To",
-    "priceReset": "Reset"
+    "priceReset": "Reset",
+    "newest": "Newest"
   },
   "category": {
     "title": "Categories",
@@ -90,7 +100,8 @@
   "shopItem": {
     "views": "views",
     "sale": "Sale",
-    "outOfStock": "Out of stock"
+    "freeBattery": "Free Battery",
+    "outOfStock": "Out of stock - coming soon"
   },
   "shopItemDetail": {
     "backToShop": "Back to shop",
@@ -100,16 +111,33 @@
     "views": "Total views",
     "quantity": "Quantity",
     "sku": "SKU",
+    "freeBatteries": "Free Batteries",
+    "freeBatteriesIncluded": "Included",
+    "category": "Category",
+    "availability": "Availability",
+    "availableNow": "In Stock",
+    "notInStock": "Out of stock - coming soon",
     "categories": "Categories",
     "inStock": "{stock} in stock",
+    "quantityUnavailable": "This quantity is not available.",
     "quantityWarning": "Only {stock} items available in stock. Please reduce the quantity.",
     "outOfStock": "This product is currently out of stock.",
     "addToCart": "Add to Cart",
     "buyNow": "Buy Now",
+    "share": "Share",
+    "shareCopied": "Link copied to clipboard",
+    "shareFailed": "Could not share this product",
     "addedToCart": "Added to cart",
     "mediaImage": "Product image {index}",
     "mediaVideo": "Product video {index}",
-    "relatedItems": "Related Products",
+    "relatedSection": {
+      "title": "Related",
+      "highlight": "Products"
+    },
+    "youMayAlsoLikeSection": {
+      "title": "You May Also",
+      "highlight": "Like"
+    },
     "notFound": "Product not found",
     "notFoundDescription": "The product you are looking for does not exist or has been removed."
   },
@@ -121,10 +149,19 @@
     "clearCart": "Clear Cart",
     "clearConfirm": "Are you sure you want to clear your cart?",
     "remove": "Remove",
+    "removeConfirmTitle": "Remove this item?",
+    "removeConfirmMessage": "Are you sure you want to remove \"{title}\" from your cart?",
+    "removeConfirm": "Remove",
+    "removeCancel": "Cancel",
     "stockWarning": "Only {stock} available — you selected {quantity}.",
     "subtotal": "Subtotal",
     "total": "Total",
     "items": "items",
+    "tableProduct": "Product",
+    "tableDiscount": "Discount",
+    "tablePrice": "Price",
+    "tableQuantity": "Quantity",
+    "tableTotal": "Total",
     "validation": {
       "checking": "Checking item availability and prices...",
       "failed": "We couldn't verify your cart right now. Please try again in a moment.",
@@ -134,7 +171,8 @@
       "unavailable": "This product is no longer available.",
       "insufficientStock": "Only {stock} left in stock — you have {quantity} in your cart.",
       "priceChanged": "Price changed from {oldPrice} to {newPrice}. Remove this item and add it again."
-    }
+    },
+    "topSellers": "You May Also Like"
   },
   "checkout": {
     "title": "Checkout",
@@ -160,6 +198,7 @@
       "extraNotesPlaceholder": "Any special requests or delivery instructions..."
     },
     "orderSummary": "Order Summary",
+    "orderDetails": "Order Details",
     "subtotal": "Subtotal",
     "discount": "Discount",
     "promoApply": "Apply",
@@ -168,11 +207,18 @@
     "promoInvalid": "Invalid promo code",
     "shipping": "Shipping",
     "giftWrapping": "Premium Packaging",
-    "giftWrappingNote": "Note: Products come with PlanBlue's special gift wrapping.",
+    "perksCongratulations": "Congratulations!",
+    "perksMessagePrefix": "You have got",
+    "perksMessageJoin": "and",
+    "perksMessageSuffix": "with your order.",
+    "perksGiftHighlight": "free special gift wrapping",
+    "perksBatteriesHighlight": "free batteries",
     "giftWrappingDesc": "Add premium packaging for",
     "total": "Total",
     "items": "items",
     "placeOrder": "Place Order",
+    "checkout": "Checkout",
+    "confirming": "Placing order...",
     "placing": "Placing order...",
     "emptyCart": "Your cart is empty. Add some products before checkout.",
     "backToCart": "Back to Cart",
@@ -185,9 +231,11 @@
       "addressRequired": "Delivery address is required"
     },
     "success": {
-      "title": "Order Placed Successfully!",
-      "message": "Thank you for your order. You will receive a confirmation email shortly.",
-      "orderId": "Order ID",
+      "eyebrow": "Order confirmed",
+      "title": "Thank you",
+      "subtitle": "Your PlanBlue order is on its way.",
+      "message": "We've received your order and will send a confirmation email shortly.",
+      "orderId": "Order Number",
       "backToHome": "Back to Home"
     },
     "error": {
@@ -201,6 +249,15 @@
       "blockedMessage": "Some cart items are unavailable, out of stock, or have price changes. Go back to your cart to fix them.",
       "submitRechecking": "Rechecking your cart before placing the order...",
       "submitRecheckFailed": "We rechecked your cart and found issues. Review the messages below, then return to your cart to fix them."
+    },
+    "confirmModal": {
+      "title": "Review Your Order",
+      "subtitle": "Please confirm that all details below are correct before placing your order.",
+      "customerDetails": "Customer Details",
+      "deliveryDetails": "Delivery Details",
+      "orderItems": "Order Items",
+      "none": "—",
+      "close": "Back to Edit"
     }
   },
   "affiliates": {
@@ -211,7 +268,45 @@
     "allAffiliates": "All Affiliates",
     "pendingCommission": "Pending commission",
     "empty": "No affiliates yet. Check back soon!",
-    "moreComingSoon": "More affiliates joining soon — stay tuned!"
+    "moreComingSoon": "More affiliates joining soon — stay tuned!",
+    "gate": {
+      "title": "Protected Area",
+      "subtitle": "Enter the password to view the affiliate leaderboard.",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Enter password",
+      "submit": "Enter",
+      "checking": "Checking...",
+      "invalidPassword": "Incorrect password. Please try again."
+    }
+  },
+  "report": {
+    "badge": "PlanBlue Reports",
+    "title": "Generate Report",
+    "subtitle": "Select a from and to date, then generate your report.",
+    "from": "From",
+    "to": "To",
+    "selectFrom": "Select start date",
+    "selectTo": "Select end date",
+    "rangeSummary": "From {from} to {to}",
+    "generateReport": "Generate Report",
+    "sending": "Sending report...",
+    "emailSent": "Report sent successfully to the admin email.",
+    "emailError": "Failed to send the report. Please try again.",
+    "gate": {
+      "title": "Protected Area",
+      "subtitle": "Enter the password to access the report page.",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Enter password",
+      "submit": "Enter",
+      "checking": "Checking...",
+      "invalidPassword": "Incorrect password. Please try again."
+    },
+    "calendar": {
+      "previousMonth": "Previous month",
+      "nextMonth": "Next month",
+      "selectingFrom": "Select the start date on the calendar",
+      "selectingTo": "Select the end date on the calendar"
+    }
   },
   "footer": {
     "about": "Quality toys for every age, delivered across Egypt with care.",

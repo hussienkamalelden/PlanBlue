@@ -13,7 +13,7 @@ import { useSliderDirection } from '@/lib/hooks/use-slider-direction';
 import type { Locale } from '@/lib/i18n/config';
 import { useSliderSwiperProps } from '@/lib/shop/slider-drag-guard';
 import { buildInfiniteSliderItems } from '@/lib/shop/slider-loop';
-import { SLIDER_TOUCH_OPTIONS } from '@/lib/shop/slider-touch';
+import { SLIDER_AUTOPLAY_OPTIONS, SLIDER_TOUCH_OPTIONS } from '@/lib/shop/slider-touch';
 import type { StrapiCategory } from '@/lib/types/strapi';
 import { useLocaleStore } from '@/stores/locale-store';
 
@@ -40,9 +40,10 @@ function PopularCategoriesCarouselInner({
 
   const breakpoints = useMemo(
     () => ({
-      0: { slidesPerView: 2, spaceBetween: 16 },
-      640: { slidesPerView: 3, spaceBetween: 20 },
-      1024: { slidesPerView: 4, spaceBetween: 24 },
+      0: { slidesPerView: 2, spaceBetween: 12 },
+      480: { slidesPerView: 2.25, spaceBetween: 14 },
+      640: { slidesPerView: 3, spaceBetween: 18 },
+      1024: { slidesPerView: 4, spaceBetween: 22 },
       1280: { slidesPerView: 5, spaceBetween: 28 },
     }),
     [],
@@ -55,11 +56,7 @@ function PopularCategoriesCarouselInner({
       modules={[Autoplay]}
       {...SLIDER_TOUCH_OPTIONS}
       {...sliderDragProps}
-      autoplay={{
-        delay: 3000,
-        disableOnInteraction: false,
-        pauseOnMouseEnter: true,
-      }}
+      autoplay={SLIDER_AUTOPLAY_OPTIONS}
       loop
       loopAdditionalSlides={MAX_SLIDES_PER_VIEW}
       watchSlidesProgress
@@ -125,7 +122,7 @@ function CategoryCard({
               </div>
             )}
           </figure>
-          <h4 className="text-lg font-bold leading-6 text-neutral-900 transition-colors group-hover:text-[#4389F7] md:text-xl md:leading-6">
+          <h4 className="pb-category-block__title">
             {title}
           </h4>
         </SliderLink>

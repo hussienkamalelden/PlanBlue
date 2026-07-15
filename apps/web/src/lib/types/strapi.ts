@@ -21,10 +21,25 @@ export type StrapiExtra = {
   cost: number;
 };
 
+export type StrapiMediaFormat = {
+  url: string;
+  width?: number;
+  height?: number;
+};
+
+export type StrapiMediaFormats = {
+  thumbnail?: StrapiMediaFormat;
+  small?: StrapiMediaFormat;
+  medium?: StrapiMediaFormat;
+  large?: StrapiMediaFormat;
+};
+
 export type StrapiMedia = {
   url: string;
   name: string;
   mime: string;
+  previewUrl?: string | null;
+  formats?: StrapiMediaFormats | null;
 };
 
 export type StrapiCategory = {
@@ -55,6 +70,9 @@ export type StrapiShopItem = {
   total_sold: number;
   all_ages: boolean;
   age?: number;
+  need_batteries: boolean;
+  batteries_size?: 'Size AAA' | 'Size AA' | 'Size C' | 'Size D' | 'Others' | null;
+  batteries_quantity?: string | null;
   categories?: StrapiCategory[];
   media?: StrapiMedia[];
 };

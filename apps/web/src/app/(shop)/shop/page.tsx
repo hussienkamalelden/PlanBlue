@@ -1,3 +1,4 @@
+import { ShopPageBanner } from '@/components/shop/shop-page-banner';
 import { ShopView } from '@/components/shop/shop-view';
 import { fetchCategories, fetchShopItems } from '@/lib/api/strapi.server';
 import type { Metadata } from 'next';
@@ -9,26 +10,41 @@ export const metadata: Metadata = {
 export default async function ShopPage({
   searchParams,
 }: {
-  searchParams: Promise<{ category?: string }>;
+  searchParams: Promise<{ category?: string; search?: string }>;
 }) {
-  const { category } = await searchParams;
-  const [categories, items] = await Promise.all([
+  const { category, search } = await searchParams;
+  const trimmedSearch = search?.trim() || undefined;
+
+  const [categories, shopResult, allItemsResult] = await Promise.all([
     fetchCategories(),
-    fetchShopItems(),
+    fetchShopItems({
+      pageSize: 12,
+      search: trimmedSearch,
+      categoryIds: category ? [category] : undefined,
+    }),
+    fetchShopItems({ pageSize: 100 }),
   ]);
 
-  const initialCategoryId =
-    category && categories.some((item) => item.documentId === category)
-      ? category
-      : null;
+  const initialCategoryIds = category && categories.some((item) => item.documentId === category)
+    ? [category]
+    : [];
+
+  const viewKey = `${trimmedSearch ?? ''}_${category ?? ''}`;
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-10">
-      <ShopView
-        categories={categories}
-        items={items}
-        initialCategoryId={initialCategoryId}
-      />
-    </main>
+    <>
+      <ShopPageBanner />
+      <main className="relative pb-large-container py-10">
+        <div className="pb-shop-page" />
+        <ShopView
+          key={viewKey}
+          categories={categories}
+          items={shopResult.data}
+          allItems={allItemsResult.data}
+          initialCategoryIds={initialCategoryIds}
+          initialSearch={trimmedSearch ?? ''}
+        />
+      </main>
+    </>
   );
 }

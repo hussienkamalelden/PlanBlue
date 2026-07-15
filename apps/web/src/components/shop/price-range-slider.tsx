@@ -1,6 +1,6 @@
 'use client';
 
-import { formatPrice } from '@/lib/api/strapi';
+import { formatPriceWhole } from '@/lib/api/strapi';
 import type { Locale } from '@/lib/i18n/config';
 import { isPriceFilterActive } from '@/lib/shop/filters';
 
@@ -18,21 +18,8 @@ type PriceRangeSliderProps = {
 };
 
 function toPercent(value: number, min: number, max: number): number {
-  if (max <= min) {
-    return 0;
-  }
-
+  if (max <= min) return 0;
   return ((value - min) / (max - min)) * 100;
-}
-
-function getPriceSliderStep(boundMin: number, boundMax: number): number | 'any' {
-  const range = boundMax - boundMin;
-  if (range <= 0) {
-    return 1;
-  }
-
-  // Allow exact catalog min/max regardless of decimal prices.
-  return 'any';
 }
 
 function snapToRangeEdge(
@@ -42,20 +29,11 @@ function snapToRangeEdge(
   edge: 'min' | 'max',
 ): number {
   const range = boundMax - boundMin;
-  if (range <= 0) {
-    return value;
-  }
+  if (range <= 0) return value;
 
   const pct = (value - boundMin) / range;
-
-  if (edge === 'max' && pct >= 0.985) {
-    return boundMax;
-  }
-
-  if (edge === 'min' && pct <= 0.015) {
-    return boundMin;
-  }
-
+  if (edge === 'max' && pct >= 0.985) return boundMax;
+  if (edge === 'min' && pct <= 0.015) return boundMin;
   return value;
 }
 
@@ -74,7 +52,6 @@ export function PriceRangeSlider({
   const { min: boundMin, max: boundMax } = bounds;
   const isSinglePrice = boundMax <= boundMin;
   const isActive = isPriceFilterActive(min, max, bounds);
-  const step = getPriceSliderStep(boundMin, boundMax);
 
   const left = toPercent(min, boundMin, boundMax);
   const right = toPercent(max, boundMin, boundMax);
@@ -82,76 +59,75 @@ export function PriceRangeSlider({
   if (isSinglePrice) {
     return (
       <p className="px-1 text-sm font-medium text-neutral-700">
-        {formatPrice(boundMin, locale)}
+        {formatPriceWhole(boundMin, locale)}
       </p>
     );
   }
 
   return (
-    <div className="px-1">
-      {/* Keep slider + values LTR so thumbs match the fill bar in Arabic layout */}
-      <div dir="ltr" className="price-range-ltr">
-        <div className="mb-3 flex items-center justify-between gap-2 text-sm font-medium text-neutral-800">
-          <span>{formatPrice(min, locale)}</span>
-          <span className="text-neutral-300">–</span>
-          <span>{formatPrice(max, locale)}</span>
-        </div>
+    <div className="pb-price-range-slider">
+      {/* Slider track (always LTR for correct thumb behavior) */}
+      <div dir="ltr" className="price-range-ltr pb-price-range-slider__track">
+        <div className="pb-price-range-slider__rail" />
+        <div
+          className="pb-price-range-slider__fill"
+          style={{ left: `${left}%`, width: `${Math.max(right - left, 0)}%` }}
+        />
+        <input
+          type="range"
+          dir="ltr"
+          min={boundMin}
+          max={boundMax}
+          step="any"
+          value={min}
+          aria-label={fromLabel}
+          onChange={(e) => {
+            const raw = Number(e.target.value);
+            const snapped = snapToRangeEdge(raw, boundMin, boundMax, 'min');
+            onMinChange(Math.min(snapped, max));
+          }}
+          className="price-range-thumb absolute inset-0 z-20 w-full cursor-pointer appearance-none bg-transparent"
+        />
+        <input
+          type="range"
+          dir="ltr"
+          min={boundMin}
+          max={boundMax}
+          step="any"
+          value={max}
+          aria-label={toLabel}
+          onChange={(e) => {
+            const raw = Number(e.target.value);
+            const snapped = snapToRangeEdge(raw, boundMin, boundMax, 'max');
+            onMaxChange(Math.max(snapped, min));
+          }}
+          className="price-range-thumb absolute inset-0 z-30 w-full cursor-pointer appearance-none bg-transparent"
+        />
+      </div>
 
-        <div className="relative mx-1 h-6">
-          <div className="absolute top-1/2 h-2 w-full -translate-y-1/2 rounded-full bg-neutral-200" />
-          <div
-            className="absolute top-1/2 h-2 -translate-y-1/2 rounded-full bg-brand-primary"
-            style={{
-              left: `${left}%`,
-              width: `${Math.max(right - left, 0)}%`,
-            }}
-          />
+      {/* Price values + labels (respects document direction) */}
+      <div className="pb-price-range-slider__values">
+        <span className="pb-price-range-slider__value">
+          <span className="pb-price-range-slider__label">{fromLabel}</span>
+          <span className="pb-price-range-slider__amount">{formatPriceWhole(Math.round(min), locale)}</span>
+        </span>
+        <span className="pb-price-range-slider__separator">–</span>
+        <span className="pb-price-range-slider__value">
+          <span className="pb-price-range-slider__label">{toLabel}</span>
+          <span className="pb-price-range-slider__amount">{formatPriceWhole(Math.round(max), locale)}</span>
+        </span>
+      </div>
 
-          <input
-            type="range"
-            min={boundMin}
-            max={max}
-            step={step}
-            value={min}
-            aria-label={fromLabel}
-            onChange={(event) => {
-              const raw = Number(event.target.value);
-              const next = snapToRangeEdge(raw, boundMin, boundMax, 'min');
-              onMinChange(Math.min(next, max));
-            }}
-            className="price-range-thumb absolute inset-0 z-20 w-full cursor-pointer appearance-none bg-transparent"
-          />
-          <input
-            type="range"
-            min={min}
-            max={boundMax}
-            step={step}
-            value={max}
-            aria-label={toLabel}
-            onChange={(event) => {
-              const raw = Number(event.target.value);
-              const next = snapToRangeEdge(raw, boundMin, boundMax, 'max');
-              onMaxChange(Math.max(next, min));
-            }}
-            className="price-range-thumb absolute inset-0 z-30 w-full cursor-pointer appearance-none bg-transparent"
-          />
-        </div>
-
-        <div className="mt-2 flex justify-between text-[11px] text-neutral-400">
-          <span>{fromLabel}</span>
-          <span>{toLabel}</span>
-        </div>
-
-        <div className="mt-2 flex justify-end">
-          <button
-            type="button"
-            onClick={onReset}
-            disabled={!isActive}
-            className="text-xs font-medium text-brand-primary transition-opacity hover:underline disabled:cursor-not-allowed disabled:text-neutral-300 disabled:no-underline"
-          >
-            {resetLabel}
-          </button>
-        </div>
+      {/* Reset link */}
+      <div className="pb-price-range-slider__reset">
+        <button
+          type="button"
+          onClick={onReset}
+          disabled={!isActive}
+          className="pb-price-range-slider__reset-btn"
+        >
+          {resetLabel}
+        </button>
       </div>
     </div>
   );

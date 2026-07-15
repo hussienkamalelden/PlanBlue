@@ -10,38 +10,50 @@ import { ShopProductCard } from '@/components/home/shop-product-card';
 import { useSliderDirection } from '@/lib/hooks/use-slider-direction';
 import { useSliderSwiperProps } from '@/lib/shop/slider-drag-guard';
 import { buildInfiniteSliderItems } from '@/lib/shop/slider-loop';
-import { SLIDER_TOUCH_OPTIONS } from '@/lib/shop/slider-touch';
+import { SLIDER_AUTOPLAY_OPTIONS, SLIDER_TOUCH_OPTIONS } from '@/lib/shop/slider-touch';
 import type { StrapiShopItem } from '@/lib/types/strapi';
 import { useLocaleStore } from '@/stores/locale-store';
 
 import 'swiper/css';
 import 'swiper/css/navigation';
 
-const MAX_SLIDES_PER_VIEW = 4;
+const MAX_SLIDES_PER_VIEW = 6;
 const MIN_LOOP_SLIDES = MAX_SLIDES_PER_VIEW * 3;
 
 type PopularShopCarouselProps = {
   items: StrapiShopItem[];
+  disableLoop?: boolean;
 };
 
-function PopularShopCarouselInner({ items }: PopularShopCarouselProps) {
+function PopularShopCarouselInner({ items, disableLoop = false }: PopularShopCarouselProps) {
   const locale = useLocaleStore((state) => state.locale);
   const direction = useSliderDirection();
   const prevRef = useRef<HTMLButtonElement>(null);
   const nextRef = useRef<HTMLButtonElement>(null);
   const sliderDragProps = useSliderSwiperProps();
 
-  const loopSlides = useMemo(
-    () => buildInfiniteSliderItems(items, MIN_LOOP_SLIDES),
-    [items],
-  );
+  const shouldLoop = !disableLoop && items.length >= MAX_SLIDES_PER_VIEW;
+
+  const slides = useMemo(() => {
+    if (shouldLoop) {
+      return buildInfiniteSliderItems(items, MIN_LOOP_SLIDES);
+    }
+    return items.map((item, index) => ({
+      data: item,
+      slideKey: `${index}`,
+      sourceIndex: index,
+    }));
+  }, [items, shouldLoop]);
 
   const breakpoints = useMemo(
     () => ({
-      0: { slidesPerView: 1, spaceBetween: 0 },
-      640: { slidesPerView: 2, spaceBetween: 0 },
-      1024: { slidesPerView: 3, spaceBetween: 0 },
-      1280: { slidesPerView: MAX_SLIDES_PER_VIEW, spaceBetween: 0 },
+      0: { slidesPerView: 1.45, spaceBetween: 10 },
+      480: { slidesPerView: 1.7, spaceBetween: 12 },
+      640: { slidesPerView: 2.15, spaceBetween: 12 },
+      1024: { slidesPerView: 3, spaceBetween: 14 },
+      1280: { slidesPerView: 4, spaceBetween: 14 },
+      1440: { slidesPerView: 5, spaceBetween: 14 },
+      1920: { slidesPerView: MAX_SLIDES_PER_VIEW, spaceBetween: 14 },
     }),
     [],
   );
@@ -52,24 +64,26 @@ function PopularShopCarouselInner({ items }: PopularShopCarouselProps) {
 
   return (
     <>
-      <div className="popular-shop-owl-nav pointer-events-none absolute inset-x-0 top-1/2 z-10 hidden -translate-y-1/2 min-[1201px]:block">
-        <button
-          ref={prevRef}
-          type="button"
-          className="popular-shop-nav-btn popular-shop-nav-prev pointer-events-auto"
-          aria-label="Previous slide"
-        >
-          <span className="icon-21" aria-hidden="true" />
-        </button>
-        <button
-          ref={nextRef}
-          type="button"
-          className="popular-shop-nav-btn popular-shop-nav-next pointer-events-auto"
-          aria-label="Next slide"
-        >
-          <span className="icon-20" aria-hidden="true" />
-        </button>
-      </div>
+      {shouldLoop && (
+        <div className="popular-shop-owl-nav pointer-events-none absolute inset-x-0 top-1/2 z-10 hidden -translate-y-1/2 min-[1201px]:block">
+          <button
+            ref={prevRef}
+            type="button"
+            className="popular-shop-nav-btn popular-shop-nav-prev pointer-events-auto"
+            aria-label="Previous slide"
+          >
+            <span className="icon-21" aria-hidden="true" />
+          </button>
+          <button
+            ref={nextRef}
+            type="button"
+            className="popular-shop-nav-btn popular-shop-nav-next pointer-events-auto"
+            aria-label="Next slide"
+          >
+            <span className="icon-20" aria-hidden="true" />
+          </button>
+        </div>
+      )}
 
       <Swiper
         key={`popular-shop-${direction}`}
@@ -77,20 +91,18 @@ function PopularShopCarouselInner({ items }: PopularShopCarouselProps) {
         modules={[Navigation, Autoplay]}
         {...SLIDER_TOUCH_OPTIONS}
         {...sliderDragProps}
-        autoplay={{
-          delay: 3000,
-          disableOnInteraction: false,
-          pauseOnMouseEnter: true,
-        }}
-        loop
-        loopAdditionalSlides={MAX_SLIDES_PER_VIEW}
+        autoplay={SLIDER_AUTOPLAY_OPTIONS}
+        loop={shouldLoop}
+        rewind={!shouldLoop}
+        {...(shouldLoop ? { loopAdditionalSlides: MAX_SLIDES_PER_VIEW } : {})}
         watchSlidesProgress
-        navigation={{
+        navigation={shouldLoop ? {
           prevEl: prevRef.current,
           nextEl: nextRef.current,
-        }}
+        } : false}
         onBeforeInit={(swiper: SwiperType) => {
           if (
+            !shouldLoop ||
             !swiper.params.navigation ||
             typeof swiper.params.navigation === 'boolean'
           ) {
@@ -101,14 +113,16 @@ function PopularShopCarouselInner({ items }: PopularShopCarouselProps) {
           swiper.params.navigation.nextEl = nextRef.current;
         }}
         onInit={(swiper: SwiperType) => {
-          swiper.navigation.init();
-          swiper.navigation.update();
+          if (shouldLoop) {
+            swiper.navigation.init();
+            swiper.navigation.update();
+          }
         }}
         breakpoints={breakpoints}
         className="popular-shop-swiper"
       >
-        {loopSlides.map(({ data, slideKey }) => (
-          <SwiperSlide key={slideKey} className="!h-auto">
+        {slides.map(({ data, slideKey }) => (
+          <SwiperSlide key={slideKey} className="!h-auto pb-4 md:pb-6">
             <ShopProductCard item={data} locale={locale} />
           </SwiperSlide>
         ))}
@@ -117,14 +131,14 @@ function PopularShopCarouselInner({ items }: PopularShopCarouselProps) {
   );
 }
 
-export function PopularShopCarousel({ items }: PopularShopCarouselProps) {
+export function PopularShopCarousel({ items, disableLoop = false }: PopularShopCarouselProps) {
   if (items.length === 0) {
     return null;
   }
 
   return (
     <SliderCarouselFrame className="popular-shop-nav-wrap relative">
-      <PopularShopCarouselInner items={items} />
+      <PopularShopCarouselInner items={items} disableLoop={disableLoop} />
     </SliderCarouselFrame>
   );
 }
