@@ -175,22 +175,12 @@
   }
 
   @media (max-width: 767px) {
-    .popular-shop-swiper .pb-product-card__footer {
-      padding-inline: 12px;
-    }
-
-    .popular-shop-swiper .pb-product-card__price-current {
-      font-size: 0.9375rem;
-    }
-
-    .popular-shop-swiper h3 {
+    .popular-shop-swiper .pb-product-card__title {
       display: -webkit-box;
       overflow: hidden;
       -webkit-box-orient: vertical;
       -webkit-line-clamp: 2;
       white-space: normal;
-      font-size: 0.9375rem;
-      line-height: 1.35;
     }
   }
 
