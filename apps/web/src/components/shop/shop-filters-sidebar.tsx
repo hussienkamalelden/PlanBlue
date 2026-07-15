@@ -34,6 +34,8 @@ type ShopFiltersSidebarProps = {
   onPriceMinChange: (value: number) => void;
   onPriceMaxChange: (value: number) => void;
   onPriceReset: () => void;
+  variant?: 'sidebar' | 'drawer';
+  className?: string;
 };
 
 export function ShopFiltersSidebar({
@@ -51,6 +53,8 @@ export function ShopFiltersSidebar({
   onPriceMinChange,
   onPriceMaxChange,
   onPriceReset,
+  variant = 'sidebar',
+  className,
 }: ShopFiltersSidebarProps) {
   const t = useTranslations();
   const locale = useLocaleStore((state) => state.locale);
@@ -76,7 +80,11 @@ export function ShopFiltersSidebar({
   return (
     <aside
       aria-label={t.shop.filtersTitle}
-      className="pb-shop-sidebar lg:sticky lg:top-6 lg:self-start"
+      className={`pb-shop-sidebar${
+        variant === 'drawer' ? ' pb-shop-sidebar--drawer' : ''
+      }${
+        variant === 'sidebar' ? ' lg:sticky lg:top-6 lg:self-start' : ''
+      }${className ? ` ${className}` : ''}`}
     >
       <div className="pb-shop-sidebar-widget">
         <section className="pb-shop-sidebar-section pb-shop-sidebar-section--search">
