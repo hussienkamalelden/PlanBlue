@@ -623,6 +623,71 @@ html[dir='rtl'] .planblue-site {
   border-bottom: 1px solid #f0f0f0;
 }
 
+.pb-mobile-sidebar-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 4px;
+  padding-top: 16px;
+  border-top: 1px solid #f5f5f5;
+}
+
+.pb-mobile-sidebar-meta__hotline {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  text-decoration: none;
+}
+
+.pb-mobile-sidebar-meta__icon {
+  flex-shrink: 0;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: var(--pb-theme);
+}
+
+.pb-mobile-sidebar-meta__hotline-text {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1.25;
+}
+
+.pb-mobile-sidebar-meta__hotline-label {
+  overflow: hidden;
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pb-mobile-sidebar-meta__hotline-number {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--pb-title);
+  white-space: nowrap;
+}
+
+.pb-mobile-sidebar-meta__hotline:hover .pb-mobile-sidebar-meta__hotline-number {
+  color: var(--pb-theme);
+}
+
+.pb-mobile-sidebar-meta__divider {
+  flex-shrink: 0;
+  align-self: stretch;
+  width: 1px;
+  min-height: 44px;
+  background: #e2e8f0;
+}
+
+.pb-mobile-sidebar-meta__locale {
+  flex-shrink: 0;
+}
+
 /* Banner / Hero */
 .pb-banner-section {
   position: relative;
