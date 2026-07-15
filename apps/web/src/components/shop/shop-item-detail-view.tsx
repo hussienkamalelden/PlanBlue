@@ -86,14 +86,17 @@ export function ShopItemDetailView({
 
   async function handleShare() {
     const url = `${window.location.origin}/shop/${item.slug}`;
+    const displayPrice = salePrice ?? basePrice;
+    const priceLabel = formatPrice(displayPrice, locale);
+    const shareText = `${title} — ${priceLabel}`;
 
     try {
       if (typeof navigator.share === 'function') {
-        await navigator.share({ title, url });
+        await navigator.share({ title: shareText, text: shareText, url });
         return;
       }
 
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(`${shareText}\n${url}`);
       setShareFeedback(t.shopItemDetail.shareCopied);
       window.setTimeout(() => setShareFeedback(null), 2500);
     } catch (error) {
@@ -108,7 +111,7 @@ export function ShopItemDetailView({
 
   return (
     <div className="pb-product-details">
-      <div className="pb-product-details__content bg-white border border-dashed border-neutral-300 rounded-lg p-8 my-10">
+      <div className="pb-product-details__content">
         <div className="pb-product-details__gallery">
           <ShopItemMediaGallery media={item.media ?? []} alt={title} />
         </div>

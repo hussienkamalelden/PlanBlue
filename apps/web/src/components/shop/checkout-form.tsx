@@ -263,7 +263,7 @@ export function CheckoutForm({ shippingOptions }: CheckoutFormProps) {
     return (
       <ShopPageShell
         bannerSrc="/images/checkout/banner.png"
-        mainClassName="relative pb-medium-container flex min-h-[50vh] flex-col items-center justify-center overflow-hidden py-10"
+        mainClassName="relative pb-medium-container pb-checkout-success-page flex min-h-[50vh] flex-col items-center justify-center overflow-hidden py-10"
       >
         <CheckoutOrderSuccess orderId={orderId} />
       </ShopPageShell>
@@ -276,7 +276,10 @@ export function CheckoutForm({ shippingOptions }: CheckoutFormProps) {
   const isCheckoutDisabled = isBusy || (isCheckingCart && !submitRecheck);
 
   return (
-    <ShopPageShell bannerSrc="/images/checkout/banner.png">
+    <ShopPageShell
+      bannerSrc="/images/checkout/banner.png"
+      mainClassName="relative pb-medium-container pb-checkout-page-main py-10"
+    >
       {isBusy && (
         <CheckoutFloatingSpinner label={t.checkout.cartValidation.checking} />
       )}

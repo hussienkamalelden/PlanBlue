@@ -12,11 +12,18 @@ import { STRAPI_URL } from './strapi';
 
 async function strapiFetch<T>(
   path: string,
-  searchParams: Record<string, string> = {},
+  searchParams: Record<string, string | string[]> = {},
 ): Promise<T> {
   const url = new URL(`${STRAPI_URL}/api${path}`);
 
   for (const [key, value] of Object.entries(searchParams)) {
+    if (Array.isArray(value)) {
+      for (const entry of value) {
+        url.searchParams.append(key, entry);
+      }
+      continue;
+    }
+
     url.searchParams.set(key, value);
   }
 
@@ -175,10 +182,39 @@ export async function fetchShopItems(options?: {
 
   const trimmedSearch = search?.trim();
   if (trimmedSearch) {
-    params[`filters[$and][${andIndex}][$or][0][title][$containsi]`] = trimmedSearch;
-    params[`filters[$and][${andIndex}][$or][1][title_ar][$containsi]`] = trimmedSearch;
-    params[`filters[$and][${andIndex}][$or][2][description][$containsi]`] = trimmedSearch;
-    params[`filters[$and][${andIndex}][$or][3][description_ar][$containsi]`] = trimmedSearch;
+    const searchParams: Record<string, string | string[]> = {
+      q: trimmedSearch,
+      page: String(page),
+      pageSize: String(pageSize),
+      sort,
+    };
+
+    if (categoryIds && categoryIds.length > 0) {
+      searchParams.category = categoryIds;
+    }
+
+    if (ageFilters && ageFilters.length > 0) {
+      searchParams.age = ageFilters;
+    }
+
+    if (priceMin !== undefined && priceMin > 0) {
+      searchParams.priceMin = String(priceMin);
+    }
+
+    if (priceMax !== undefined && priceMax > 0) {
+      searchParams.priceMax = String(priceMax);
+    }
+
+    const json = await strapiFetch<StrapiListResponse<StrapiShopItem>>(
+      '/product-search',
+      searchParams,
+    );
+
+    return {
+      data: json.data,
+      total: json.meta.pagination.total,
+      pageCount: json.meta.pagination.pageCount,
+    };
   }
 
   const json = await strapiFetch<StrapiListResponse<StrapiShopItem>>(

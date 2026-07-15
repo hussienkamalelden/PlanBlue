@@ -11,7 +11,7 @@ export default async function AffiliatesPage() {
   const affiliates = await fetchAffiliates();
 
   return (
-    <main className="pb-large-container py-6 sm:py-10">
+    <main className="pb-medium-container pb-affiliate-page">
       <AffiliatePasswordGate>
         <AffiliateLeaderboard affiliates={affiliates} />
       </AffiliatePasswordGate>

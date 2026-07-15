@@ -71,7 +71,7 @@ export function ProductCardCartControl({ item }: ProductCardCartControlProps) {
         onClick={handleAdd}
         aria-label={t.shopItemDetail.addToCart}
       >
-        <ShoppingCart className="h-4 w-4" aria-hidden="true" />
+        <ShoppingCart className="pb-product-card-cart__icon" aria-hidden="true" />
       </button>
     );
   }

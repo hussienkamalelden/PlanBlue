@@ -13,6 +13,7 @@ import { NavigationLoader } from '@/components/ui/navigation-loader';
 import { RouteReadyNotifier } from '@/components/ui/route-ready-notifier';
 import { getLocaleDirection } from '@/lib/i18n/config';
 import { getLocale } from '@/lib/i18n/get-locale';
+import { buildRootMetadata, buildWebsiteJsonLd } from '@/lib/seo/metadata';
 
 import type { Metadata } from 'next';
 import './globals.css';
@@ -30,13 +31,10 @@ const arabicFont = Cairo({
   display: 'swap',
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: 'PlanBlue',
-    template: '%s | PlanBlue',
-  },
-  description: 'Online toy store powered by PlanBlue',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  return buildRootMetadata(locale);
+}
 
 export default async function RootLayout({
   children,
@@ -44,6 +42,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const locale = await getLocale();
+  const websiteJsonLd = buildWebsiteJsonLd(locale);
 
   return (
     <html lang={locale} dir={getLocaleDirection(locale)} className="planblue-loading">
@@ -51,6 +50,10 @@ export default async function RootLayout({
         suppressHydrationWarning
         className={`${nunito.variable} ${arabicFont.variable} planblue-site min-h-screen bg-white text-neutral-900 antialiased`}
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
         <InitialPageLoader />
         <LocaleProvider>
           <NavigationLoader />

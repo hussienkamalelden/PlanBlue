@@ -71,6 +71,7 @@
     "empty": "No products available yet.",
     "filteredEmpty": "No products match your filters.",
     "filtersTitle": "Filters",
+    "showResults": "Show products",
     "removeFilter": "Remove filter",
     "searchLabel": "Search",
     "sortTitle": "Sort by",
@@ -288,6 +289,9 @@
     "selectTo": "Select end date",
     "rangeSummary": "From {from} to {to}",
     "generateReport": "Generate Report",
+    "sending": "Sending report...",
+    "emailSent": "Report sent successfully to the admin email.",
+    "emailError": "Failed to send the report. Please try again.",
     "gate": {
       "title": "Protected Area",
       "subtitle": "Enter the password to access the report page.",

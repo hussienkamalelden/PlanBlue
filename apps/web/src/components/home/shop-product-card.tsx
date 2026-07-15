@@ -36,12 +36,12 @@ export function ShopProductCard({ item, locale }: ShopProductCardProps) {
 
   return (
     <div
-      className={`group h-full rounded-2xl shadow-[0_8px_24px_rgba(15,23,42,0.08)] transition-shadow hover:shadow-[0_12px_28px_rgba(15,23,42,0.12)] ${
+      className={`pb-product-card group h-full rounded-2xl shadow-[0_8px_24px_rgba(15,23,42,0.08)] transition-shadow hover:shadow-[0_12px_28px_rgba(15,23,42,0.12)] ${
         outOfStock ? 'opacity-80' : ''
       }`}
     >
       <article
-        className="relative flex h-full flex-col overflow-hidden rounded-2xl bg-white ring-1 ring-neutral-100"
+        className="pb-product-card__inner relative flex h-full flex-col overflow-hidden rounded-2xl bg-white ring-1 ring-neutral-100"
         dir={direction}
         title={title}
       >
@@ -50,7 +50,7 @@ export function ShopProductCard({ item, locale }: ShopProductCardProps) {
           className="flex flex-1 flex-col"
           aria-label={title}
         >
-          <div className="relative aspect-square overflow-hidden">
+          <div className="pb-product-card__media relative aspect-square overflow-hidden">
             <ProductCornerRibbons
               showSale={hasSaleBadge}
               salePercentage={item.discount_percentage}
@@ -68,7 +68,7 @@ export function ShopProductCard({ item, locale }: ShopProductCardProps) {
                 <Image
                   src={getMediaUrl(firstImage.url)}
                   alt={firstImage.name || title}
-                  className="h-[90%] w-[90%] rounded-2xl object-contain transition-transform duration-500 group-hover:scale-105"
+                  className="pb-product-card__image h-[90%] w-[90%] rounded-2xl object-contain transition-transform duration-500 group-hover:scale-105"
                   width={100}
                   height={100}
                 />
@@ -80,8 +80,8 @@ export function ShopProductCard({ item, locale }: ShopProductCardProps) {
             </div>
           </div>
 
-          <div className="px-4 pt-2 pb-2 text-start">
-            <h3 className="line-clamp-1 text-base font-bold capitalize leading-snug text-black md:text-lg">
+          <div className="pb-product-card__title-wrap px-4 pt-2 pb-2 text-start">
+            <h3 className="pb-product-card__title font-bold capitalize text-black">
               {title}
             </h3>
           </div>

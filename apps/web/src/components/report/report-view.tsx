@@ -5,10 +5,12 @@ import { useMemo, useState } from 'react';
 
 import type { Locale } from '@/lib/i18n/config';
 import { interpolate } from '@/lib/i18n/dictionary';
+import { STRAPI_URL } from '@/lib/api/strapi';
 import { useTranslations } from '@/lib/i18n/use-translations';
 import { useLocaleStore } from '@/stores/locale-store';
 
 type SelectionField = 'from' | 'to';
+type ReportStatus = 'idle' | 'sending' | 'success' | 'error';
 
 function pad(value: number): string {
   return String(value).padStart(2, '0');
@@ -97,6 +99,16 @@ function isBetweenRange(date: Date, fromDate: Date, toDate: Date): boolean {
   return time > from.getTime() && time < to.getTime();
 }
 
+function isAfterToday(date: Date, today: Date): boolean {
+  return startOfDay(date).getTime() > startOfDay(today).getTime();
+}
+
+function isFutureMonth(year: number, month: number, today: Date): boolean {
+  const monthStart = new Date(year, month, 1);
+  const currentMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+  return monthStart.getTime() > currentMonthStart.getTime();
+}
+
 export function ReportView() {
   const t = useTranslations();
   const locale = useLocaleStore((state) => state.locale);
@@ -106,6 +118,7 @@ export function ReportView() {
   const [activeField, setActiveField] = useState<SelectionField>('from');
   const [fromDate, setFromDate] = useState<Date | null>(null);
   const [toDate, setToDate] = useState<Date | null>(null);
+  const [reportStatus, setReportStatus] = useState<ReportStatus>('idle');
   const [visibleMonth, setVisibleMonth] = useState(() => ({
     year: today.getFullYear(),
     month: today.getMonth(),
@@ -155,14 +168,30 @@ export function ReportView() {
   }
 
   function goToNextMonth() {
+    if (isFutureMonth(visibleMonth.year, visibleMonth.month + 1, today)) {
+      return;
+    }
+
     setVisibleMonth((current) => {
       const date = new Date(current.year, current.month + 1, 1);
       return { year: date.getFullYear(), month: date.getMonth() };
     });
   }
 
+  const canGoToNextMonth = !isFutureMonth(
+    visibleMonth.year,
+    visibleMonth.month + 1,
+    today,
+  );
+
   function handleDaySelect(date: Date) {
     const picked = startOfDay(date);
+
+    if (isAfterToday(picked, today)) {
+      return;
+    }
+
+    setReportStatus('idle');
 
     if (activeField === 'from') {
       setFromDate(picked);
@@ -179,6 +208,37 @@ export function ReportView() {
 
     if (fromDate && picked.getTime() < startOfDay(fromDate).getTime()) {
       setFromDate(picked);
+    }
+  }
+
+  async function handleGenerateReport() {
+    if (!fromDate || !toDate) {
+      return;
+    }
+
+    setReportStatus('sending');
+
+    try {
+      const { from, to } = normalizeRange(fromDate, toDate);
+      const fromKey = toDateKey(from);
+      const toKey = toDateKey(to);
+
+      const response = await fetch(
+        `${STRAPI_URL}/api/orders/generate-report`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ fromDate: fromKey, toDate: toKey }),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to generate report');
+      }
+
+      setReportStatus('success');
+    } catch {
+      setReportStatus('error');
     }
   }
 
@@ -248,6 +308,7 @@ export function ReportView() {
               type="button"
               className="pb-report-calendar__nav"
               onClick={goToNextMonth}
+              disabled={!canGoToNextMonth}
               aria-label={t.report.calendar.nextMonth}
             >
               <NextMonthIcon aria-hidden size={20} />
@@ -281,6 +342,7 @@ export function ReportView() {
                   ? isBetweenRange(cell.date, fromDate, toDate)
                   : false;
               const isToday = isSameDay(cell.date, today);
+              const isDisabled = isAfterToday(cell.date, today);
 
               return (
                 <button
@@ -293,10 +355,12 @@ export function ReportView() {
                     isTo ? 'pb-report-calendar__cell--to' : '',
                     isInRange ? 'pb-report-calendar__cell--in-range' : '',
                     isToday ? 'pb-report-calendar__cell--today' : '',
+                    isDisabled ? 'pb-report-calendar__cell--disabled' : '',
                   ]
                     .filter(Boolean)
                     .join(' ')}
                   onClick={() => handleDaySelect(cell.date)}
+                  disabled={isDisabled}
                   aria-pressed={isFrom || isTo}
                   aria-label={formatReportDate(cell.date, locale)}
                 >
@@ -310,9 +374,26 @@ export function ReportView() {
         <button
           type="button"
           className="pb-cart-summary__btn pb-cart-summary__btn--primary pb-report__generate"
+          disabled={
+            !fromDate ||
+            !toDate ||
+            reportStatus === 'sending' ||
+            reportStatus === 'success'
+          }
+          onClick={handleGenerateReport}
         >
-          {t.report.generateReport}
+          {reportStatus === 'sending'
+            ? t.report.sending
+            : t.report.generateReport}
         </button>
+
+        {reportStatus === 'success' && (
+          <p className="pb-report__success">{t.report.emailSent}</p>
+        )}
+
+        {reportStatus === 'error' && (
+          <p className="pb-report__error">{t.report.emailError}</p>
+        )}
       </div>
     </section>
   );

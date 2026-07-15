@@ -4,10 +4,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { ActiveFilterTags } from '@/components/shop/active-filter-tags';
 import { ShopEmptyState } from '@/components/shop/shop-empty-state';
+import { ShopFiltersDrawer } from '@/components/shop/shop-filters-drawer';
 import { ShopFiltersSidebar } from '@/components/shop/shop-filters-sidebar';
 import { ShopProductCard } from '@/components/home/shop-product-card';
 import { ShopSortDropdown } from '@/components/shop/shop-sort-dropdown';
 import { useTranslations } from '@/lib/i18n/use-translations';
+import { SlidersHorizontal } from 'lucide-react';
 import {
   getShopItemPriceBounds,
   isPriceFilterActive,
@@ -78,6 +80,7 @@ export function ShopView({
   );
   const [priceMin, setPriceMin] = useState(priceBounds.min);
   const [priceMax, setPriceMax] = useState(priceBounds.max);
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const priceDebounceRef = useRef<number | null>(null);
   const isFirstLoad = useRef(true);
@@ -323,43 +326,63 @@ export function ShopView({
     ? t.shop.filteredEmpty
     : t.shop.empty;
 
-  return (
-    <div className="pt-10 grid gap-8 lg:grid-cols-[300px_minmax(0,1fr)] xl:grid-cols-[320px_minmax(0,1fr)]">
-      <ShopFiltersSidebar
-        categories={categories}
-        selectedCategoryIds={selectedCategoryIds}
-        selectedAgeFilters={selectedAgeFilters}
-        priceBounds={priceBounds}
-        priceMin={priceMin}
-        priceMax={priceMax}
-        searchQuery={searchQuery}
-        onSearchQueryChange={setSearchQuery}
-        onSearchSubmit={handleSearchSubmit}
-        onToggleCategory={(id) =>
-          setSelectedCategoryIds((prev) =>
-            prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id],
-          )
-        }
-        onToggleAgeFilter={(filter) =>
-          setSelectedAgeFilters((prev) =>
-            prev.includes(filter) ? prev.filter((a) => a !== filter) : [...prev, filter],
-          )
-        }
-        onPriceMinChange={handlePriceMinChange}
-        onPriceMaxChange={handlePriceMaxChange}
-        onPriceReset={handlePriceReset}
-      />
+  const sidebarProps = {
+    categories,
+    selectedCategoryIds,
+    selectedAgeFilters,
+    priceBounds,
+    priceMin,
+    priceMax,
+    searchQuery,
+    onSearchQueryChange: setSearchQuery,
+    onSearchSubmit: handleSearchSubmit,
+    onToggleCategory: (id: string) =>
+      setSelectedCategoryIds((prev) =>
+        prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id],
+      ),
+    onToggleAgeFilter: (filter: Exclude<AgeFilter, null>) =>
+      setSelectedAgeFilters((prev) =>
+        prev.includes(filter) ? prev.filter((a) => a !== filter) : [...prev, filter],
+      ),
+    onPriceMinChange: handlePriceMinChange,
+    onPriceMaxChange: handlePriceMaxChange,
+    onPriceReset: handlePriceReset,
+  };
 
-      <div>
-        <div className="flex flex-wrap items-center gap-3 mb-6">
-          <ShopSortDropdown
-            label={t.shop.sortTitle}
-            value={selectedSort}
-            options={sortOptions}
-            onChange={setSelectedSort}
-          />
-          <ActiveFilterTags tags={activeFilterTags} onRemove={handleRemoveFilterTag} />
-        </div>
+  return (
+    <>
+      <div className="pt-10 grid gap-8 lg:grid-cols-[300px_minmax(0,1fr)] xl:grid-cols-[320px_minmax(0,1fr)]">
+        <ShopFiltersSidebar
+          {...sidebarProps}
+          variant="sidebar"
+          className="hidden lg:block"
+        />
+
+        <div>
+          <div className="mb-6 flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              className="pb-shop-filters-toggle lg:hidden"
+              onClick={() => setFiltersOpen(true)}
+              aria-expanded={filtersOpen}
+            >
+              <SlidersHorizontal className="size-[18px] shrink-0" aria-hidden="true" />
+              <span>{t.shop.filtersTitle}</span>
+              {hasActiveFilters && (
+                <span className="pb-shop-filters-toggle__badge">
+                  {activeFilterTags.length}
+                </span>
+              )}
+            </button>
+
+            <ShopSortDropdown
+              label={t.shop.sortTitle}
+              value={selectedSort}
+              options={sortOptions}
+              onChange={setSelectedSort}
+            />
+            <ActiveFilterTags tags={activeFilterTags} onRemove={handleRemoveFilterTag} />
+          </div>
 
         {loading ? (
           <div className="flex justify-center py-16">
@@ -385,6 +408,17 @@ export function ShopView({
           </div>
         )}
       </div>
-    </div>
+      </div>
+
+      <ShopFiltersDrawer
+        open={filtersOpen}
+        onClose={() => setFiltersOpen(false)}
+        title={t.shop.filtersTitle}
+        closeLabel={t.header.closeMenu}
+        doneLabel={t.shop.showResults}
+      >
+        <ShopFiltersSidebar {...sidebarProps} variant="drawer" />
+      </ShopFiltersDrawer>
+    </>
   );
 }

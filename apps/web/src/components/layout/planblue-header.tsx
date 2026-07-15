@@ -268,7 +268,7 @@ export function PlanBlueHeader() {
           </div>
 
           {/* Nav links */}
-          <nav aria-label="Mobile" className="flex-1">
+          <nav aria-label="Mobile">
             <ul className="m-0 list-none p-0">
               {navItems.map((item) => {
                 const Icon = item.icon;
@@ -290,7 +290,6 @@ export function PlanBlueHeader() {
                 );
               })}
 
-              {/* Cart */}
               <li className="border-b border-neutral-100">
                 <Link
                   href="/cart"
@@ -312,32 +311,35 @@ export function PlanBlueHeader() {
                 </Link>
               </li>
             </ul>
-          </nav>
 
-          {/* Hotline */}
-          <div className="mt-6 border-t border-neutral-100 pt-4">
-            <div className="flex items-center gap-2.5">
-              <span className="text-xl text-[#4389F7]">
-                <i className="icon-2" aria-hidden="true" />
-              </span>
-              <div className="leading-tight">
-                <span className="block text-xs text-neutral-500">
-                  {t.header.hotline}
+            <div className="pb-mobile-sidebar-meta">
+              <a
+                href={`tel:${t.header.phone.replace(/\s/g, '')}`}
+                className="pb-mobile-sidebar-meta__hotline"
+              >
+                <span className="pb-mobile-sidebar-meta__icon">
+                  <i className="icon-2" aria-hidden="true" />
                 </span>
-                <a
-                  href={`tel:${t.header.phone.replace(/\s/g, '')}`}
-                  className="text-sm font-bold text-neutral-900"
-                >
-                  012-88-739-168
-                </a>
+                <span className="pb-mobile-sidebar-meta__hotline-text">
+                  <span className="pb-mobile-sidebar-meta__hotline-label">
+                    {t.header.hotline}
+                  </span>
+                  <span className="pb-mobile-sidebar-meta__hotline-number">
+                    {t.header.phone}
+                  </span>
+                </span>
+              </a>
+
+              <span
+                className="pb-mobile-sidebar-meta__divider"
+                aria-hidden="true"
+              />
+
+              <div className="pb-mobile-sidebar-meta__locale">
+                <LocaleSwitcher />
               </div>
             </div>
-          </div>
-
-          {/* Language switcher — last item */}
-          <div className="mt-4 border-t border-neutral-100 pt-4">
-            <LocaleSwitcher />
-          </div>
+          </nav>
         </div>
       </div>
     </header>

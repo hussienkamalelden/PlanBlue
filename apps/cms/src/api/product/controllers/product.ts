@@ -4,6 +4,19 @@
 
 import { factories } from '@strapi/strapi';
 
+function normalizeQueryArray(value: unknown): string[] | undefined {
+  if (!value) {
+    return undefined;
+  }
+
+  if (Array.isArray(value)) {
+    return value.map(String).filter(Boolean);
+  }
+
+  const single = String(value).trim();
+  return single ? [single] : undefined;
+}
+
 export default factories.createCoreController(
   'api::product.product',
   ({ strapi }) => ({
@@ -68,6 +81,41 @@ export default factories.createCoreController(
         return ctx.send(result);
       } catch (error) {
         return ctx.badRequest('Failed to reset views', { error });
+      }
+    },
+
+    async search(ctx) {
+      const {
+        q,
+        page = '1',
+        pageSize = '12',
+        sort = 'createdAt:desc',
+        priceMin,
+        priceMax,
+      } = ctx.query;
+
+      if (!q || typeof q !== 'string' || !q.trim()) {
+        return ctx.badRequest('Search query "q" is required');
+      }
+
+      try {
+        const result = await strapi
+          .service('api::product.product')
+          .searchProducts({
+            query: q,
+            page: Number(page),
+            pageSize: Number(pageSize),
+            sort: typeof sort === 'string' ? sort : 'createdAt:desc',
+            categoryIds: normalizeQueryArray(ctx.query.category),
+            ageFilters: normalizeQueryArray(ctx.query.age),
+            priceMin: priceMin ? Number(priceMin) : undefined,
+            priceMax: priceMax ? Number(priceMax) : undefined,
+          });
+
+        return result;
+      } catch (error) {
+        strapi.log.error('Product search failed:', error);
+        return ctx.internalServerError('Failed to search products');
       }
     },
   }),
