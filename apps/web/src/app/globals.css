@@ -174,13 +174,12 @@
     padding-bottom: 0.75rem;
   }
 
-  @media (max-width: 767px) {
+  @media (max-width: 1023px) {
     .popular-shop-swiper .pb-product-card__title {
-      display: -webkit-box;
+      display: block;
       overflow: hidden;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 2;
-      white-space: normal;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   }
 

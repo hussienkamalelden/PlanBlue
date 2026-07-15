@@ -81,7 +81,7 @@ export function ShopProductCard({ item, locale }: ShopProductCardProps) {
           </div>
 
           <div className="pb-product-card__title-wrap px-4 pt-2 pb-2 text-start">
-            <h3 className="pb-product-card__title line-clamp-1 text-base font-bold capitalize leading-snug text-black md:text-lg">
+            <h3 className="pb-product-card__title font-bold capitalize text-black">
               {title}
             </h3>
           </div>
