@@ -48,6 +48,11 @@ export function PlanBlueHeader() {
     [cartItems],
   );
 
+  const cartTotalPrice = useMemo(
+    () => `(${formatPriceWhole(cartTotal, locale)})`,
+    [cartTotal, locale],
+  );
+
   const navItems = [
     { href: '/', label: t.header.nav.home, icon: Home },
     { href: '/shop', label: t.header.nav.shop, icon: ToyBrick },
@@ -188,7 +193,7 @@ export function PlanBlueHeader() {
                 </span>
                 <span className="ms-1.5 min-w-0 text-start leading-tight">
                   <span className="block truncate text-sm font-bold sm:max-w-none">
-                    {formatPriceWhole(cartTotal, locale)}
+                    {cartTotalPrice}
                   </span>
                 </span>
               </Link>
@@ -304,9 +309,7 @@ export function PlanBlueHeader() {
                     aria-hidden="true"
                   />
                   <span>
-                    {t.header.cartTotal}
-                    {cartItemCount > 0 ? ` (${cartItemCount})` : ''} —{' '}
-                    {formatPriceWhole(cartTotal, locale)}
+                    {t.header.cartTotal} {cartTotalPrice}
                   </span>
                 </Link>
               </li>
