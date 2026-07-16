@@ -72,7 +72,7 @@ export function getProductImageUrl(item: StrapiShopItem): string | null {
 export function buildRootMetadata(locale: Locale): Metadata {
   const t = getDictionary(locale);
   const siteName = t.common.brand;
-  const siteDescription = t.footer.about;
+  const siteDescription = t.home.hero.title;
   const siteUrl = getSiteUrl();
   const ogImage = getSiteOgImageUrl();
   const defaultTitle = `${siteName} — ${t.common.tagline}`;
@@ -192,7 +192,7 @@ export function buildWebsiteJsonLd(locale: Locale) {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: t.common.brand,
-    description: t.footer.about,
+    description: t.home.hero.title,
     url: siteUrl,
     image: getSiteOgImageUrl(),
   };
