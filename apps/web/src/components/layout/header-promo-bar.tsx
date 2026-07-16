@@ -57,9 +57,9 @@ export function HeaderPromoBar() {
       <div className="pb-header-promo__viewport">
         <div className="pb-header-promo__marquee">
           <PromoTrackGroup items={trackItems} groupId="primary" />
-          <PromoTrackGroup items={trackItems} groupId="clone" ariaHidden />
-          <PromoTrackGroup items={trackItems} groupId="clone" ariaHidden />
-          <PromoTrackGroup items={trackItems} groupId="clone" ariaHidden />
+          <PromoTrackGroup items={trackItems} groupId="clone-a" ariaHidden />
+          <PromoTrackGroup items={trackItems} groupId="clone-b" ariaHidden />
+          <PromoTrackGroup items={trackItems} groupId="clone-c" ariaHidden />
         </div>
       </div>
     </div>
