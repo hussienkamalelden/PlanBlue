@@ -8,10 +8,11 @@ import { CircleCheck, CircleX, Share2 } from 'lucide-react';
 import { QuantitySelector } from '@/components/shop/quantity-selector';
 import { ShopItemMediaGallery } from '@/components/shop/shop-item-media-gallery';
 import { RelatedShopItems } from '@/components/shop/related-shop-items';
-import { formatPrice, getShopItemPrices } from '@/lib/api/strapi';
+import { formatPrice, formatPriceWhole, getShopItemPrices } from '@/lib/api/strapi';
 import { buildCartLineFromShopItem } from '@/lib/cart/build-cart-line';
 import { useCartStore } from '@/lib/cart/cart-store';
 import { useTranslations } from '@/lib/i18n/use-translations';
+import { buildProductShareMessage } from '@/lib/seo/metadata';
 import {
   arePurchaseActionsDisabled,
   getStockQuantity,
@@ -87,16 +88,16 @@ export function ShopItemDetailView({
   async function handleShare() {
     const url = `${window.location.origin}/shop/${item.slug}`;
     const displayPrice = salePrice ?? basePrice;
-    const priceLabel = formatPrice(displayPrice, locale);
-    const shareText = `${title} — ${priceLabel}`;
+    const priceLabel = formatPriceWhole(displayPrice, locale);
+    const shareText = buildProductShareMessage(title, priceLabel, url);
 
     try {
       if (typeof navigator.share === 'function') {
-        await navigator.share({ title: shareText, text: shareText, url });
+        await navigator.share({ text: shareText });
         return;
       }
 
-      await navigator.clipboard.writeText(`${shareText}\n${url}`);
+      await navigator.clipboard.writeText(shareText);
       setShareFeedback(t.shopItemDetail.shareCopied);
       window.setTimeout(() => setShareFeedback(null), 2500);
     } catch (error) {

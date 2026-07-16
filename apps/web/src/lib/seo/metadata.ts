@@ -45,13 +45,31 @@ export function getProductTitle(item: StrapiShopItem, locale: Locale): string {
 export function getProductDescriptionText(
   item: StrapiShopItem,
   locale: Locale,
+  max = 160,
 ): string {
   const raw =
     locale === 'ar' && item.description_ar
       ? item.description_ar
       : item.description;
 
-  return truncate(raw);
+  return truncate(raw ?? '', max);
+}
+
+export function buildProductOgDescription(
+  priceLabel: string,
+  descriptionText: string,
+  maxDescLength = 120,
+): string {
+  const desc = truncate(descriptionText, maxDescLength);
+  return desc ? `${priceLabel}\n${desc}` : priceLabel;
+}
+
+export function buildProductShareMessage(
+  title: string,
+  priceLabel: string,
+  url: string,
+): string {
+  return `${title}\n${priceLabel}\n${url}`;
 }
 
 export function getProductImageUrl(item: StrapiShopItem): string | null {
@@ -121,21 +139,21 @@ export function buildProductMetadata(
   const { basePrice, salePrice } = getShopItemPrices(item);
   const displayPrice = salePrice ?? basePrice;
   const priceLabel = formatPriceWhole(displayPrice, locale);
-  const descriptionText = getProductDescriptionText(item, locale);
-  const description = `${priceLabel} — ${descriptionText}`;
+  const descriptionText = getProductDescriptionText(item, locale, 120);
+  const socialDescription = buildProductOgDescription(priceLabel, descriptionText);
   const pageUrl = `${getSiteUrl()}/shop/${item.slug}`;
   const ogImage = getProductImageUrl(item) ?? getSiteOgImageUrl();
 
   return {
     title,
-    description,
+    description: socialDescription,
     openGraph: {
       type: 'website',
       locale: locale === 'ar' ? 'ar_EG' : 'en_EG',
       url: pageUrl,
       siteName,
-      title: `${title} — ${priceLabel}`,
-      description: descriptionText,
+      title,
+      description: socialDescription,
       images: [
         {
           url: ogImage,
@@ -145,8 +163,8 @@ export function buildProductMetadata(
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${title} — ${priceLabel}`,
-      description: descriptionText,
+      title,
+      description: socialDescription,
       images: [ogImage],
     },
     alternates: {
