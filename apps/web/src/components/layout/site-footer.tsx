@@ -84,7 +84,7 @@ export function SiteFooter() {
               className="w-auto h-[40px]"
             />
             <p className="mt-3 w-3/4 text-sm leading-relaxed text-neutral-600">
-              {t.home.hero.title}
+              {t.footer.about}
             </p>
           </div>
 
