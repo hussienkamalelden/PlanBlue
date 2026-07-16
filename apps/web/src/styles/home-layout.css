@@ -413,6 +413,7 @@ html[dir='rtl'] .planblue-site {
 .pb-header-promo__viewport {
   overflow: hidden;
   width: 100%;
+  direction: ltr;
 }
 
 .pb-header-promo__marquee {
@@ -424,10 +425,6 @@ html[dir='rtl'] .planblue-site {
 
 .pb-header-promo:hover .pb-header-promo__marquee {
   animation-play-state: paused;
-}
-
-[dir='rtl'] .pb-header-promo__marquee {
-  animation-direction: reverse;
 }
 
 .pb-header-promo__group {
