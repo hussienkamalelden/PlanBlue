@@ -75,5 +75,3 @@ pnpm dev:web   # http://localhost:3000
 pnpm dev:cms   # http://localhost:1337/admin
 pnpm dev       # both in parallel
 ```
-
-
