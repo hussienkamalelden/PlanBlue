@@ -1,11 +1,19 @@
 import { ShopPageBanner } from '@/components/shop/shop-page-banner';
 import { ShopView } from '@/components/shop/shop-view';
 import { fetchCategories, fetchShopItems } from '@/lib/api/strapi.server';
+import { getDictionary } from '@/lib/i18n/dictionary';
+import { getLocale } from '@/lib/i18n/get-locale';
+
 import type { Metadata } from 'next';
 
-export const metadata: Metadata = {
-  title: 'Shop',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  const t = getDictionary(locale);
+
+  return {
+    title: t.shop.title,
+  };
+}
 
 export default async function ShopPage({
   searchParams,
