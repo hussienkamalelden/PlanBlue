@@ -1417,6 +1417,26 @@ html[dir='rtl'] .planblue-site {
   }
 }
 
+@media (max-width: 1023px) {
+  .pb-header-lower .pb-outer-box {
+    position: relative;
+    justify-content: flex-end;
+  }
+
+  .pb-brand-block {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    gap: 0;
+    pointer-events: none;
+  }
+
+  .pb-brand-block .pb-logo-box {
+    pointer-events: auto;
+  }
+}
+
 @media (max-width: 767px) {
   .pb-header-lower .pb-outer-box {
     min-height: 72px;

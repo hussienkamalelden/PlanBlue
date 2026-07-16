@@ -37,7 +37,7 @@
     "description": "Browse our toy collection — no account required.",
     "cta": "Shop products",
     "hero": {
-      "title": "A World of Fun Awaits Your Child",
+      "title": "Learn, Play and Grow Together",
       "pricePrefix": "From",
       "priceAmount": 42.99,
       "cta": "View Shop",
@@ -309,7 +309,7 @@
     }
   },
   "footer": {
-    "about": "Quality toys for every age, delivered across Egypt with care.",
+    "about": "A World of Learning, Play, and Growth for Every Child",
     "linksTitle": "Quick links",
     "terms": "Terms & Conditions",
     "socialTitle": "Follow us",
