@@ -1,0 +1,17 @@
+name: Deploy Frontend
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/web/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Frontend Deploy Webhook
+        run: |
+          curl --request GET '${{ secrets.COOLIFY_FRONTEND_WEBHOOK }}' \
+               --header 'Authorization: Bearer ${{ secrets.COOLIFY_API_TOKEN }}'
