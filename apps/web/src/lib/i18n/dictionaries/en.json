@@ -181,6 +181,7 @@
     "cashOnDelivery": "Cash on Delivery",
     "cashOnDeliveryDesc": "Pay when you receive your order at your doorstep.",
     "giftBanner": "Free batteries included with every toy — a special gift from PlanBlue to you!",
+    "formTitle": "Delivery Information",
     "form": {
       "name": "Full Name",
       "namePlaceholder": "Enter your full name",

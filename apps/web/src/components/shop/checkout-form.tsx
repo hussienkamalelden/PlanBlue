@@ -332,6 +332,11 @@ export function CheckoutForm({ shippingOptions }: CheckoutFormProps) {
         <form onSubmit={handleReviewOrder} className="pb-cart-layout">
           <div className="pb-checkout-main">
             <section className="pb-checkout-panel">
+              <div className="pb-checkout-form-header">
+                <h2 className="pb-checkout-form-header__title">
+                  {t.checkout.formTitle}
+                </h2>
+              </div>
               <div className="pb-checkout-fields">
                 <FieldInput
                   id="checkout-field-name"
@@ -395,7 +400,7 @@ export function CheckoutForm({ shippingOptions }: CheckoutFormProps) {
                     <span className="pb-checkout-field__required">*</span>
                   </label>
                   <textarea
-                    rows={2}
+                    rows={4}
                     value={form.address}
                     onChange={(e) => updateField("address", e.target.value)}
                     placeholder={t.checkout.form.addressPlaceholder}
@@ -407,7 +412,7 @@ export function CheckoutForm({ shippingOptions }: CheckoutFormProps) {
                 <div className="pb-checkout-field pb-checkout-field--wide">
                   <label>{t.checkout.form.extraNotes}</label>
                   <textarea
-                    rows={2}
+                    rows={4}
                     value={form.extra_notes}
                     onChange={(e) => updateField("extra_notes", e.target.value)}
                     placeholder={t.checkout.form.extraNotesPlaceholder}

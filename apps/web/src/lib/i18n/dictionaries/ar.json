@@ -181,6 +181,7 @@
     "cashOnDelivery": "الدفع عند الاستلام",
     "cashOnDeliveryDesc": "ادفع عند استلام طلبك على باب منزلك.",
     "giftBanner": "بطاريات مجانية مع كل لعبة — هدية خاصة من PlanBlue لك!",
+    "formTitle": "بيانات التوصيل",
     "form": {
       "name": "الاسم الكامل",
       "namePlaceholder": "أدخل اسمك الكامل",
