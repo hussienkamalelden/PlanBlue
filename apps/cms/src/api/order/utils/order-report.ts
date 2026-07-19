@@ -24,10 +24,30 @@ const HEADERS = [
   'صافي الربح بعد الخصومات',
   'إعادة الاستثمار 50%',
   'الربح المتبقي 50%',
-  'نصيب كل شريك',
+  'نصيب كل شريك (3 شركاء)',
   'اجمالي الاستثمار',
   'اجمالي الربح للشريك',
 ] as const;
+
+// Column letters for formula references (A=1 … Q=17)
+const COL = {
+  sellingPrice: 'D',
+  originalWithOperation: 'E',
+  profitBeforeDiscounts: 'F',
+  affiliateCommission: 'G',
+  clientDiscount: 'H',
+  giftWrapping: 'I',
+  shipping: 'J',
+  offersCost: 'K',
+  netProfit: 'L',
+  reinvestment: 'M',
+  remainingProfit: 'N',
+  partnerShare: 'O',
+  totalReinvestment: 'P',
+  totalPartnerProfit: 'Q',
+} as const;
+
+const MONEY_COLUMNS = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
 
 type OrderRow = {
   updatedAt: string | Date;
@@ -54,6 +74,36 @@ function formatOrderDate(updatedAt: string | Date): string {
 
 function getStatusLabel(status: string): string {
   return STATUS_LABELS[status] ?? status;
+}
+
+function setFormula(cell: ExcelJS.Cell, formula: string) {
+  cell.value = { formula };
+}
+
+function applyMoneyFormat(row: ExcelJS.Row) {
+  for (const columnIndex of MONEY_COLUMNS) {
+    row.getCell(columnIndex).numFmt = '#,##0.00';
+  }
+}
+
+function applyOrderRowFormulas(row: ExcelJS.Row, rowNumber: number) {
+  const r = String(rowNumber);
+
+  setFormula(
+    row.getCell(5),
+    `ROUND(${COL.sellingPrice}${r}*0.6,2)`,
+  );
+  setFormula(
+    row.getCell(6),
+    `ROUND(${COL.sellingPrice}${r}*0.4,2)`,
+  );
+  setFormula(
+    row.getCell(12),
+    `ROUND(${COL.profitBeforeDiscounts}${r}-${COL.affiliateCommission}${r}-${COL.clientDiscount}${r}-${COL.offersCost}${r}-${COL.giftWrapping}${r},2)`,
+  );
+  setFormula(row.getCell(13), `ROUND(${COL.netProfit}${r}/2,2)`);
+  setFormula(row.getCell(14), `ROUND(${COL.netProfit}${r}/2,2)`);
+  setFormula(row.getCell(15), `ROUND(${COL.remainingProfit}${r}/3,2)`);
 }
 
 async function loadAffiliateCommissionByPromoCode(
@@ -93,45 +143,6 @@ function getAffiliateCommission(
   const subtotal = Number(order.subtotal ?? 0);
 
   return round((subtotal * commissionPercentage) / 100);
-}
-
-function buildOrderCalculations(
-  order: OrderRow,
-  promoCommissionMap: Map<string, number>,
-) {
-  const sellingPrice = round(Number(order.subtotal ?? 0));
-  const originalPriceWithOperation = round(sellingPrice * 0.6);
-  const profitBeforeDiscounts = round(sellingPrice * 0.4);
-  const affiliateCommission = getAffiliateCommission(order, promoCommissionMap);
-  const clientDiscount = round(Number(order.discount_amount ?? 0));
-  const giftWrappingValue = 0;
-  const shippingValue = round(Number(order.shipping_cost ?? 0));
-  const offersCost = 0;
-  const netProfitAfterDiscounts = round(
-    profitBeforeDiscounts -
-      affiliateCommission -
-      clientDiscount -
-      offersCost -
-      giftWrappingValue,
-  );
-  const reinvestment50 = round(netProfitAfterDiscounts / 2);
-  const remainingProfit50 = round(netProfitAfterDiscounts / 2);
-  const partnerShare = round(remainingProfit50 / 3);
-
-  return {
-    sellingPrice,
-    originalPriceWithOperation,
-    profitBeforeDiscounts,
-    affiliateCommission,
-    clientDiscount,
-    giftWrappingValue,
-    shippingValue,
-    offersCost,
-    netProfitAfterDiscounts,
-    reinvestment50,
-    remainingProfit50,
-    partnerShare,
-  };
 }
 
 export async function generateOrderReportExcel(
@@ -177,36 +188,40 @@ export async function generateOrderReportExcel(
   headerRow.font = { bold: true };
   headerRow.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
 
-  let totalReinvestment = 0;
-  let totalPartnerProfit = 0;
+  const firstDataRow = 2;
 
   for (const order of orders as OrderRow[]) {
-    const calculations = buildOrderCalculations(order, promoCommissionMap);
+    const sellingPrice = round(Number(order.subtotal ?? 0));
+    const affiliateCommission = getAffiliateCommission(order, promoCommissionMap);
+    const clientDiscount = round(Number(order.discount_amount ?? 0));
+    const shippingValue = round(Number(order.shipping_cost ?? 0));
 
-    totalReinvestment += calculations.reinvestment50;
-    totalPartnerProfit += calculations.partnerShare;
-
-    worksheet.addRow([
+    const row = worksheet.addRow([
       formatOrderDate(order.updatedAt),
       getStatusLabel(order.status_type),
       String(order.order_id),
-      calculations.sellingPrice,
-      calculations.originalPriceWithOperation,
-      calculations.profitBeforeDiscounts,
-      calculations.affiliateCommission,
-      calculations.clientDiscount,
-      calculations.giftWrappingValue,
-      calculations.shippingValue,
-      calculations.offersCost,
-      calculations.netProfitAfterDiscounts,
-      calculations.reinvestment50,
-      calculations.remainingProfit50,
-      calculations.partnerShare,
+      sellingPrice,
+      null,
+      null,
+      affiliateCommission,
+      clientDiscount,
+      0,
+      shippingValue,
+      0,
+      null,
+      null,
+      null,
+      null,
       '',
       '',
     ]);
+
+    const rowNumber = row.number;
+    applyOrderRowFormulas(row, rowNumber);
+    applyMoneyFormat(row);
   }
 
+  const lastDataRow = worksheet.rowCount;
   const totalsRow = worksheet.addRow([
     'الإجمالي',
     '',
@@ -223,33 +238,28 @@ export async function generateOrderReportExcel(
     '',
     '',
     '',
-    round(totalReinvestment),
-    round(totalPartnerProfit),
+    null,
+    null,
   ]);
   totalsRow.font = { bold: true };
 
-  worksheet.columns = HEADERS.map((header, index) => ({
-    key: String(index + 1),
-    width: header ? Math.max(header.length + 4, 14) : 4,
-  }));
-
-  for (let rowIndex = 2; rowIndex <= worksheet.rowCount; rowIndex += 1) {
-    const row = worksheet.getRow(rowIndex);
-
-    for (let columnIndex = 4; columnIndex <= 15; columnIndex += 1) {
-      const cell = row.getCell(columnIndex);
-      if (typeof cell.value === 'number') {
-        cell.numFmt = '#,##0.00';
-      }
-    }
-
-    for (const columnIndex of [16, 17]) {
-      const cell = row.getCell(columnIndex);
-      if (typeof cell.value === 'number') {
-        cell.numFmt = '#,##0.00';
-      }
-    }
+  if (lastDataRow >= firstDataRow) {
+    const totalsRowNumber = totalsRow.number;
+    setFormula(
+      totalsRow.getCell(16),
+      `SUM(${COL.reinvestment}${firstDataRow}:${COL.reinvestment}${lastDataRow})`,
+    );
+    setFormula(
+      totalsRow.getCell(17),
+      `SUM(${COL.partnerShare}${firstDataRow}:${COL.partnerShare}${lastDataRow})`,
+    );
   }
+
+  applyMoneyFormat(totalsRow);
+
+  worksheet.columns = HEADERS.map((header) => ({
+    width: Math.max(header.length + 4, 14),
+  }));
 
   const buffer = Buffer.from(await workbook.xlsx.writeBuffer());
   const filename =
