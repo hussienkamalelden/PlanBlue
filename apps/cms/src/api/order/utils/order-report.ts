@@ -92,6 +92,7 @@ function applyMoneyFormat(row: ExcelJS.Row) {
 
 function applyOrderRowFormulas(row: ExcelJS.Row, rowNumber: number) {
   const r = String(rowNumber);
+  const isCancelled = `B${r}="ملغي"`;
 
   setFormula(
     row.getCell(5),
@@ -103,11 +104,20 @@ function applyOrderRowFormulas(row: ExcelJS.Row, rowNumber: number) {
   );
   setFormula(
     row.getCell(13),
-    `ROUND(${COL.profitBeforeDiscounts}${r}-${COL.affiliateCommission}${r}-${COL.clientDiscount}${r}-${COL.offersCost}${r}-${COL.giftWrappingCost}${r},2)`,
+    `IF(${isCancelled},0,ROUND(${COL.profitBeforeDiscounts}${r}-${COL.affiliateCommission}${r}-${COL.clientDiscount}${r}-${COL.offersCost}${r}-${COL.giftWrappingCost}${r},2))`,
   );
-  setFormula(row.getCell(14), `ROUND(${COL.netProfit}${r}/2,2)`);
-  setFormula(row.getCell(15), `ROUND(${COL.netProfit}${r}/2,2)`);
-  setFormula(row.getCell(16), `ROUND(${COL.remainingProfit}${r}/3,2)`);
+  setFormula(
+    row.getCell(14),
+    `IF(${isCancelled},0,ROUND(${COL.netProfit}${r}/2,2))`,
+  );
+  setFormula(
+    row.getCell(15),
+    `IF(${isCancelled},0,ROUND(${COL.netProfit}${r}/2,2))`,
+  );
+  setFormula(
+    row.getCell(16),
+    `IF(${isCancelled},0,ROUND(${COL.remainingProfit}${r}/3,2))`,
+  );
 }
 
 async function loadAffiliateCommissionByPromoCode(
@@ -259,13 +269,16 @@ export async function generateOrderReportExcel(
   totalsRow.font = { bold: true };
 
   if (lastDataRow >= firstDataRow) {
+    const statusRange = `B${firstDataRow}:B${lastDataRow}`;
+    const deliveredStatus = `"${STATUS_LABELS.delivered}"`;
+
     setFormula(
       totalsRow.getCell(17),
-      `SUM(${COL.reinvestment}${firstDataRow}:${COL.reinvestment}${lastDataRow})`,
+      `SUMIF(${statusRange},${deliveredStatus},${COL.reinvestment}${firstDataRow}:${COL.reinvestment}${lastDataRow})`,
     );
     setFormula(
       totalsRow.getCell(18),
-      `SUM(${COL.partnerShare}${firstDataRow}:${COL.partnerShare}${lastDataRow})`,
+      `SUMIF(${statusRange},${deliveredStatus},${COL.partnerShare}${firstDataRow}:${COL.partnerShare}${lastDataRow})`,
     );
   }
 
