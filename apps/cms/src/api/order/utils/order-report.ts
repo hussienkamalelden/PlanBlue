@@ -15,10 +15,11 @@ const HEADERS = [
   'ID order',
   'سعر البيع',
   'سعر المنتج الاصلي مع + التشغيل',
+  'لف هدايا مميز',
   'الربح قبل أي خصومات',
   'عمولة Affiliate بالجنية',
   'خصم العميل بالجنية',
-  'قيمة لف الهدايا المميز',
+  'تكلفة لف الهدايا المميز',
   'قيمة الشحن',
   'تكلفة العروض',
   'صافي الربح بعد الخصومات',
@@ -29,25 +30,26 @@ const HEADERS = [
   'اجمالي الربح للشريك',
 ] as const;
 
-// Column letters for formula references (A=1 … Q=17)
+// Column letters for formula references (A=1 … R=18)
 const COL = {
   sellingPrice: 'D',
   originalWithOperation: 'E',
-  profitBeforeDiscounts: 'F',
-  affiliateCommission: 'G',
-  clientDiscount: 'H',
-  giftWrapping: 'I',
-  shipping: 'J',
-  offersCost: 'K',
-  netProfit: 'L',
-  reinvestment: 'M',
-  remainingProfit: 'N',
-  partnerShare: 'O',
-  totalReinvestment: 'P',
-  totalPartnerProfit: 'Q',
+  premiumGiftWrapping: 'F',
+  profitBeforeDiscounts: 'G',
+  affiliateCommission: 'H',
+  clientDiscount: 'I',
+  giftWrappingCost: 'J',
+  shipping: 'K',
+  offersCost: 'L',
+  netProfit: 'M',
+  reinvestment: 'N',
+  remainingProfit: 'O',
+  partnerShare: 'P',
+  totalReinvestment: 'Q',
+  totalPartnerProfit: 'R',
 } as const;
 
-const MONEY_COLUMNS = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
+const MONEY_COLUMNS = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
 
 type OrderRow = {
   updatedAt: string | Date;
@@ -56,6 +58,8 @@ type OrderRow = {
   subtotal: number;
   discount_amount: number;
   shipping_cost: number;
+  gift_wrapping?: boolean;
+  gift_wrapping_cost?: number;
   promo_code?: string | null;
 };
 
@@ -94,16 +98,16 @@ function applyOrderRowFormulas(row: ExcelJS.Row, rowNumber: number) {
     `ROUND(${COL.sellingPrice}${r}*0.6,2)`,
   );
   setFormula(
-    row.getCell(6),
-    `ROUND(${COL.sellingPrice}${r}*0.4,2)`,
+    row.getCell(7),
+    `ROUND(${COL.sellingPrice}${r}*0.4+${COL.premiumGiftWrapping}${r},2)`,
   );
   setFormula(
-    row.getCell(12),
-    `ROUND(${COL.profitBeforeDiscounts}${r}-${COL.affiliateCommission}${r}-${COL.clientDiscount}${r}-${COL.offersCost}${r}-${COL.giftWrapping}${r},2)`,
+    row.getCell(13),
+    `ROUND(${COL.profitBeforeDiscounts}${r}-${COL.affiliateCommission}${r}-${COL.clientDiscount}${r}-${COL.offersCost}${r}-${COL.giftWrappingCost}${r},2)`,
   );
-  setFormula(row.getCell(13), `ROUND(${COL.netProfit}${r}/2,2)`);
   setFormula(row.getCell(14), `ROUND(${COL.netProfit}${r}/2,2)`);
-  setFormula(row.getCell(15), `ROUND(${COL.remainingProfit}${r}/3,2)`);
+  setFormula(row.getCell(15), `ROUND(${COL.netProfit}${r}/2,2)`);
+  setFormula(row.getCell(16), `ROUND(${COL.remainingProfit}${r}/3,2)`);
 }
 
 async function loadAffiliateCommissionByPromoCode(
@@ -143,6 +147,14 @@ function getAffiliateCommission(
   const subtotal = Number(order.subtotal ?? 0);
 
   return round((subtotal * commissionPercentage) / 100);
+}
+
+function getPremiumGiftWrapping(order: OrderRow): number {
+  if (!order.gift_wrapping) {
+    return 0;
+  }
+
+  return round(Number(order.gift_wrapping_cost ?? 0));
 }
 
 export async function generateOrderReportExcel(
@@ -195,6 +207,7 @@ export async function generateOrderReportExcel(
     const affiliateCommission = getAffiliateCommission(order, promoCommissionMap);
     const clientDiscount = round(Number(order.discount_amount ?? 0));
     const shippingValue = round(Number(order.shipping_cost ?? 0));
+    const premiumGiftWrapping = getPremiumGiftWrapping(order);
 
     const row = worksheet.addRow([
       formatOrderDate(order.updatedAt),
@@ -202,6 +215,7 @@ export async function generateOrderReportExcel(
       String(order.order_id),
       sellingPrice,
       null,
+      premiumGiftWrapping,
       null,
       affiliateCommission,
       clientDiscount,
@@ -238,19 +252,19 @@ export async function generateOrderReportExcel(
     '',
     '',
     '',
+    '',
     null,
     null,
   ]);
   totalsRow.font = { bold: true };
 
   if (lastDataRow >= firstDataRow) {
-    const totalsRowNumber = totalsRow.number;
     setFormula(
-      totalsRow.getCell(16),
+      totalsRow.getCell(17),
       `SUM(${COL.reinvestment}${firstDataRow}:${COL.reinvestment}${lastDataRow})`,
     );
     setFormula(
-      totalsRow.getCell(17),
+      totalsRow.getCell(18),
       `SUM(${COL.partnerShare}${firstDataRow}:${COL.partnerShare}${lastDataRow})`,
     );
   }
