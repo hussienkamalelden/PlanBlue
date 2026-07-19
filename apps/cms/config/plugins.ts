@@ -21,15 +21,9 @@ export default ({ env }: { env: any }) => ({
   // email plugin for resend
   email: {
     config: {
-      provider: '@strapi/provider-email-nodemailer',
+      provider: 'strapi-provider-email-resend',
       providerOptions: {
-        host: 'smtp.resend.com',
-        port: 465,
-        secure: true, // secure the connection
-        auth: {
-          user: 'resend', // the word "resend" is fixed with the SMTP of Resend
-          pass: env('RESEND_API_KEY'),
-        },
+        apiKey: env('RESEND_API_KEY'),
       },
       settings: {
         defaultFrom: env('RESEND_DEFAULT_FROM'),
