@@ -13,15 +13,16 @@ const HEADERS = [
   'تاريخ',
   'الحالة',
   'ID order',
-  'سعر البيع',
-  'سعر المنتج الاصلي مع + التشغيل',
+  'المنتجات',
+  'اجمالي سعر البيع للاوردر',
+  'اجمالي سعر المنتجات بالتشغيل',
   'لف هدايا مميز',
   'الربح قبل أي خصومات',
   'عمولة Affiliate بالجنية',
   'خصم العميل بالجنية',
   'تكلفة لف الهدايا المميز',
   'قيمة الشحن',
-  'تكلفة العروض',
+  'تكلفة العروض (بطاريات + تغليف عادي)',
   'صافي الربح بعد الخصومات',
   'إعادة الاستثمار 50%',
   'الربح المتبقي 50%',
@@ -30,28 +31,29 @@ const HEADERS = [
   'اجمالي الربح للشريك',
 ] as const;
 
-// Column letters for formula references (A=1 … R=18)
+// Column letters for formula references (A=1 … S=19)
 const COL = {
-  sellingPrice: 'D',
-  originalWithOperation: 'E',
-  premiumGiftWrapping: 'F',
-  profitBeforeDiscounts: 'G',
-  affiliateCommission: 'H',
-  clientDiscount: 'I',
-  giftWrappingCost: 'J',
-  shipping: 'K',
-  offersCost: 'L',
-  netProfit: 'M',
-  reinvestment: 'N',
-  remainingProfit: 'O',
-  partnerShare: 'P',
-  totalReinvestment: 'Q',
-  totalPartnerProfit: 'R',
+  sellingPrice: 'E',
+  originalWithOperation: 'F',
+  premiumGiftWrapping: 'G',
+  profitBeforeDiscounts: 'H',
+  affiliateCommission: 'I',
+  clientDiscount: 'J',
+  giftWrappingCost: 'K',
+  shipping: 'L',
+  offersCost: 'M',
+  netProfit: 'N',
+  reinvestment: 'O',
+  remainingProfit: 'P',
+  partnerShare: 'Q',
+  totalReinvestment: 'R',
+  totalPartnerProfit: 'S',
 } as const;
 
-const MONEY_COLUMNS = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
+const MONEY_COLUMNS = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
 
 type OrderRow = {
+  documentId: string;
   updatedAt: string | Date;
   status_type: string;
   order_id: string;
@@ -61,6 +63,16 @@ type OrderRow = {
   gift_wrapping?: boolean;
   gift_wrapping_cost?: number;
   promo_code?: string | null;
+};
+
+type ReportOrderItem = {
+  quantity: number;
+  price_at_purchase?: number | null;
+  product_title?: string | null;
+  product?: {
+    title?: string | null;
+    sku?: string | null;
+  } | null;
 };
 
 function round(value: number): number {
@@ -95,20 +107,16 @@ function applyOrderRowFormulas(row: ExcelJS.Row, rowNumber: number) {
   const isCancelled = `B${r}="ملغي"`;
 
   setFormula(
-    row.getCell(5),
+    row.getCell(6),
     `ROUND(${COL.sellingPrice}${r}*0.6,2)`,
   );
   setFormula(
-    row.getCell(7),
+    row.getCell(8),
     `ROUND(${COL.sellingPrice}${r}*0.4+${COL.premiumGiftWrapping}${r},2)`,
   );
   setFormula(
-    row.getCell(13),
-    `IF(${isCancelled},0,ROUND(${COL.profitBeforeDiscounts}${r}-${COL.affiliateCommission}${r}-${COL.clientDiscount}${r}-${COL.offersCost}${r}-${COL.giftWrappingCost}${r},2))`,
-  );
-  setFormula(
     row.getCell(14),
-    `IF(${isCancelled},0,ROUND(${COL.netProfit}${r}/2,2))`,
+    `IF(${isCancelled},0,ROUND(${COL.profitBeforeDiscounts}${r}-${COL.affiliateCommission}${r}-${COL.clientDiscount}${r}-${COL.offersCost}${r}-${COL.giftWrappingCost}${r},2))`,
   );
   setFormula(
     row.getCell(15),
@@ -116,6 +124,10 @@ function applyOrderRowFormulas(row: ExcelJS.Row, rowNumber: number) {
   );
   setFormula(
     row.getCell(16),
+    `IF(${isCancelled},0,ROUND(${COL.netProfit}${r}/2,2))`,
+  );
+  setFormula(
+    row.getCell(17),
     `IF(${isCancelled},0,ROUND(${COL.remainingProfit}${r}/3,2))`,
   );
 }
@@ -165,6 +177,47 @@ function getPremiumGiftWrapping(order: OrderRow): number {
   }
 
   return round(Number(order.gift_wrapping_cost ?? 0));
+}
+
+function formatOrderProductsText(items: ReportOrderItem[]): string {
+  if (items.length === 0) {
+    return '';
+  }
+
+  return items
+    .map((item) => {
+      const title = item.product?.title ?? item.product_title ?? 'Product';
+      const sku = item.product?.sku?.trim() || '-';
+      const price = round(Number(item.price_at_purchase ?? 0));
+      return `${title} × ${item.quantity} — ${price} جنيه — SKU: ${sku}`;
+    })
+    .join('\n');
+}
+
+async function getOrderProductsText(
+  strapi: Core.Strapi,
+  documentId: string,
+): Promise<string> {
+  try {
+    const order = await strapi.documents('api::order.order').findOne({
+      documentId,
+      populate: {
+        order_items: {
+          populate: {
+            product: {
+              fields: ['title', 'sku'],
+            },
+          },
+        },
+      },
+      status: 'published',
+    });
+
+    return formatOrderProductsText((order?.order_items ?? []) as ReportOrderItem[]);
+  } catch (error) {
+    strapi.log.error(`Failed to fetch order items for report (${documentId}):`, error);
+    return '';
+  }
 }
 
 export async function generateOrderReportExcel(
@@ -218,11 +271,13 @@ export async function generateOrderReportExcel(
     const clientDiscount = round(Number(order.discount_amount ?? 0));
     const shippingValue = round(Number(order.shipping_cost ?? 0));
     const premiumGiftWrapping = getPremiumGiftWrapping(order);
+    const productsText = await getOrderProductsText(strapi, order.documentId);
 
     const row = worksheet.addRow([
       formatOrderDate(order.updatedAt),
       getStatusLabel(order.status_type),
       String(order.order_id),
+      productsText,
       sellingPrice,
       null,
       premiumGiftWrapping,
@@ -240,6 +295,8 @@ export async function generateOrderReportExcel(
       '',
     ]);
 
+    row.getCell(4).alignment = { wrapText: true, vertical: 'top' };
+
     const rowNumber = row.number;
     applyOrderRowFormulas(row, rowNumber);
     applyMoneyFormat(row);
@@ -248,6 +305,7 @@ export async function generateOrderReportExcel(
   const lastDataRow = worksheet.rowCount;
   const totalsRow = worksheet.addRow([
     'الإجمالي',
+    '',
     '',
     '',
     '',
@@ -273,11 +331,11 @@ export async function generateOrderReportExcel(
     const deliveredStatus = `"${STATUS_LABELS.delivered}"`;
 
     setFormula(
-      totalsRow.getCell(17),
+      totalsRow.getCell(18),
       `SUMIF(${statusRange},${deliveredStatus},${COL.reinvestment}${firstDataRow}:${COL.reinvestment}${lastDataRow})`,
     );
     setFormula(
-      totalsRow.getCell(18),
+      totalsRow.getCell(19),
       `SUMIF(${statusRange},${deliveredStatus},${COL.partnerShare}${firstDataRow}:${COL.partnerShare}${lastDataRow})`,
     );
   }
@@ -285,7 +343,10 @@ export async function generateOrderReportExcel(
   applyMoneyFormat(totalsRow);
 
   worksheet.columns = HEADERS.map((header) => ({
-    width: Math.max(header.length + 4, 14),
+    width:
+      header === 'المنتجات'
+        ? 48
+        : Math.max(header.length + 4, 14),
   }));
 
   const buffer = Buffer.from(await workbook.xlsx.writeBuffer());
