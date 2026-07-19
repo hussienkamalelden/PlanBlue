@@ -6,7 +6,7 @@
   "scripts": {
     "develop": "strapi develop",
     "start": "strapi start",
-    "build": "strapi build --no-admin",
+    "build": "strapi build",
     "strapi": "strapi",
     "lint": "echo \"Strapi lint — configure eslint later\""
   },
