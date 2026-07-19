@@ -13,7 +13,7 @@ import { NavigationLoader } from '@/components/ui/navigation-loader';
 import { RouteReadyNotifier } from '@/components/ui/route-ready-notifier';
 import { getLocaleDirection } from '@/lib/i18n/config';
 import { getLocale } from '@/lib/i18n/get-locale';
-import { buildRootMetadata, buildWebsiteJsonLd } from '@/lib/seo/metadata';
+import { buildRootMetadata, buildSiteJsonLd } from '@/lib/seo/metadata';
 
 import type { Metadata } from 'next';
 import './globals.css';
@@ -42,7 +42,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const locale = await getLocale();
-  const websiteJsonLd = buildWebsiteJsonLd(locale);
+  const siteJsonLd = buildSiteJsonLd(locale);
 
   return (
     <html lang={locale} dir={getLocaleDirection(locale)} className="planblue-loading">
@@ -52,7 +52,7 @@ export default async function RootLayout({
       >
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd) }}
         />
         <InitialPageLoader />
         <LocaleProvider>

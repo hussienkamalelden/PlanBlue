@@ -21,6 +21,10 @@ export function getSiteOgImageUrl(): string {
   return process.env.NEXT_PUBLIC_OG_IMAGE_URL ?? DEFAULT_OG_IMAGE;
 }
 
+export function getSiteIconUrl(size: 48 | 96 | 192 = 192): string {
+  return resolveAbsoluteUrl(`/icons/icon-${size}.png`);
+}
+
 export function resolveAbsoluteUrl(path: string): string {
   if (path.startsWith('http://') || path.startsWith('https://')) {
     return path;
@@ -103,6 +107,15 @@ export function buildRootMetadata(locale: Locale): Metadata {
     },
     description: siteDescription,
     applicationName: siteName,
+    icons: {
+      icon: [
+        { url: '/icons/icon-48.png', sizes: '48x48', type: 'image/png' },
+        { url: '/icons/icon-96.png', sizes: '96x96', type: 'image/png' },
+        { url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+      ],
+      apple: '/icons/apple-icon.png',
+      shortcut: '/icons/icon-192.png',
+    },
     openGraph: {
       type: 'website',
       locale: locale === 'ar' ? 'ar_EG' : 'en_EG',
@@ -207,11 +220,56 @@ export function buildWebsiteJsonLd(locale: Locale) {
   const siteUrl = getSiteUrl();
 
   return {
-    '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: t.common.brand,
     description: t.home.hero.title,
     url: siteUrl,
     image: getSiteOgImageUrl(),
+    publisher: {
+      '@type': 'Organization',
+      name: t.common.brand,
+      logo: {
+        '@type': 'ImageObject',
+        url: getSiteIconUrl(192),
+        width: 192,
+        height: 192,
+      },
+    },
+  };
+}
+
+export function buildOrganizationJsonLd(locale: Locale) {
+  const t = getDictionary(locale);
+  const siteUrl = getSiteUrl();
+
+  return {
+    '@type': 'OnlineStore',
+    name: t.common.brand,
+    url: siteUrl,
+    logo: {
+      '@type': 'ImageObject',
+      url: getSiteIconUrl(192),
+      width: 192,
+      height: 192,
+    },
+    image: [getSiteOgImageUrl(), getSiteIconUrl(192)],
+    description: t.home.hero.title,
+    sameAs: [
+      'https://www.facebook.com/hussien.kamal.elden/',
+    ],
+    contactPoint: {
+      '@type': 'ContactPoint',
+      telephone: '+20-128-873-9168',
+      contactType: 'customer service',
+      availableLanguage: ['Arabic', 'English'],
+      areaServed: 'EG',
+    },
+  };
+}
+
+export function buildSiteJsonLd(locale: Locale) {
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [buildWebsiteJsonLd(locale), buildOrganizationJsonLd(locale)],
   };
 }
