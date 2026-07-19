@@ -239,7 +239,7 @@ const AdminOrderEmail = ({
 
               {gift_wrapping && (
                 <DetailRow
-                  label="Gift Wrapping"
+                  label="Premium Packing"
                   value={`${gift_wrapping_cost} EGP`}
                 />
               )}
