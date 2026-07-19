@@ -44,17 +44,20 @@ export default factories.createCoreController(
       }
 
       try {
-        const { generateAndSendReport } = await import(
+        const { generateOrderReportExcel } = await import(
           '../utils/order-report'
         );
-        const result = await generateAndSendReport(strapi, fromDate, toDate);
+        const result = await generateOrderReportExcel(strapi, fromDate, toDate);
 
-        ctx.body = {
-          data: {
-            message: 'Report email sent successfully.',
-            email: result.email,
-          },
-        };
+        ctx.set(
+          'Content-Type',
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        );
+        ctx.set(
+          'Content-Disposition',
+          `attachment; filename="${result.filename}"`,
+        );
+        ctx.body = result.buffer;
       } catch (error: any) {
         strapi.log.error('[REPORT] Failed to generate report:', error);
         return ctx.badRequest(
