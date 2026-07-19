@@ -1,178 +1,265 @@
-import { render } from '@react-email/components';
-import React from 'react';
+import ExcelJS from 'exceljs';
 import type { Core } from '@strapi/strapi';
 
-import AdminReportEmail from '../../../emails/AdminReportEmail';
-
-type StatusBreakdown = {
-  status: string;
-  value: number;
+const STATUS_LABELS: Record<string, string> = {
+  pending: 'قيد الانتظار',
+  confirmed: 'مؤكد',
+  shipped: 'تم الشحن',
+  delivered: 'تم التوصيل',
+  cancelled: 'ملغي',
 };
 
-type OrderDetail = {
-  orderId: string;
+const HEADERS = [
+  'تاريخ',
+  'الحالة',
+  'ID order',
+  'سعر البيع',
+  'سعر المنتج الاصلي مع + التشغيل',
+  'الربح قبل أي خصومات',
+  'عمولة Affiliate بالجنية',
+  'خصم العميل بالجنية',
+  'قيمة لف الهدايا المميز',
+  'قيمة الشحن',
+  'تكلفة العروض',
+  'صافي الربح بعد الخصومات',
+  'إعادة الاستثمار 50%',
+  'الربح المتبقي 50%',
+  'نصيب كل شريك',
+  'اجمالي الاستثمار',
+  'اجمالي الربح للشريك',
+] as const;
+
+type OrderRow = {
+  updatedAt: string | Date;
+  status_type: string;
+  order_id: string;
   subtotal: number;
-  shipping: number;
-  discount: number;
-  giftWrapping: number;
+  discount_amount: number;
+  shipping_cost: number;
+  promo_code?: string | null;
 };
 
-type OrderIdsByStatus = {
-  status: string;
-  orders: OrderDetail[];
-};
+function round(value: number): number {
+  return Number(value.toFixed(2));
+}
 
-type ReportData = {
-  fromDate: string;
-  toDate: string;
-  totalOrdersCount: number;
-  subtotalByStatus: StatusBreakdown[];
-  shippingByStatus: StatusBreakdown[];
-  affiliateDiscountDelivered: number;
-  clientDiscountByStatus: StatusBreakdown[];
-  giftWrappingByStatus: StatusBreakdown[];
-  orderCountByStatus: StatusBreakdown[];
-  orderIdsByStatus: OrderIdsByStatus[];
-};
+function formatOrderDate(updatedAt: string | Date): string {
+  return new Intl.DateTimeFormat('ar-EG', {
+    timeZone: 'Africa/Cairo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date(updatedAt));
+}
 
-const ORDER_STATUSES = ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'];
+function getStatusLabel(status: string): string {
+  return STATUS_LABELS[status] ?? status;
+}
 
-const ADMIN_ORDER_EMAIL =
-  process.env.ADMIN_ORDER_EMAIL ?? 'planbluestore@gmail.com';
-
-export async function generateAndSendReport(
+async function loadAffiliateCommissionByPromoCode(
   strapi: Core.Strapi,
-  fromDate: string,
-  toDate: string,
-): Promise<{ success: boolean; email: string }> {
-  // Convert local Egypt time (UTC+3) to UTC for accurate date filtering
-  const fromUTC = new Date(`${fromDate}T00:00:00.000+03:00`).toISOString();
-  const toUTC = new Date(`${toDate}T23:59:59.999+03:00`).toISOString();
-
-  // Include orders created OR updated in the range, and read published rows
-  // directly so status changes (e.g. pending → delivered) are reflected.
-  const orders = await strapi.db.query('api::order.order').findMany({
-    where: {
-      publishedAt: { $ne: null },
-      $or: [
-        {
-          createdAt: {
-            $gte: fromUTC,
-            $lte: toUTC,
-          },
-        },
-        {
-          updatedAt: {
-            $gte: fromUTC,
-            $lte: toUTC,
-          },
-        },
-      ],
-    },
+): Promise<Map<string, number>> {
+  const affiliates = await strapi.documents('api::affiliate.affiliate').findMany({
+    populate: { promocodes: true },
+    status: 'published',
   });
 
-  const subtotalByStatus: StatusBreakdown[] = [];
-  const shippingByStatus: StatusBreakdown[] = [];
-  const clientDiscountByStatus: StatusBreakdown[] = [];
-  const giftWrappingByStatus: StatusBreakdown[] = [];
-  const orderCountByStatus: StatusBreakdown[] = [];
-  const orderIdsByStatus: OrderIdsByStatus[] = [];
-  let affiliateDiscountDelivered = 0;
+  const promoCommissionMap = new Map<string, number>();
 
-  for (const status of ORDER_STATUSES) {
-    const ordersForStatus = orders.filter(
-      (order: any) => order.status_type === status,
-    );
+  for (const affiliate of affiliates) {
+    const commissionPercentage = Number(affiliate.commission_percentage ?? 0);
 
-    if (ordersForStatus.length === 0) {
-      continue;
-    }
-
-    let subtotalSum = 0;
-    let shippingSum = 0;
-    let discountSum = 0;
-    let giftWrappingSum = 0;
-
-    for (const order of ordersForStatus) {
-      subtotalSum += Number(order.subtotal ?? 0);
-      shippingSum += Number(order.shipping_cost ?? 0);
-      discountSum += Number(order.discount_amount ?? 0);
-      giftWrappingSum += Number(order.gift_wrapping_cost ?? 0);
-    }
-
-    subtotalByStatus.push({
-      status,
-      value: Number(subtotalSum.toFixed(2)),
-    });
-
-    shippingByStatus.push({
-      status,
-      value: Number(shippingSum.toFixed(2)),
-    });
-
-    clientDiscountByStatus.push({
-      status,
-      value: Number(discountSum.toFixed(2)),
-    });
-
-    giftWrappingByStatus.push({
-      status,
-      value: Number(giftWrappingSum.toFixed(2)),
-    });
-
-    orderCountByStatus.push({
-      status,
-      value: ordersForStatus.length,
-    });
-
-    orderIdsByStatus.push({
-      status,
-      orders: ordersForStatus
-        .filter((order: any) => order.order_id)
-        .sort((a: any, b: any) =>
-          String(a.order_id).localeCompare(String(b.order_id), undefined, { numeric: true }),
-        )
-        .map((order: any) => ({
-          orderId: String(order.order_id),
-          subtotal: Number(order.subtotal ?? 0),
-          shipping: Number(order.shipping_cost ?? 0),
-          discount: Number(order.discount_amount ?? 0),
-          giftWrapping: Number(order.gift_wrapping_cost ?? 0),
-        })),
-    });
-
-    if (status === 'delivered') {
-      affiliateDiscountDelivered = Number(discountSum.toFixed(2));
+    for (const promo of affiliate.promocodes ?? []) {
+      const code = promo.code?.trim()?.toLowerCase();
+      if (code) {
+        promoCommissionMap.set(code, commissionPercentage);
+      }
     }
   }
 
-  const reportData: ReportData = {
-    fromDate,
-    toDate,
-    totalOrdersCount: orders.length,
-    subtotalByStatus,
-    shippingByStatus,
-    affiliateDiscountDelivered,
-    clientDiscountByStatus,
-    giftWrappingByStatus,
-    orderCountByStatus,
-    orderIdsByStatus,
-  };
+  return promoCommissionMap;
+}
 
-  const emailHtml = await render(
-    React.createElement(AdminReportEmail, reportData),
+function getAffiliateCommission(
+  order: OrderRow,
+  promoCommissionMap: Map<string, number>,
+): number {
+  const promoCode = order.promo_code?.trim()?.toLowerCase();
+  if (!promoCode || !promoCommissionMap.has(promoCode)) {
+    return 0;
+  }
+
+  const commissionPercentage = promoCommissionMap.get(promoCode) ?? 0;
+  const subtotal = Number(order.subtotal ?? 0);
+
+  return round((subtotal * commissionPercentage) / 100);
+}
+
+function buildOrderCalculations(
+  order: OrderRow,
+  promoCommissionMap: Map<string, number>,
+) {
+  const sellingPrice = round(Number(order.subtotal ?? 0));
+  const originalPriceWithOperation = round(sellingPrice * 0.6);
+  const profitBeforeDiscounts = round(sellingPrice * 0.4);
+  const affiliateCommission = getAffiliateCommission(order, promoCommissionMap);
+  const clientDiscount = round(Number(order.discount_amount ?? 0));
+  const giftWrappingValue = 0;
+  const shippingValue = round(Number(order.shipping_cost ?? 0));
+  const offersCost = 0;
+  const netProfitAfterDiscounts = round(
+    profitBeforeDiscounts -
+      affiliateCommission -
+      clientDiscount -
+      offersCost -
+      giftWrappingValue,
   );
+  const reinvestment50 = round(netProfitAfterDiscounts / 2);
+  const remainingProfit50 = round(netProfitAfterDiscounts / 2);
+  const partnerShare = round(remainingProfit50 / 3);
 
-  await strapi.plugins['email'].services.email.send({
-    to: ADMIN_ORDER_EMAIL,
-    from: process.env.RESEND_DEFAULT_FROM,
-    subject: `تقرير الطلبات — من ${fromDate} إلى ${toDate}`,
-    html: emailHtml,
+  return {
+    sellingPrice,
+    originalPriceWithOperation,
+    profitBeforeDiscounts,
+    affiliateCommission,
+    clientDiscount,
+    giftWrappingValue,
+    shippingValue,
+    offersCost,
+    netProfitAfterDiscounts,
+    reinvestment50,
+    remainingProfit50,
+    partnerShare,
+  };
+}
+
+export async function generateOrderReportExcel(
+  strapi: Core.Strapi,
+  fromDate: string,
+  toDate: string,
+): Promise<{ buffer: Buffer; filename: string }> {
+  const fromUTC = new Date(`${fromDate}T00:00:00.000+03:00`).toISOString();
+  const toUTC = new Date(`${toDate}T23:59:59.999+03:00`).toISOString();
+
+  const [orders, promoCommissionMap] = await Promise.all([
+    strapi.db.query('api::order.order').findMany({
+      where: {
+        publishedAt: { $ne: null },
+        $or: [
+          {
+            createdAt: {
+              $gte: fromUTC,
+              $lte: toUTC,
+            },
+          },
+          {
+            updatedAt: {
+              $gte: fromUTC,
+              $lte: toUTC,
+            },
+          },
+        ],
+      },
+      orderBy: { updatedAt: 'asc' },
+    }),
+    loadAffiliateCommissionByPromoCode(strapi),
+  ]);
+
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('تقرير الطلبات', {
+    views: [{ rightToLeft: true }],
   });
 
+  worksheet.addRow([...HEADERS]);
+
+  const headerRow = worksheet.getRow(1);
+  headerRow.font = { bold: true };
+  headerRow.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+
+  let totalReinvestment = 0;
+  let totalPartnerProfit = 0;
+
+  for (const order of orders as OrderRow[]) {
+    const calculations = buildOrderCalculations(order, promoCommissionMap);
+
+    totalReinvestment += calculations.reinvestment50;
+    totalPartnerProfit += calculations.partnerShare;
+
+    worksheet.addRow([
+      formatOrderDate(order.updatedAt),
+      getStatusLabel(order.status_type),
+      String(order.order_id),
+      calculations.sellingPrice,
+      calculations.originalPriceWithOperation,
+      calculations.profitBeforeDiscounts,
+      calculations.affiliateCommission,
+      calculations.clientDiscount,
+      calculations.giftWrappingValue,
+      calculations.shippingValue,
+      calculations.offersCost,
+      calculations.netProfitAfterDiscounts,
+      calculations.reinvestment50,
+      calculations.remainingProfit50,
+      calculations.partnerShare,
+      '',
+      '',
+    ]);
+  }
+
+  const totalsRow = worksheet.addRow([
+    'الإجمالي',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    round(totalReinvestment),
+    round(totalPartnerProfit),
+  ]);
+  totalsRow.font = { bold: true };
+
+  worksheet.columns = HEADERS.map((header, index) => ({
+    key: String(index + 1),
+    width: header ? Math.max(header.length + 4, 14) : 4,
+  }));
+
+  for (let rowIndex = 2; rowIndex <= worksheet.rowCount; rowIndex += 1) {
+    const row = worksheet.getRow(rowIndex);
+
+    for (let columnIndex = 4; columnIndex <= 15; columnIndex += 1) {
+      const cell = row.getCell(columnIndex);
+      if (typeof cell.value === 'number') {
+        cell.numFmt = '#,##0.00';
+      }
+    }
+
+    for (const columnIndex of [16, 17]) {
+      const cell = row.getCell(columnIndex);
+      if (typeof cell.value === 'number') {
+        cell.numFmt = '#,##0.00';
+      }
+    }
+  }
+
+  const buffer = Buffer.from(await workbook.xlsx.writeBuffer());
+  const filename =
+    fromDate === toDate
+      ? `planblue-report-${fromDate}.xlsx`
+      : `planblue-report-${fromDate}-to-${toDate}.xlsx`;
+
   strapi.log.info(
-    `[REPORT] Sent report email for ${fromDate} → ${toDate} to ${ADMIN_ORDER_EMAIL}`,
+    `[REPORT] Generated Excel report for ${fromDate} → ${toDate} (${orders.length} orders)`,
   );
 
-  return { success: true, email: ADMIN_ORDER_EMAIL };
+  return { buffer, filename };
 }

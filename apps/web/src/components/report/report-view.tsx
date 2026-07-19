@@ -10,7 +10,26 @@ import { useTranslations } from '@/lib/i18n/use-translations';
 import { useLocaleStore } from '@/stores/locale-store';
 
 type SelectionField = 'from' | 'to';
-type ReportStatus = 'idle' | 'sending' | 'success' | 'error';
+type ReportStatus = 'idle' | 'generating' | 'success' | 'error';
+
+function downloadBlob(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+function getFilenameFromResponse(response: Response, fallback: string): string {
+  const disposition = response.headers.get('Content-Disposition');
+  if (!disposition) {
+    return fallback;
+  }
+
+  const match = disposition.match(/filename="([^"]+)"/);
+  return match?.[1] ?? fallback;
+}
 
 function pad(value: number): string {
   return String(value).padStart(2, '0');
@@ -216,12 +235,16 @@ export function ReportView() {
       return;
     }
 
-    setReportStatus('sending');
+    setReportStatus('generating');
 
     try {
       const { from, to } = normalizeRange(fromDate, toDate);
       const fromKey = toDateKey(from);
       const toKey = toDateKey(to);
+      const fallbackFilename =
+        fromKey === toKey
+          ? `planblue-report-${fromKey}.xlsx`
+          : `planblue-report-${fromKey}-to-${toKey}.xlsx`;
 
       const response = await fetch(
         `${STRAPI_URL}/api/orders/generate-report`,
@@ -236,6 +259,9 @@ export function ReportView() {
         throw new Error('Failed to generate report');
       }
 
+      const blob = await response.blob();
+      const filename = getFilenameFromResponse(response, fallbackFilename);
+      downloadBlob(blob, filename);
       setReportStatus('success');
     } catch {
       setReportStatus('error');
@@ -377,22 +403,21 @@ export function ReportView() {
           disabled={
             !fromDate ||
             !toDate ||
-            reportStatus === 'sending' ||
-            reportStatus === 'success'
+            reportStatus === 'generating'
           }
           onClick={handleGenerateReport}
         >
-          {reportStatus === 'sending'
-            ? t.report.sending
+          {reportStatus === 'generating'
+            ? t.report.generating
             : t.report.generateReport}
         </button>
 
         {reportStatus === 'success' && (
-          <p className="pb-report__success">{t.report.emailSent}</p>
+          <p className="pb-report__success">{t.report.downloadSuccess}</p>
         )}
 
         {reportStatus === 'error' && (
-          <p className="pb-report__error">{t.report.emailError}</p>
+          <p className="pb-report__error">{t.report.downloadError}</p>
         )}
       </div>
     </section>
