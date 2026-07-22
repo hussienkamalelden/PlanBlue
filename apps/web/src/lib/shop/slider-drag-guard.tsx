@@ -17,6 +17,7 @@ import {
 
 type SliderDragGuardContextValue = {
   registerSwiper: (swiper: SwiperType) => void;
+  stopAutoplay: () => void;
   isClickBlocked: () => boolean;
   handleTouchStart: () => void;
   handleSliderMove: () => void;
@@ -52,6 +53,13 @@ export function SliderDragGuardProvider({ children }: { children: ReactNode }) {
     );
   }, []);
 
+  const stopAutoplay = useCallback(() => {
+    const swiper = swiperRef.current;
+    if (swiper?.autoplay?.running) {
+      swiper.autoplay.stop();
+    }
+  }, []);
+
   const registerSwiper = useCallback(
     (swiper: SwiperType) => {
       swiperRef.current = swiper;
@@ -71,13 +79,15 @@ export function SliderDragGuardProvider({ children }: { children: ReactNode }) {
   const handleTouchStart = useCallback(() => {
     clearResetTimer();
     draggedRef.current = false;
+    stopAutoplay();
     updateDragState();
-  }, [clearResetTimer, updateDragState]);
+  }, [clearResetTimer, stopAutoplay, updateDragState]);
 
   const handleSliderMove = useCallback(() => {
     draggedRef.current = true;
+    stopAutoplay();
     updateDragState();
-  }, [updateDragState]);
+  }, [stopAutoplay, updateDragState]);
 
   const handleSliderFirstMove = handleSliderMove;
 
@@ -99,6 +109,7 @@ export function SliderDragGuardProvider({ children }: { children: ReactNode }) {
   const value = useMemo(
     () => ({
       registerSwiper,
+      stopAutoplay,
       isClickBlocked,
       handleTouchStart,
       handleSliderMove,
@@ -107,6 +118,7 @@ export function SliderDragGuardProvider({ children }: { children: ReactNode }) {
     }),
     [
       registerSwiper,
+      stopAutoplay,
       isClickBlocked,
       handleTouchStart,
       handleSliderMove,
@@ -128,6 +140,7 @@ export function useSliderDragGuard() {
   if (!context) {
     return {
       registerSwiper: () => undefined,
+      stopAutoplay: () => undefined,
       isClickBlocked: () => false,
       handleTouchStart: () => undefined,
       handleSliderMove: () => undefined,
@@ -137,6 +150,10 @@ export function useSliderDragGuard() {
   }
 
   return context;
+}
+
+export function useStopSliderAutoplay() {
+  return useSliderDragGuard().stopAutoplay;
 }
 
 export function useSliderClickCaptureHandler() {

@@ -128,6 +128,7 @@
     "shareCopied": "Link copied to clipboard",
     "shareFailed": "Could not share this product",
     "addedToCart": "Added to cart",
+    "inCartNotice": "You already have {quantity} of this product in your cart.",
     "mediaImage": "Product image {index}",
     "mediaVideo": "Product video {index}",
     "relatedSection": {
@@ -181,9 +182,10 @@
     "cashOnDelivery": "Cash on Delivery",
     "cashOnDeliveryDesc": "Pay when you receive your order at your doorstep.",
     "giftBanner": "Free batteries included with every toy — a special gift from PlanBlue to you!",
+    "formTitle": "Delivery Information",
     "form": {
-      "name": "Full Name",
-      "namePlaceholder": "Enter your full name",
+      "name": "Your Name",
+      "namePlaceholder": "Enter your name",
       "email": "Email Address",
       "emailPlaceholder": "example@email.com",
       "phone": "Phone Number",
@@ -223,12 +225,14 @@
     "emptyCart": "Your cart is empty. Add some products before checkout.",
     "backToCart": "Back to Cart",
     "validation": {
-      "nameRequired": "Full name is required",
+      "nameRequired": "Name is required",
+      "nameMinLength": "Please enter at least {min} characters for your name.",
       "emailRequired": "Email is required",
       "emailInvalid": "Please enter a valid email",
       "phoneRequired": "Phone number is required",
       "governorateRequired": "Governorate is required",
-      "addressRequired": "Delivery address is required"
+      "addressRequired": "Delivery address is required",
+      "addressMinLength": "Please enter at least {min} characters for the delivery address."
     },
     "success": {
       "eyebrow": "Order confirmed",

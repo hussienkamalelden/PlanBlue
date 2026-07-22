@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CircleCheck, CircleX, Share2 } from 'lucide-react';
 
 import { QuantitySelector } from '@/components/shop/quantity-selector';
@@ -12,12 +12,13 @@ import { formatPrice, formatPriceWhole, getShopItemPrices } from '@/lib/api/stra
 import { buildCartLineFromShopItem } from '@/lib/cart/build-cart-line';
 import { useCartStore } from '@/lib/cart/cart-store';
 import { useTranslations } from '@/lib/i18n/use-translations';
+import { interpolate } from '@/lib/i18n/dictionary';
 import { buildProductShareMessage } from '@/lib/seo/metadata';
 import {
-  arePurchaseActionsDisabled,
-  getStockQuantity,
+  areDetailPurchaseActionsDisabled,
+  getRemainingAddableQuantity,
+  isDetailAddQuantityExceedsAvailable,
   isShopItemOutOfStock,
-  isQuantityExceedsStock,
 } from '@/lib/shop/stock';
 import type { StrapiShopItem } from '@/lib/types/strapi';
 import { useLocaleStore } from '@/stores/locale-store';
@@ -38,26 +39,59 @@ export function ShopItemDetailView({
   const t = useTranslations();
   const addItem = useCartStore((state) => state.addItem);
   const isInCart = useCartStore((state) => state.isInCart);
+  const cartQuantity = useCartStore(
+    (state) =>
+      state.items.find((line) => line.documentId === item.documentId)
+        ?.quantity ?? 0,
+  );
 
   const [quantity, setQuantity] = useState(1);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [shareFeedback, setShareFeedback] = useState<string | null>(null);
+  const [quantityUnavailableNotice, setQuantityUnavailableNotice] =
+    useState(false);
 
-  const stockQuantity = getStockQuantity(item);
+  const maxAddableQuantity = getRemainingAddableQuantity(item, cartQuantity);
   const outOfStock = isShopItemOutOfStock(item);
-  const exceedsStock = isQuantityExceedsStock(quantity, item);
-  const actionsDisabled = arePurchaseActionsDisabled(quantity, item);
+  const exceedsAvailable = isDetailAddQuantityExceedsAvailable(
+    quantity,
+    item,
+    cartQuantity,
+  );
+  const showQuantityUnavailable =
+    (exceedsAvailable || quantityUnavailableNotice) && !outOfStock;
+  const actionsDisabled = areDetailPurchaseActionsDisabled(
+    quantity,
+    item,
+    cartQuantity,
+  );
   const { basePrice, salePrice } = getShopItemPrices(item);
   const title = locale === 'ar' ? item.title_ar : item.title;
   const description = locale === 'ar' ? item.description_ar : item.description;
 
+  useEffect(() => {
+    setQuantity((current) => {
+      if (maxAddableQuantity <= 0) {
+        return 1;
+      }
+      return Math.min(Math.max(1, current), maxAddableQuantity);
+    });
+    setQuantityUnavailableNotice(false);
+  }, [maxAddableQuantity, item.documentId]);
+
   function incrementQuantity() {
     setFeedback(null);
-    setQuantity((current) => current + 1);
+    if (maxAddableQuantity <= 0 || quantity >= maxAddableQuantity) {
+      setQuantityUnavailableNotice(true);
+      return;
+    }
+    setQuantityUnavailableNotice(false);
+    setQuantity((current) => Math.min(maxAddableQuantity, current + 1));
   }
 
   function decrementQuantity() {
     setFeedback(null);
+    setQuantityUnavailableNotice(false);
     setQuantity((current) => Math.max(1, current - 1));
   }
 
@@ -197,14 +231,23 @@ export function ShopItemDetailView({
           </ul>
 
           <div className="pb-product-details__actions">
-            <QuantitySelector
-              variant="product"
-              quantity={quantity}
-              stockQuantity={stockQuantity}
-              onIncrement={incrementQuantity}
-              onDecrement={decrementQuantity}
-              label={t.shopItemDetail.quantity}
-            />
+            <div className="pb-product-details__qty-row">
+              <QuantitySelector
+                variant="product"
+                quantity={quantity}
+                stockQuantity={maxAddableQuantity}
+                onIncrement={incrementQuantity}
+                onDecrement={decrementQuantity}
+                label={t.shopItemDetail.quantity}
+              />
+              {cartQuantity > 0 ? (
+                <p className="pb-product-details__cart-notice" role="status">
+                  {interpolate(t.shopItemDetail.inCartNotice, {
+                    quantity: cartQuantity,
+                  })}
+                </p>
+              ) : null}
+            </div>
 
             <div className="pb-product-details__buttons">
               <button
@@ -245,7 +288,7 @@ export function ShopItemDetailView({
             </p>
           )}
 
-          {exceedsStock && !outOfStock && (
+          {showQuantityUnavailable && (
             <p role="alert" className="pb-product-details__alert">
               {t.shopItemDetail.quantityUnavailable}
             </p>

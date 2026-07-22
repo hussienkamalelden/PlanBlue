@@ -5,6 +5,7 @@ import type { ReactNode } from 'react';
 import {
   SliderDragGuardProvider,
   useSliderClickCaptureHandler,
+  useStopSliderAutoplay,
 } from '@/lib/shop/slider-drag-guard';
 
 type SliderCarouselFrameProps = {
@@ -17,11 +18,15 @@ function SliderCarouselFrameInner({
   className,
 }: SliderCarouselFrameProps) {
   const handleClickCapture = useSliderClickCaptureHandler();
+  const stopAutoplay = useStopSliderAutoplay();
 
   return (
     <div
       className={className}
       data-slider-carousel=""
+      onPointerDownCapture={() => {
+        stopAutoplay();
+      }}
       onClickCapture={handleClickCapture}
     >
       {children}

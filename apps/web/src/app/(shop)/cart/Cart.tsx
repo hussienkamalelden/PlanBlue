@@ -137,7 +137,11 @@ export default function Cart() {
                                 />
                               )}
                               <div className="pb-cart-table__product-box">
-                                <div className="pb-cart-table__image">
+                                <Link
+                                  href={`/shop/${item.slug}`}
+                                  className="pb-cart-table__image"
+                                  aria-label={item.title}
+                                >
                                   {item.imageUrl ? (
                                     <Image
                                       src={item.imageUrl}
@@ -154,7 +158,7 @@ export default function Cart() {
                                       🧸
                                     </span>
                                   )}
-                                </div>
+                                </Link>
                                 <div className="pb-cart-table__details">
                                   <Link
                                     href={`/shop/${item.slug}`}

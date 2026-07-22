@@ -7,6 +7,7 @@ import { buildCartLineFromShopItem } from '@/lib/cart/build-cart-line';
 import { useCartStore } from '@/lib/cart/cart-store';
 import { useTranslations } from '@/lib/i18n/use-translations';
 import {
+  getRemainingAddableQuantity,
   getStockQuantity,
   isShopItemOutOfStock,
 } from '@/lib/shop/stock';
@@ -31,8 +32,10 @@ export function ProductCardCartControl({ item }: ProductCardCartControlProps) {
   const removeItem = useCartStore((state) => state.removeItem);
 
   const quantity = cartLine?.quantity ?? 0;
-  const stockQuantity = getStockQuantity(item);
+  const stockCap = getStockQuantity(item);
+  const remainingAddable = getRemainingAddableQuantity(item, quantity);
   const outOfStock = isShopItemOutOfStock(item);
+  const atIncrementLimit = remainingAddable <= 0;
 
   if (outOfStock) {
     return null;
@@ -40,16 +43,18 @@ export function ProductCardCartControl({ item }: ProductCardCartControlProps) {
 
   function handleAdd(event: MouseEvent<HTMLButtonElement>) {
     stopCardNavigation(event);
+    if (getRemainingAddableQuantity(item, quantity) < 1) {
+      return;
+    }
     addItem(buildCartLineFromShopItem(item, 1));
   }
 
   function handleIncrement(event: MouseEvent<HTMLButtonElement>) {
     stopCardNavigation(event);
-    if (quantity >= stockQuantity) {
+    if (remainingAddable <= 0) {
       return;
     }
-
-    setItemQuantity(item.documentId, quantity + 1);
+    setItemQuantity(item.documentId, Math.min(quantity + 1, stockCap));
   }
 
   function handleDecrement(event: MouseEvent<HTMLButtonElement>) {
@@ -69,9 +74,13 @@ export function ProductCardCartControl({ item }: ProductCardCartControlProps) {
         type="button"
         className="pb-product-card-cart__add"
         onClick={handleAdd}
+        disabled={atIncrementLimit}
         aria-label={t.shopItemDetail.addToCart}
       >
-        <ShoppingCart className="pb-product-card-cart__icon" aria-hidden="true" />
+        <ShoppingCart
+          className="pb-product-card-cart__icon"
+          aria-hidden="true"
+        />
       </button>
     );
   }
@@ -98,7 +107,7 @@ export function ProductCardCartControl({ item }: ProductCardCartControlProps) {
         type="button"
         className="pb-product-card-cart__btn"
         onClick={handleIncrement}
-        disabled={quantity >= stockQuantity}
+        disabled={atIncrementLimit}
         aria-label="Increase quantity"
       >
         +

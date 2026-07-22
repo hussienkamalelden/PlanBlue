@@ -128,6 +128,7 @@
     "shareCopied": "تم نسخ الرابط",
     "shareFailed": "تعذرت مشاركة هذا المنتج",
     "addedToCart": "تمت الإضافة إلى السلة",
+    "inCartNotice": "هذا المنتج موجود في سلتك بكمية {quantity}.",
     "mediaImage": "صورة المنتج {index}",
     "mediaVideo": "فيديو المنتج {index}",
     "relatedSection": {
@@ -181,9 +182,10 @@
     "cashOnDelivery": "الدفع عند الاستلام",
     "cashOnDeliveryDesc": "ادفع عند استلام طلبك على باب منزلك.",
     "giftBanner": "بطاريات مجانية مع كل لعبة — هدية خاصة من PlanBlue لك!",
+    "formTitle": "بيانات التوصيل",
     "form": {
-      "name": "الاسم الكامل",
-      "namePlaceholder": "أدخل اسمك الكامل",
+      "name": "اسمك",
+      "namePlaceholder": "أدخل اسمك",
       "email": "البريد الإلكتروني",
       "emailPlaceholder": "example@email.com",
       "phone": "رقم الهاتف",
@@ -223,12 +225,14 @@
     "emptyCart": "سلتك فارغة. أضف منتجات قبل الدفع.",
     "backToCart": "العودة إلى السلة",
     "validation": {
-      "nameRequired": "الاسم الكامل مطلوب",
+      "nameRequired": "الاسم مطلوب",
+      "nameMinLength": "يرجى إدخال {min} حرفاً على الأقل.",
       "emailRequired": "البريد الإلكتروني مطلوب",
       "emailInvalid": "يرجى إدخال بريد إلكتروني صالح",
       "phoneRequired": "رقم الهاتف مطلوب",
       "governorateRequired": "المحافظة مطلوبة",
-      "addressRequired": "عنوان التوصيل مطلوب"
+      "addressRequired": "عنوان التوصيل مطلوب",
+      "addressMinLength": "يرجى إدخال {min} حرفاً على الأقل في عنوان التوصيل."
     },
     "success": {
       "eyebrow": "تم تأكيد الطلب",

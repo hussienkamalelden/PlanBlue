@@ -18,7 +18,7 @@ export function QuantitySelector({
   variant = 'default',
 }: QuantitySelectorProps) {
   const canDecrement = quantity > 1;
-  const canIncrement = stockQuantity > 0;
+  const canIncrement = stockQuantity > 0 && quantity < stockQuantity;
 
   if (variant === 'product') {
     return (
@@ -38,9 +38,13 @@ export function QuantitySelector({
         <button
           type="button"
           onClick={onIncrement}
-          disabled={!canIncrement}
+          aria-disabled={!canIncrement}
           aria-label="Increase quantity"
-          className="pb-product-qty__btn"
+          className={
+            canIncrement
+              ? 'pb-product-qty__btn'
+              : 'pb-product-qty__btn pb-product-qty__btn--at-limit'
+          }
         >
           +
         </button>

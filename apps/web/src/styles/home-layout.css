@@ -190,6 +190,11 @@ html[dir='rtl'] .planblue-site {
   animation-delay: 1.4s;
 }
 
+.pb-letters-loading__space {
+  display: inline-block;
+  width: 0.35em;
+}
+
 @keyframes pb-letters-loading {
   0%,
   75%,
@@ -2413,6 +2418,24 @@ html[dir='rtl'] .planblue-site {
   pointer-events: none;
 }
 
+.pb-product-details__cart-notice {
+  margin: 0;
+  flex: 1 1 10rem;
+  min-width: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: #16a34a;
+}
+
+.pb-product-details__qty-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  width: 100%;
+}
+
 .pb-product-details__actions {
   display: flex;
   flex-direction: column;
@@ -2471,6 +2494,17 @@ html[dir='rtl'] .planblue-site {
   cursor: not-allowed;
 }
 
+.pb-product-qty__btn--at-limit,
+.pb-product-qty__btn[aria-disabled='true'] {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.pb-product-qty__btn--at-limit:hover,
+.pb-product-qty__btn[aria-disabled='true']:hover {
+  color: #18181c;
+}
+
 .pb-product-qty__value {
   min-width: 2.5rem;
   text-align: center;
@@ -2484,6 +2518,11 @@ html[dir='rtl'] .planblue-site {
   width: 18px;
   height: 18px;
   flex-shrink: 0;
+}
+
+.pb-product-card-cart__add:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
 }
 
 .pb-product-card-cart__add {
@@ -2932,6 +2971,18 @@ html[dir='rtl'] .planblue-site {
     width: 100%;
   }
 
+  .pb-product-details__qty-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .pb-product-details__cart-notice {
+    flex: none;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
   .pb-product-qty {
     width: 100%;
     min-width: 0;
@@ -3262,6 +3313,15 @@ html[dir='rtl'] .planblue-site {
   border: 1px dashed #d8d8d8;
   border-radius: 10px;
   background: #fff;
+  text-decoration: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.pb-cart-table__image:hover {
+  border-color: var(--pb-theme);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--pb-theme) 25%, transparent);
 }
 
 .pb-cart-table__image-fallback {
@@ -3852,6 +3912,85 @@ html[dir='rtl'] .planblue-site {
   color: var(--pb-title);
 }
 
+.pb-checkout-panel__title--centered {
+  margin-bottom: 1.25rem;
+  text-align: center;
+}
+
+.pb-checkout-form-header {
+  position: relative;
+  margin: -24px -24px 1.5rem;
+  padding: 26px 20px 24px;
+  overflow: hidden;
+  border-radius: 10px 10px 0 0;
+  border-bottom: 1px dashed #b8cff5;
+  background:
+    radial-gradient(circle at 12% 20%, rgb(255 214 102 / 22%) 0%, transparent 42%),
+    radial-gradient(circle at 88% 24%, rgb(167 139 250 / 18%) 0%, transparent 40%),
+    linear-gradient(135deg, #e8f2ff 0%, #f3ebff 48%, #fff6e8 100%);
+  text-align: center;
+}
+
+.pb-checkout-form-header::before,
+.pb-checkout-form-header::after {
+  content: "";
+  position: absolute;
+  top: 10px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgb(63 127 224 / 8%);
+  pointer-events: none;
+}
+
+.pb-checkout-form-header::before {
+  left: -18px;
+}
+
+.pb-checkout-form-header::after {
+  right: -18px;
+}
+
+.pb-checkout-form-header__title {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  font-size: clamp(1.5rem, 3.2vw, 1.875rem);
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  background: linear-gradient(120deg, #1d4ed8 0%, #6366f1 42%, #9333ea 72%, #d97706 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: pb-checkout-title-shimmer 6s ease-in-out infinite;
+}
+
+@keyframes pb-checkout-title-shimmer {
+  0%,
+  100% {
+    background-position: 0% center;
+  }
+
+  50% {
+    background-position: 100% center;
+  }
+}
+
+@media (min-width: 768px) {
+  .pb-checkout-form-header {
+    margin: -28px -28px 1.75rem;
+    padding: 28px 24px 26px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pb-checkout-form-header__title {
+    animation: none;
+  }
+}
+
 .pb-checkout-payment {
   display: flex;
   align-items: flex-start;
@@ -3907,6 +4046,9 @@ html[dir='rtl'] .planblue-site {
 }
 
 .pb-checkout-field {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
   min-width: 0;
 }
 
@@ -3942,6 +4084,11 @@ html[dir='rtl'] .planblue-site {
     background-color 0.2s ease;
 }
 
+.pb-checkout-field textarea {
+  min-height: 104px;
+  resize: vertical;
+}
+
 .pb-checkout-field input:hover,
 .pb-checkout-field select:hover,
 .pb-checkout-field textarea:hover {
@@ -3964,9 +4111,14 @@ html[dir='rtl'] .planblue-site {
 }
 
 .pb-checkout-field__error {
+  display: block;
+  position: static;
+  float: none;
+  clear: both;
   margin: 6px 0 0;
   font-size: 12px;
   font-weight: 600;
+  line-height: 1.4;
   color: #dc2626;
 }
 
