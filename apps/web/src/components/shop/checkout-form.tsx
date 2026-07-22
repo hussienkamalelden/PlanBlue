@@ -18,6 +18,7 @@ import { useCartItemImages } from "@/lib/cart/use-cart-item-images";
 import { useCartValidation } from "@/lib/cart/use-cart-validation";
 import { getItemValidation } from "@/lib/cart/validate-cart";
 import { useTranslations } from "@/lib/i18n/use-translations";
+import { interpolate } from "@/lib/i18n/dictionary";
 import type { StrapiShipping } from "@/lib/types/strapi";
 import { useLocaleStore } from "@/stores/locale-store";
 
@@ -28,6 +29,9 @@ type FormErrors = {
   governorate?: string;
   address?: string;
 };
+
+const CHECKOUT_NAME_MIN_LENGTH = 2;
+const CHECKOUT_ADDRESS_MIN_LENGTH = 10;
 
 const CHECKOUT_FIELD_ORDER: (keyof FormErrors)[] = [
   "name",
@@ -139,7 +143,13 @@ export function CheckoutForm({ shippingOptions }: CheckoutFormProps) {
   function getValidationErrors(): FormErrors {
     const newErrors: FormErrors = {};
 
-    if (!form.name.trim()) newErrors.name = t.checkout.validation.nameRequired;
+    if (!form.name.trim()) {
+      newErrors.name = t.checkout.validation.nameRequired;
+    } else if (form.name.trim().length < CHECKOUT_NAME_MIN_LENGTH) {
+      newErrors.name = interpolate(t.checkout.validation.nameMinLength, {
+        min: CHECKOUT_NAME_MIN_LENGTH,
+      });
+    }
     if (!form.email.trim()) {
       newErrors.email = t.checkout.validation.emailRequired;
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
@@ -149,7 +159,13 @@ export function CheckoutForm({ shippingOptions }: CheckoutFormProps) {
     if (!form.shippingId) {
       newErrors.governorate = t.checkout.validation.governorateRequired;
     }
-    if (!form.address.trim()) newErrors.address = t.checkout.validation.addressRequired;
+    if (!form.address.trim()) {
+      newErrors.address = t.checkout.validation.addressRequired;
+    } else if (form.address.trim().length < CHECKOUT_ADDRESS_MIN_LENGTH) {
+      newErrors.address = interpolate(t.checkout.validation.addressMinLength, {
+        min: CHECKOUT_ADDRESS_MIN_LENGTH,
+      });
+    }
 
     return newErrors;
   }
@@ -329,7 +345,7 @@ export function CheckoutForm({ shippingOptions }: CheckoutFormProps) {
           </Link>
         )}
 
-        <form onSubmit={handleReviewOrder} className="pb-cart-layout">
+        <form onSubmit={handleReviewOrder} className="pb-cart-layout" noValidate>
           <div className="pb-checkout-main">
             <section className="pb-checkout-panel">
               <div className="pb-checkout-form-header">
@@ -346,6 +362,7 @@ export function CheckoutForm({ shippingOptions }: CheckoutFormProps) {
                   onChange={(v) => updateField("name", v)}
                   error={errors.name}
                   required
+                  minLength={CHECKOUT_NAME_MIN_LENGTH}
                 />
                 <FieldInput
                   id="checkout-field-email"
@@ -404,9 +421,18 @@ export function CheckoutForm({ shippingOptions }: CheckoutFormProps) {
                     value={form.address}
                     onChange={(e) => updateField("address", e.target.value)}
                     placeholder={t.checkout.form.addressPlaceholder}
+                    aria-invalid={errors.address ? true : undefined}
+                    aria-describedby={
+                      errors.address ? "checkout-address-error" : undefined
+                    }
                   />
                   {errors.address && (
-                    <p className="pb-checkout-field__error">{errors.address}</p>
+                    <p
+                      id="checkout-address-error"
+                      className="pb-checkout-field__error"
+                    >
+                      {errors.address}
+                    </p>
                   )}
                 </div>
                 <div className="pb-checkout-field pb-checkout-field--wide">
@@ -615,6 +641,7 @@ function FieldInput({
   onChange,
   error,
   required,
+  minLength,
 }: {
   id?: string;
   label: string;
@@ -625,7 +652,10 @@ function FieldInput({
   onChange: (value: string) => void;
   error?: string;
   required?: boolean;
+  minLength?: number;
 }) {
+  const errorId = id ? `${id}-error` : undefined;
+
   return (
     <div
       id={id}
@@ -641,8 +671,15 @@ function FieldInput({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
+        minLength={minLength}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error && errorId ? errorId : undefined}
       />
-      {error && <p className="pb-checkout-field__error">{error}</p>}
+      {error && (
+        <p id={errorId} className="pb-checkout-field__error">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

@@ -4046,6 +4046,9 @@ html[dir='rtl'] .planblue-site {
 }
 
 .pb-checkout-field {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
   min-width: 0;
 }
 
@@ -4108,9 +4111,14 @@ html[dir='rtl'] .planblue-site {
 }
 
 .pb-checkout-field__error {
+  display: block;
+  position: static;
+  float: none;
+  clear: both;
   margin: 6px 0 0;
   font-size: 12px;
   font-weight: 600;
+  line-height: 1.4;
   color: #dc2626;
 }
 
