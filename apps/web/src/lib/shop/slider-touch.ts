@@ -6,6 +6,6 @@ export const SLIDER_TOUCH_OPTIONS = {
 
 export const SLIDER_AUTOPLAY_OPTIONS = {
   delay: 3000,
-  disableOnInteraction: false,
+  disableOnInteraction: true,
   pauseOnMouseEnter: true,
 } as const;
