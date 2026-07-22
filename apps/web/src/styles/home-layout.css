@@ -2476,6 +2476,17 @@ html[dir='rtl'] .planblue-site {
   cursor: not-allowed;
 }
 
+.pb-product-qty__btn--at-limit,
+.pb-product-qty__btn[aria-disabled='true'] {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.pb-product-qty__btn--at-limit:hover,
+.pb-product-qty__btn[aria-disabled='true']:hover {
+  color: #18181c;
+}
+
 .pb-product-qty__value {
   min-width: 2.5rem;
   text-align: center;
