@@ -2502,6 +2502,11 @@ html[dir='rtl'] .planblue-site {
   flex-shrink: 0;
 }
 
+.pb-product-card-cart__add:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
 .pb-product-card-cart__add {
   display: inline-flex;
   flex-shrink: 0;
