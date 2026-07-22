@@ -2418,6 +2418,24 @@ html[dir='rtl'] .planblue-site {
   pointer-events: none;
 }
 
+.pb-product-details__cart-notice {
+  margin: 0;
+  flex: 1 1 10rem;
+  min-width: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: #16a34a;
+}
+
+.pb-product-details__qty-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  width: 100%;
+}
+
 .pb-product-details__actions {
   display: flex;
   flex-direction: column;
@@ -2953,6 +2971,18 @@ html[dir='rtl'] .planblue-site {
     width: 100%;
   }
 
+  .pb-product-details__qty-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .pb-product-details__cart-notice {
+    flex: none;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
   .pb-product-qty {
     width: 100%;
     min-width: 0;
@@ -3283,6 +3313,15 @@ html[dir='rtl'] .planblue-site {
   border: 1px dashed #d8d8d8;
   border-radius: 10px;
   background: #fff;
+  text-decoration: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.pb-cart-table__image:hover {
+  border-color: var(--pb-theme);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--pb-theme) 25%, transparent);
 }
 
 .pb-cart-table__image-fallback {

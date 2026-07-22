@@ -12,6 +12,7 @@ import { formatPrice, formatPriceWhole, getShopItemPrices } from '@/lib/api/stra
 import { buildCartLineFromShopItem } from '@/lib/cart/build-cart-line';
 import { useCartStore } from '@/lib/cart/cart-store';
 import { useTranslations } from '@/lib/i18n/use-translations';
+import { interpolate } from '@/lib/i18n/dictionary';
 import { buildProductShareMessage } from '@/lib/seo/metadata';
 import {
   areDetailPurchaseActionsDisabled,
@@ -230,14 +231,23 @@ export function ShopItemDetailView({
           </ul>
 
           <div className="pb-product-details__actions">
-            <QuantitySelector
-              variant="product"
-              quantity={quantity}
-              stockQuantity={maxAddableQuantity}
-              onIncrement={incrementQuantity}
-              onDecrement={decrementQuantity}
-              label={t.shopItemDetail.quantity}
-            />
+            <div className="pb-product-details__qty-row">
+              <QuantitySelector
+                variant="product"
+                quantity={quantity}
+                stockQuantity={maxAddableQuantity}
+                onIncrement={incrementQuantity}
+                onDecrement={decrementQuantity}
+                label={t.shopItemDetail.quantity}
+              />
+              {cartQuantity > 0 ? (
+                <p className="pb-product-details__cart-notice" role="status">
+                  {interpolate(t.shopItemDetail.inCartNotice, {
+                    quantity: cartQuantity,
+                  })}
+                </p>
+              ) : null}
+            </div>
 
             <div className="pb-product-details__buttons">
               <button

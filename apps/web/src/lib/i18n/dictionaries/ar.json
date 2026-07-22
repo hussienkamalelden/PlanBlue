@@ -128,6 +128,7 @@
     "shareCopied": "تم نسخ الرابط",
     "shareFailed": "تعذرت مشاركة هذا المنتج",
     "addedToCart": "تمت الإضافة إلى السلة",
+    "inCartNotice": "هذا المنتج موجود في سلتك بكمية {quantity}.",
     "mediaImage": "صورة المنتج {index}",
     "mediaVideo": "فيديو المنتج {index}",
     "relatedSection": {
