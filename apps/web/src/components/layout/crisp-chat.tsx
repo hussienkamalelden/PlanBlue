@@ -3,11 +3,10 @@
 import Script from 'next/script';
 import { useEffect } from 'react';
 
-import {
-  configureCrispChatbox,
-  CRISP_WEBSITE_ID,
-  isCrispEnabled,
-} from '@/lib/crisp';
+import { CRISP_WEBSITE_ID, isCrispEnabled } from '@/lib/crisp';
+
+/** Purple — distinct from WhatsApp green (#25D366) and cart blue (#4389F7). */
+const CRISP_THEME_COLOR = '7642EC';
 
 export function CrispChat() {
   useEffect(() => {
@@ -15,8 +14,8 @@ export function CrispChat() {
       return;
     }
 
-    configureCrispChatbox();
-    window.$crisp?.push(['on', 'session:loaded', configureCrispChatbox]);
+    window.$crisp = window.$crisp ?? [];
+    window.$crisp.push(['config', 'color:theme', CRISP_THEME_COLOR]);
   }, []);
 
   if (!isCrispEnabled()) {
@@ -31,6 +30,7 @@ export function CrispChat() {
         __html: `
           window.$crisp=[];
           window.CRISP_WEBSITE_ID="${CRISP_WEBSITE_ID}";
+          window.$crisp.push(["config", "color:theme", "${CRISP_THEME_COLOR}"]);
           (function(){
             var documentReference=document;
             var scriptElement=documentReference.createElement("script");

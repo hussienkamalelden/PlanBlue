@@ -40,6 +40,23 @@
   left: 1.5rem;
 }
 
+/* Crisp chat — bottom slot (below WhatsApp & cart) */
+.crisp-client .cc-1m2mf {
+  bottom: var(--pb-float-edge) !important;
+  right: 1.5rem !important;
+  z-index: 50 !important;
+}
+
+[dir='rtl'] .crisp-client .cc-1m2mf {
+  right: auto !important;
+  left: 1.5rem !important;
+}
+
+.crisp-client .cc-1xxa,
+.crisp-client .cc-1yy0g {
+  z-index: 60 !important;
+}
+
 html[lang='ar'] .planblue-site,
 html[dir='rtl'] .planblue-site {
   font-family: var(--font-arabic, 'Cairo'), var(--font-nunito, 'Nunito'),
