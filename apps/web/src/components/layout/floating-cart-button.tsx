@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { ShoppingCart } from 'lucide-react';
 
-import { isCrispEnabled } from '@/lib/crisp';
 import { useCartStore } from '@/lib/cart/cart-store';
 import { useTranslations } from '@/lib/i18n/use-translations';
 
@@ -30,20 +29,16 @@ export function FloatingCartButton() {
     return null;
   }
 
-  const cartLayerClass = isCrispEnabled()
-    ? 'pb-floating-btn--layer-2'
-    : 'pb-floating-btn--layer-1';
-
   return (
     <Link
       href="/cart"
-      className={`pb-floating-btn ${cartLayerClass} fixed right-6 z-50 hidden h-14 w-14 items-center justify-center rounded-full bg-[#4389F7] text-white shadow-lg transition-transform hover:scale-105 hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4389F7] lg:flex`}
+      className="pb-floating-cart"
       aria-label={`${t.header.cart} (${itemCount})`}
     >
-      <ShoppingCart className="h-6 w-6" strokeWidth={2} aria-hidden="true" />
-      <span className="absolute -right-1 -top-1 flex h-[22px] min-w-[22px] items-center justify-center rounded-full bg-[#e0a31e] px-1.5 text-xs font-bold leading-none text-white rtl:-left-1 rtl:right-auto">
+      <span className="pb-floating-cart__count" aria-hidden="true">
         {itemCount > 99 ? '99+' : itemCount}
       </span>
+      <ShoppingCart className="pb-floating-cart__icon" strokeWidth={2} aria-hidden="true" />
     </Link>
   );
 }
