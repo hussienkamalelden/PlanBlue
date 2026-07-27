@@ -15,7 +15,29 @@
   --pb-title: #111111;
   --pb-text: #666666;
   --pb-mobile-nav-height: 4.25rem;
+  --pb-float-size: 3.5rem;
+  --pb-float-gap: 0.75rem;
+  --pb-float-edge: 1.5rem;
   font-family: var(--font-nunito, 'Nunito', sans-serif);
+}
+
+.pb-floating-btn--layer-0 {
+  bottom: var(--pb-float-edge);
+}
+
+.pb-floating-btn--layer-1 {
+  bottom: calc(var(--pb-float-edge) + var(--pb-float-size) + var(--pb-float-gap));
+}
+
+.pb-floating-btn--layer-2 {
+  bottom: calc(
+    var(--pb-float-edge) + (var(--pb-float-size) + var(--pb-float-gap)) * 2
+  );
+}
+
+[dir='rtl'] .pb-floating-btn {
+  right: auto;
+  left: 1.5rem;
 }
 
 html[lang='ar'] .planblue-site,
@@ -3198,8 +3220,8 @@ html[dir='rtl'] .planblue-site {
     left: -9px;
   }
 
-  .pb-floating-whatsapp {
-    bottom: calc(
+  .planblue-site {
+    --pb-float-edge: calc(
       var(--pb-mobile-nav-height) + 1rem + env(safe-area-inset-bottom, 0px)
     );
   }

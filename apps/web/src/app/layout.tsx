@@ -3,7 +3,9 @@ import { Cairo, Nunito } from 'next/font/google';
 import { Suspense } from 'react';
 
 import { LocaleProvider } from '@/components/locale/locale-provider';
+import { CrispChat } from '@/components/layout/crisp-chat';
 import { FloatingCartButton } from '@/components/layout/floating-cart-button';
+import { FloatingCrispButton } from '@/components/layout/floating-crisp-button';
 import { FloatingWhatsAppButton } from '@/components/layout/floating-whatsapp-button';
 import { MobileBottomNav } from '@/components/layout/mobile-bottom-nav';
 import { PlanBlueHeader } from '@/components/layout/planblue-header';
@@ -55,6 +57,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd) }}
         />
         <InitialPageLoader />
+        <CrispChat />
         <LocaleProvider>
           <NavigationLoader />
           <div className="planblue-site-shell flex min-h-screen flex-col">
@@ -67,6 +70,7 @@ export default async function RootLayout({
             </div>
             <SiteFooter />
             <FloatingCartButton />
+            <FloatingCrispButton />
             <FloatingWhatsAppButton />
             <MobileBottomNav />
           </div>
