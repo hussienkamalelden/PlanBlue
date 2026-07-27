@@ -14,8 +14,8 @@ export function CrispChat() {
       return;
     }
 
-    (window as any).$crisp = (window as any).$crisp ?? [];
-    (window as any).$crisp.push(['config', 'color:theme', CRISP_THEME_COLOR]);
+    window.$crisp = window.$crisp ?? [];
+    window.$crisp.push(['config', 'color:theme', CRISP_THEME_COLOR]);
   }, []);
 
   if (!isCrispEnabled()) {
